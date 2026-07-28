@@ -1,0 +1,13 @@
+{
+  "id": "kbthink_safeblock",
+  "goal": "account_open_nonface",
+  "title": "비대면 계좌개설 안심차단으로 보이스피싱 피해 예방하기",
+  "url": "https://kbthink.com/main/living-finance/talk-cardnews/2025/remote-account-opening-security-block.html",
+  "host": "kbthink.com",
+  "fetched_at": "2026-07-27T17:44:57+09:00",
+  "http_status": 200,
+  "content_type": "text/html; charset=UTF-8",
+  "bytes": 91480,
+  "sha256": "a153017a7a743006cf547b2a127524909c535da96ff27509383d2cb214a1b3d2",
+  "collection_method": "auto"
+}

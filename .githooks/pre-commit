@@ -1,0 +1,35 @@
+#!/bin/sh
+# 커밋 직전 비밀정보 유출 차단.
+# 설치: git config core.hooksPath .githooks
+#
+# 원칙: 감지된 비밀값을 **절대 출력하지 않는다.**
+#       파일명과 줄 번호만 알린다. 로그·터미널에 키가 남으면 차단의 의미가 없다.
+
+fail=0
+staged=$(git diff --cached --name-only)
+
+# 1) .env 계열 (.env.example 은 키 없는 템플릿이므로 허용)
+leaked=$(echo "$staged" | grep -E '(^|/)\.env($|\.)' | grep -v '\.env\.example$')
+if [ -n "$leaked" ]; then
+  echo "커밋 차단: 다음 파일은 커밋할 수 없습니다."
+  echo "$leaked" | sed 's/^/   - /'
+  fail=1
+fi
+
+# 2) 내용에 키 형태 문자열 — 값은 출력하지 않고 위치만 알린다
+hits=$(git diff --cached -U0 \
+  | grep -nE '(sk-[A-Za-z0-9_-]{20,}|api[_-]?key["'"'"' ]*[:=]["'"'"' ]*[A-Za-z0-9_-]{20,})' \
+  | wc -l)
+if [ "$hits" -gt 0 ]; then
+  echo "커밋 차단: API 키로 보이는 문자열이 ${hits}곳에서 감지되었습니다."
+  echo "   (값은 안전을 위해 표시하지 않습니다. 아래 파일을 확인하세요)"
+  git diff --cached --name-only | sed 's/^/   - /'
+  fail=1
+fi
+
+if [ "$fail" -eq 1 ]; then
+  echo ""
+  echo "   키가 한 번이라도 커밋되면 파일을 지워도 히스토리에 남습니다."
+  echo "   유출 시 대응은 키 폐기·재발급뿐입니다."
+fi
+exit $fail

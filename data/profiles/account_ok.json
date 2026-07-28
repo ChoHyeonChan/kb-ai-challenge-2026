@@ -1,0 +1,11 @@
+{
+  "profile_id": "account_ok",
+  "description": "안심차단이 없어 비대면 계좌개설이 가능한 사용자",
+  "card": {},
+  "account": {
+    "nonface_open_block": false
+  },
+  "context": {
+    "account_type": "수시입출금"
+  }
+}

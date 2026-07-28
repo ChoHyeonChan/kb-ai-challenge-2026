@@ -1,0 +1,6 @@
+# 비대면 계좌개설 안심차단 서비스
+# 출처: https://obank.kbstar.com/quics?page=C112454
+# 확보 방법: 브라우저 직접 열람 후 본문 저장 (2026-07-27, 현찬)
+# 사유: obank.kbstar.com robots.txt 가 일반 UA 전체 Disallow → 자동 수집하지 않음
+
+(브라우저로 열람한 본문을 여기에 붙여넣는다)

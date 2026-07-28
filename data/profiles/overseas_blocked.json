@@ -1,0 +1,17 @@
+{
+  "profile_id": "overseas_blocked",
+  "description": "해외거래정지와 해외원화결제 차단이 둘 다 켜져 있는 사용자. 여권 정보는 모름",
+  "card": {
+    "overseas_block_online": true,
+    "dcc_block": true,
+    "signature": true,
+    "name_matches_passport": null,
+    "expiry_date": "2029-05-31",
+    "type": "debit"
+  },
+  "account": {},
+  "context": {
+    "amount_krw": 32000,
+    "tne_accumulated_krw": 0
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "id": "card_overseas_general",
+  "goal": "overseas_payment_online",
+  "title": "해외이용 종합안내",
+  "url": "https://m.kbcard.com/SVC/DVIEW/MSDMCXHIASVC0028?mainCC=a&selectedGuidIndex=1",
+  "host": "m.kbcard.com",
+  "fetched_at": "2026-07-27T17:44:52+09:00",
+  "http_status": 200,
+  "content_type": "text/html; charset=UTF-8",
+  "bytes": 162345,
+  "sha256": "b8e85e8705adeaaf9bbd81159538cfad268af92ec7bec9eb475aecc5ef3c003f",
+  "collection_method": "auto"
+}

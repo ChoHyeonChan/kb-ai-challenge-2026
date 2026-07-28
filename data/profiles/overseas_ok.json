@@ -1,0 +1,17 @@
+{
+  "profile_id": "overseas_ok",
+  "description": "모든 조건을 충족해 해외 온라인 결제가 가능한 사용자",
+  "card": {
+    "overseas_block_online": false,
+    "dcc_block": false,
+    "signature": true,
+    "name_matches_passport": true,
+    "expiry_date": "2030-12-31",
+    "type": "credit"
+  },
+  "account": {},
+  "context": {
+    "amount_krw": 32000,
+    "tne_accumulated_krw": 0
+  }
+}

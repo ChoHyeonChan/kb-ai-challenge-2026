@@ -1,0 +1,14 @@
+{
+  "profile_id": "partial_unknown",
+  "description": "상태 대부분을 알 수 없는 사용자. '모르는 건 모른다고 한다'를 보여주는 케이스",
+  "card": {
+    "overseas_block_online": false,
+    "dcc_block": null,
+    "signature": null,
+    "name_matches_passport": null,
+    "expiry_date": null,
+    "type": "debit"
+  },
+  "account": {},
+  "context": {}
+}

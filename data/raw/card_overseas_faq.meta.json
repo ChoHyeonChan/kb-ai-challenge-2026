@@ -1,0 +1,13 @@
+{
+  "id": "card_overseas_faq",
+  "goal": "overseas_payment_online",
+  "title": "해외이용 FAQ",
+  "url": "https://m.kbcard.com/SVC/DVIEW/MSDMCXHIASVCD0032",
+  "host": "m.kbcard.com",
+  "fetched_at": "2026-07-27T17:44:47+09:00",
+  "http_status": 200,
+  "content_type": "text/html; charset=UTF-8",
+  "bytes": 160266,
+  "sha256": "c5f87e1bacd872fcf1016bd651b0e36e11db713b518300705fed073a83fce432",
+  "collection_method": "auto"
+}

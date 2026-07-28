@@ -1,0 +1,229 @@
+"""수집한 HTML을 조건 추출용 atomic snippet 으로 분할한다.
+
+설계 근거
+  - 조건 추출 정확도는 청크 단위에 크게 좌우된다 (Gao et al. 2024, RAG Survey)
+  - 규범 텍스트는 atomic snippet 으로 쪼개는 편이 규칙 추출에 유리하다 (Horner et al. 2506.08899)
+  - KB 안내 페이지는 **한도·조건이 표에 들어있다** → 표를 행 단위로 살려야 한다
+
+외부 의존 없음 (bs4 미사용, 표준 html.parser).
+
+실행:  python -m src.collect.chunk
+"""
+from __future__ import annotations
+
+import json
+import re
+from dataclasses import asdict, dataclass
+from html.parser import HTMLParser
+from pathlib import Path
+
+from src.config import CHUNKS_DIR, CHUNK_MAX_CHARS, CHUNK_MIN_CHARS, RAW_DIR
+
+SKIP_TAGS = {"script", "style", "noscript", "svg", "head", "iframe", "select", "option"}
+HEADING_TAGS = {"h1", "h2", "h3", "h4", "h5", "h6"}
+BLOCK_TAGS = {
+    "p", "div", "section", "article", "li", "dd", "dt",
+    "figcaption", "caption", "blockquote", "label", "strong",
+} | HEADING_TAGS
+
+# 메뉴·푸터 등 조건이 들어있지 않은 상투구 (수집 페이지 공통)
+NOISE_PATTERNS = [
+    r"^KB국민카드$", r"^로그인$", r"^전체메뉴$", r"^닫기$", r"^열기$", r"^이전$", r"^다음$",
+    r"^TOP$", r"^more$", r"^더보기$", r"^바로가기$", r"^메뉴$", r"^검색$",
+    r"개인정보처리방침", r"이메일무단수집거부", r"고객센터\s*\d", r"^Copyright", r"^ⓒ",
+]
+NOISE_RE = re.compile("|".join(NOISE_PATTERNS), re.IGNORECASE)
+
+
+@dataclass
+class Chunk:
+    chunk_id: str
+    source_id: str
+    goal: str | None
+    url: str
+    fetched_at: str
+    kind: str          # heading | paragraph | list_item | table_row
+    section: str       # 직전 heading (문맥 보존용)
+    text: str
+
+
+class _Extractor(HTMLParser):
+    """블록 단위 텍스트 + 표를 행 단위로 뽑는다."""
+
+    def __init__(self) -> None:
+        super().__init__(convert_charrefs=True)
+        self.blocks: list[tuple[str, str]] = []   # (kind, text)
+        self._skip_depth = 0
+        self._buf: list[str] = []
+        self._cur_kind = "paragraph"
+        # 표 상태
+        self._in_table = 0
+        self._row: list[str] = []
+        self._cell: list[str] = []
+        self._in_cell = False
+
+    # ── 내부 헬퍼 ──
+    def _flush_block(self) -> None:
+        text = _clean(" ".join(self._buf))
+        if text:
+            self.blocks.append((self._cur_kind, text))
+        self._buf = []
+        self._cur_kind = "paragraph"
+
+    def _flush_row(self) -> None:
+        cells = [_clean(c) for c in self._row]
+        cells = [c for c in cells if c]
+        if len(cells) >= 2:
+            # "항목 | 값 | 값" 형태로 직렬화 — 조건이 표에 있는 경우가 많다
+            self.blocks.append(("table_row", " | ".join(cells)))
+        elif len(cells) == 1:
+            self.blocks.append(("paragraph", cells[0]))
+        self._row = []
+
+    # ── HTMLParser 훅 ──
+    def handle_starttag(self, tag: str, attrs) -> None:
+        if tag in SKIP_TAGS:
+            self._skip_depth += 1
+            return
+        if self._skip_depth:
+            return
+
+        if tag == "table":
+            self._flush_block()
+            self._in_table += 1
+        elif tag == "tr" and self._in_table:
+            self._row = []
+        elif tag in ("td", "th") and self._in_table:
+            self._in_cell = True
+            self._cell = []
+        elif tag == "br":
+            self._buf.append(" ")
+        elif tag in BLOCK_TAGS:
+            self._flush_block()
+            if tag in HEADING_TAGS:
+                self._cur_kind = "heading"
+            elif tag == "li":
+                self._cur_kind = "list_item"
+
+    def handle_endtag(self, tag: str) -> None:
+        if tag in SKIP_TAGS:
+            self._skip_depth = max(0, self._skip_depth - 1)
+            return
+        if self._skip_depth:
+            return
+
+        if tag == "table":
+            self._in_table = max(0, self._in_table - 1)
+        elif tag == "tr" and self._in_table:
+            self._flush_row()
+        elif tag in ("td", "th") and self._in_table:
+            self._row.append(" ".join(self._cell))
+            self._cell = []
+            self._in_cell = False
+        elif tag in BLOCK_TAGS:
+            self._flush_block()
+
+    def handle_data(self, data: str) -> None:
+        if self._skip_depth or not data.strip():
+            return
+        if self._in_cell:
+            self._cell.append(data)
+        else:
+            self._buf.append(data)
+
+    def close(self) -> None:  # type: ignore[override]
+        super().close()
+        self._flush_block()
+
+
+def _clean(s: str) -> str:
+    s = s.replace("\xa0", " ").replace("​", "")
+    s = re.sub(r"\s+", " ", s)
+    return s.strip(" ·-|")
+
+
+def _is_noise(text: str) -> bool:
+    if len(text) < CHUNK_MIN_CHARS:
+        return True
+    if NOISE_RE.search(text):
+        return True
+    # 한글이 거의 없는 조각(스크립트 잔재·영문 메뉴)은 버린다
+    hangul = len(re.findall(r"[가-힣]", text))
+    return hangul < len(text) * 0.15
+
+
+def _split_long(text: str) -> list[str]:
+    """긴 조각은 문장 경계로 자른다."""
+    if len(text) <= CHUNK_MAX_CHARS:
+        return [text]
+    parts, cur = [], ""
+    for sent in re.split(r"(?<=[.!?。])\s+|(?<=니다)\s+|(?<=됩니다)\s+", text):
+        if len(cur) + len(sent) + 1 > CHUNK_MAX_CHARS and cur:
+            parts.append(cur.strip())
+            cur = sent
+        else:
+            cur = f"{cur} {sent}".strip()
+    if cur.strip():
+        parts.append(cur.strip())
+    return parts
+
+
+def chunk_file(html_path: Path) -> list[Chunk]:
+    meta_path = html_path.with_suffix("").with_suffix(".meta.json")
+    if not meta_path.exists():
+        meta_path = html_path.parent / f"{html_path.stem}.meta.json"
+    meta = json.loads(meta_path.read_text(encoding="utf-8"))
+
+    parser = _Extractor()
+    parser.feed(html_path.read_text(encoding="utf-8"))
+    parser.close()
+
+    chunks: list[Chunk] = []
+    section = ""
+    seen: set[str] = set()
+
+    for kind, text in parser.blocks:
+        if kind == "heading":
+            if not _is_noise(text) or len(text) >= 4:
+                section = text
+            continue
+        if _is_noise(text):
+            continue
+        for piece in _split_long(text):
+            if piece in seen:      # 페이지 내 반복 문구 제거
+                continue
+            seen.add(piece)
+            chunks.append(
+                Chunk(
+                    chunk_id=f"{meta['id']}#{len(chunks):04d}",
+                    source_id=meta["id"],
+                    goal=meta.get("goal"),
+                    url=meta["url"],
+                    fetched_at=meta["fetched_at"],
+                    kind=kind,
+                    section=section,
+                    text=piece,
+                )
+            )
+    return chunks
+
+
+def run() -> int:
+    CHUNKS_DIR.mkdir(parents=True, exist_ok=True)
+    out_path = CHUNKS_DIR / "chunks.jsonl"
+
+    total = 0
+    with out_path.open("w", encoding="utf-8") as f:
+        for html_path in sorted(RAW_DIR.glob("*.html")):
+            chunks = chunk_file(html_path)
+            for c in chunks:
+                f.write(json.dumps(asdict(c), ensure_ascii=False) + "\n")
+            print(f"[CHUNK] {html_path.stem:26s} {len(chunks):4d}개")
+            total += len(chunks)
+
+    print(f"\n총 {total}개 → {out_path}")
+    return total
+
+
+if __name__ == "__main__":
+    run()

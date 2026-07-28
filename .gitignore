@@ -1,0 +1,34 @@
+# ── 절대 커밋 금지 ──
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+credentials*
+secrets*
+
+# LLM 캐시 (용량 큼, 재생성 가능)
+data/.llm_cache/
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+
+# OS / 편집기
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# 수집 원문은 커밋한다 (재현성 근거).
+# 단 용량이 커지면 아래 주석을 풀고 대신 sources/ 목록만 커밋할 것.
+# data/raw/
+
+# 임시 백업·테스트 파일
+.env_backup*
+*_backup_test

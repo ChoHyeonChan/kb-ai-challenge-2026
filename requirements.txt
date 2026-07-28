@@ -1,0 +1,19 @@
+# 수집·청킹
+requests>=2.32
+PyYAML>=6.0
+
+# 스키마·판정
+pydantic>=2.9
+
+# API·데모
+fastapi>=0.115
+uvicorn>=0.30
+
+# 조건 추출 (LLM) — extract/ 에서만 사용
+openai>=1.50
+
+# 테스트
+pytest>=8.0
+
+# .env 로드
+python-dotenv>=1.0

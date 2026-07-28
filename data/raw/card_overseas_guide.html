@@ -1,0 +1,3839 @@
+
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width">
+	<meta name="format-detection" content="telephone=no, address=no, email=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="naver-site-verification" content="7ddfffea478904bf5ce1edc9061292f312fcecdd">
+	<meta name="google-site-verification" content="wx5GqAlwMOvToSkcMHNDI1Mou1m01Kl62BwJhUiNP1c">
+		
+	<!--  <script src="/CMN/common/js/lib/jquery-3.4.1.min.js"></script> -->
+	<script src="/CMN/common/js/lib/jquery-2.1.3.min.js" charset="UTF-8"></script>
+	<script src="/CMN/common/js/cmn.js"></script>
+	
+<!-- 	<link rel="stylesheet" href="/CMN/common/mobile/css/common.css?20191230"> -->
+<!-- 	<link rel="stylesheet" href="/CMN/common/mobile/css/keasy_common.css?20190531"> -->
+	<!-- 차세대 -->
+	<link rel="preload" href="/CMN/common/fonts/KBFGTextL_subset.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+	<link rel="stylesheet" href="/CMN/common/mobile/css/basic.css">
+	<link rel="stylesheet" href="/CMN/common/mobile/css/sv.css">
+	<link rel="stylesheet" href="/CMN/common/mobile/css/advance.css?20200122">
+	
+	
+
+
+
+
+
+
+
+
+
+
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Mobile Content Type START -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<script type="text/javascript">
+	var deviceType = "";
+	var tranNm = "해외이용 가이드>해외이용·송금>편의서비스";
+	
+	//Page진입시 해당페이지의 진입 이벤트 기본수집
+	//앱미업데이트시 스크립트 오류방지를 위해 try{}catch 추가 2024.08.01 KHB
+	function setPageInitInfoToDmp(){
+        if(deviceType =="aOS" && typeof(MoleculeAgent) != 'undefined') {
+           try{
+               MoleculeAgent.setCustomView(tranNm);
+               MoleculeAgent.setCollectView(location.href);
+           }catch(e){
+        	   console.log(e);
+           }
+        }else if (deviceType == "iOS" && typeof(webkit) != 'undefined') {
+        	try{
+               webkit.messageHandlers.setCustomView.postMessage(tranNm);
+               webkit.messageHandlers.setCollectView.postMessage(location.href);
+            }catch(e){
+            	console.log(e);
+            }
+        }
+	}
+	
+	
+	//이용대금 명세서, 최근이용내역, 개인화영역 이벤트 정보수집
+	function setEventItemToDmp(eventType, eventCategory, item){
+		// 안드로이드 디바이스일 경우
+		if (deviceType === "aOS" && typeof(MoleculeAgent) != 'undefined'){  
+			  try{
+			     MoleculeAgent.setEvent(eventType, eventCategory, "", JSON.stringify(item));
+			  }catch(e){
+				  console.log(e);
+	          }
+	    } else if (deviceType === "iOS" ) {       // iOS 디바이스일 경우
+		    const event = {
+			   "eventType": eventType,
+			   "eventCategory": eventCategory,
+			   "eventLabel": "",
+			   "eventAttribute": JSON.stringify(item)
+			}
+	        try{
+			   webkit.messageHandlers.setEvent.postMessage(event);
+			}catch(e){
+				console.log(e);
+	        }
+	    }
+	}
+
+	</script>
+	
+	<script>
+        
+		$(function () {
+			setPageInitInfoToDmp();
+		});
+</script>
+		
+
+
+
+<script type="text/javascript">
+var _isMobileApp         = false;
+var _isAndroid           = false;
+var _isIOS               = false;
+var _isMobileAppKIA      = false;
+var _isMobileAppKAP      = false;
+var _isMobileAppKLP      = false;
+var _isMobileAppKBC      = false;
+var _isWebAjaxPtcolUse   = false;
+var _mobileAppId         = null;
+var _mobileAppVer        = null;
+var _mobileAppName       = null;
+var _mobileUuid          = null;
+var _blockchainCertURL   = "https://m.kbcard.com/CMN/vestpin/html/vestpin/server/index.html";
+var _inAppChnCd          = "";
+var _isKbpaySchemeUse    = true;
+var _kbpayStoreAOS       = "https://play.google.com/store/apps/details?id=com.kbcard.cxh.appcard&hl=ko";
+var _kbpayStoreIOS       = "https://itunes.apple.com/kr/app/kb-pay/id695436326?mt=8";
+var _appLinkTitleForCert = "KB Pay";
+var _kbmCertCloseFlag    = false;
+var _kbmCertCloseCd      = "";
+var _kbmCertCloseMsg     = "";
+var _GNBdisplay = "Y";
+
+
+var _isKbpay = false;
+if(window.navigator && navigator.userAgent && (navigator.userAgent.indexOf('kbpayia') > -1)){
+	_isKbpay = true;
+}
+</script>
+
+<!-- Common Javascript File Import START -->
+<script src="/CMN/common/js/kbcard.common.js?202307050001" charset="UTF-8"></script>
+<script src="/CMN/common/js/kbcard.common.communication.js?202011020000" charset="UTF-8"></script>
+<script src="/CMN/common/js/kbcard.common.input-validation.js?202011020000" charset="UTF-8"></script>
+<script src="/CMN/common/js/kbcard.common.input-restrict.js?202011020000" charset="UTF-8"></script>
+<script src="/CMN/common/js/kbcard.common.conversion.js?202011020000" charset="UTF-8"></script>
+<script src="/CMN/common/js/kbcard.common.browser.js?202011020000" charset="UTF-8"></script>
+<script src="/CMN/common/js/kbcard.common.window.js?202011020000" charset="UTF-8"></script>
+<!-- Common Javascript File Import END -->
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+const cmnScrpt_kbMobileCertSlfCfmPush_confirmTitle = '맨 위 알림 메시지를 확인 해주세요';
+const cmnScrpt_kbMobileCertSlfCfmPush_confirmMsg   = '고객님 상단 PUSH 알림 메시지로 인증을 요청하였습니다.<br><p class="refer mt20">알림 메시지를 받지 못하셨을 경우 창을 닫고 인증하기를 다시 시도해 주세요.</p>';
+const cmnScrpt_kbMobileCertSlfCfmPush_cmnCtfTranId = '/CMN/API/HODM0007';
+var cmnScrpt_kbMobileCertSlfCfmPush_isMobile = false;
+var cmnScrpt_kbMobileCertSlfCfmPush_obj = {};
+var cmnScrpt_kbMobileCertSlfCfmPush_certTxId = "";
+
+$(function(){
+	if ( typeof(_isMobileApp) != "undefined" ) {
+		cmnScrpt_kbMobileCertSlfCfmPush_isMobile = true;
+	}
+});
+
+function cmnScrpt_kbMobileCertSlfCfmPush_obj_set(userNm, birthday, phoneNo, formObj, encData, prcdpVlnSkipYn, cbFunc) {
+	cmnScrpt_kbMobileCertSlfCfmPush_obj = {
+		userNm: userNm,
+		birthday: birthday,
+		phoneNo: phoneNo,
+		formObj: formObj,
+		encData: encData,
+		prcdpVlnSkipYn: prcdpVlnSkipYn,
+		cbFunc: cbFunc
+	};
+}
+
+
+function cmnScrpt_kbMobileCertSlfCfmPush_start(userNm, birthday, phoneNo, formObj, encData, prcdpVlnSkipYn, cbFunc){
+	if ( kcmn.isTrue(_kbmCertCloseFlag) ) {
+		if ( cmnScrpt_kbMobileCertSlfCfmPush_isMobile ) {
+			$.cxhia.alert({
+				message : "[" + _kbmCertCloseCd + "] " + _kbmCertCloseMsg
+			});
+		} else {
+			alert( "[" + _kbmCertCloseCd + "] " + _kbmCertCloseMsg );
+		}
+		return;
+	}
+	
+	if ( !cmnScrpt_kbMobileCertSlfCfmPush_isMobile ) {
+		$("#ctfFnsKBMCert").off().on("click", function(){
+			cmnScrpt_kbMobileCertSlfCfmPush_step2();
+		});
+	}
+	
+	cmnScrpt_kbMobileCertSlfCfmPush_obj_set(userNm, birthday, phoneNo, formObj, encData, prcdpVlnSkipYn, cbFunc);
+	cmnScrpt_kbMobileCertSlfCfmPush_certTxId = "";
+	cmnScrpt_kbMobileCertSlfCfmPush_step1();
+}
+
+function cmnScrpt_kbMobileCertSlfCfmPush_step1(){
+	/*
+	if ( !cmnScrpt_kbMobileCertSlfCfmPush_validationInptDat(cmnScrpt_kbMobileCertSlfCfmPush_obj) ) {
+		cmnScrpt_kbMobileCertSlfCfmPush_exeClbc();
+		return;
+	}
+	*/
+	
+	var data = {
+		certType: "kbMobileCertSlfCfmPush",
+		certStep: "dmdPsh"
+	};
+	
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertSlfCfmPush_obj.userNm) ) {
+		data["userNm"] = cmnScrpt_kbMobileCertSlfCfmPush_obj.userNm;
+	}
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertSlfCfmPush_obj.birthday) ) {
+		data["birthday"] = cmnScrpt_kbMobileCertSlfCfmPush_obj.birthday;
+	}
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertSlfCfmPush_obj.phoneNo) ) {
+		data["phoneNo"] = cmnScrpt_kbMobileCertSlfCfmPush_obj.phoneNo;
+	}
+	kcmn.conversion.extend(data, cmnScrpt_kbMobileCertSlfCfmPush_obj.encData);
+	
+	var paramForm = kcmn.conversion.makeParamForm(data, cmnScrpt_kbMobileCertSlfCfmPush_obj.formObj);
+	svcf_Ajax(cmnScrpt_kbMobileCertSlfCfmPush_cmnCtfTranId, paramForm, {callbackFn : cmnScrpt_kbMobileCertSlfCfmPush_step1Callback});
+}
+
+function cmnScrpt_kbMobileCertSlfCfmPush_step1Callback(result){
+	result = kcmn.conversion.convertJSONObject(result);
+	
+	if ( kcmn.isNull(result.result) ) {
+		cmnScrpt_kbMobileCertSlfCfmPush_exeClbc(result);
+		return;
+	}
+	
+	cmnScrpt_kbMobileCertSlfCfmPush_certTxId = result.result.certTxId;
+	
+	if ( cmnScrpt_kbMobileCertSlfCfmPush_isMobile ) {
+		$.cxhia.confirm({
+			title : cmnScrpt_kbMobileCertSlfCfmPush_confirmTitle, 
+			message : cmnScrpt_kbMobileCertSlfCfmPush_confirmMsg, 
+			okButtonName : "인증완료",
+			cancelButtonName : "닫기"
+		}, function(res){  
+			if(res == "ok"){
+				cmnScrpt_kbMobileCertSlfCfmPush_step2();
+			}
+		});
+	} else {
+		$.openDimPop('popKBMCertNotice');
+	}
+}
+
+function cmnScrpt_kbMobileCertSlfCfmPush_step2(){
+	if ( kcmn.isNull(cmnScrpt_kbMobileCertSlfCfmPush_certTxId) ) {
+		cmnScrpt_kbMobileCertSlfCfmPush_exeClbc();
+		return;
+	}
+	
+	var data = {
+		certType: "kbMobileCertSlfCfmPush",
+		certStep: "rstInq",
+		certTxId: cmnScrpt_kbMobileCertSlfCfmPush_certTxId
+	};
+	
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertSlfCfmPush_obj.userNm) ) {
+		data["userNm"] = cmnScrpt_kbMobileCertSlfCfmPush_obj.userNm;
+	}
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertSlfCfmPush_obj.birthday) ) {
+		data["birthday"] = cmnScrpt_kbMobileCertSlfCfmPush_obj.birthday;
+	}
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertSlfCfmPush_obj.phoneNo) ) {
+		data["phoneNo"] = cmnScrpt_kbMobileCertSlfCfmPush_obj.phoneNo;
+	}
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertSlfCfmPush_obj.prcdpVlnSkipYn) ) {
+		data["prcdpVlnSkipYn"] = cmnScrpt_kbMobileCertSlfCfmPush_obj.prcdpVlnSkipYn;
+	}
+	kcmn.conversion.extend(data, cmnScrpt_kbMobileCertSlfCfmPush_obj.encData);
+	
+	var paramForm = kcmn.conversion.makeParamForm(data, cmnScrpt_kbMobileCertSlfCfmPush_obj.formObj);
+	svcf_Ajax(cmnScrpt_kbMobileCertSlfCfmPush_cmnCtfTranId, paramForm, {callbackFn : cmnScrpt_kbMobileCertSlfCfmPush_step2Callback});
+}
+
+function cmnScrpt_kbMobileCertSlfCfmPush_step2Callback(result){
+	result = kcmn.conversion.convertJSONObject(result);
+	
+	cmnScrpt_kbMobileCertSlfCfmPush_exeClbc(result);
+}
+
+function cmnScrpt_kbMobileCertSlfCfmPush_validationInptDat(obj) {
+	var rstVl = true;
+	
+	if ( kcmn.isNull(obj) ) {
+		return false;
+	}
+	
+	$.each(obj, function(k,v){
+		if ( k=="prcdpVlnSkipYn" ) {
+			return true;//continue
+		}
+		
+		if ( kcmn.isNull(v) ) {
+			rstVl = false;
+		}
+	});
+	
+	return rstVl;
+}
+
+function cmnScrpt_kbMobileCertSlfCfmPush_exeClbc(obj){
+	const cb = cmnScrpt_kbMobileCertSlfCfmPush_obj.cbFunc;
+	cmnScrpt_kbMobileCertSlfCfmPush_obj_set();
+	cmnScrpt_kbMobileCertSlfCfmPush_certTxId = "";
+	
+	if ( kcmn.isNull(obj) ) {
+		obj = {};
+	}
+	
+	if ( kcmn.isFunc(cb) ) {
+		kcmn.execFunc(cb, obj);
+	}
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+<script>
+const cmnScrpt_kbMobileCertDigitSignPush_confirmTitle = '맨 위 알림 메시지를 확인 해주세요';
+const cmnScrpt_kbMobileCertDigitSignPush_confirmMsg   = '고객님 상단 PUSH 알림 메시지로 인증을 요청하였습니다.<br><p class="refer mt20">알림 메시지를 받지 못하셨을 경우 창을 닫고 인증하기를 다시 시도해 주세요.</p>';
+const cmnScrpt_kbMobileCertDigitSignPush_cmnCtfTranId = '/CMN/API/HODM0007';
+var cmnScrpt_kbMobileCertDigitSignPush_isMobile = false;
+var cmnScrpt_kbMobileCertDigitSignPush_obj = {};
+var cmnScrpt_kbMobileCertDigitSignPush_serialNo = "";
+
+$(function(){
+	if ( typeof(_isMobileApp) != "undefined" ) {
+		cmnScrpt_kbMobileCertDigitSignPush_isMobile = true;
+	}
+});
+
+function cmnScrpt_kbMobileCertDigitSignPush_obj_set(userNm, birthday, phoneNo, formObj, encData, cbFunc) {
+	cmnScrpt_kbMobileCertDigitSignPush_obj = {
+		userNm: userNm,
+		birthday: birthday,
+		phoneNo: phoneNo,
+		formObj: formObj,
+		encData: encData,
+		cbFunc: cbFunc
+	};
+}
+
+
+function cmnScrpt_kbMobileCertDigitSignPush_start(userNm, birthday, phoneNo, formObj, encData, cbFunc){
+	if ( kcmn.isTrue(_kbmCertCloseFlag) ) {
+		if ( cmnScrpt_kbMobileCertDigitSignPush_isMobile ) {
+			$.cxhia.alert({
+				message : "[" + _kbmCertCloseCd + "] " + _kbmCertCloseMsg
+			});
+		} else {
+			alert( "[" + _kbmCertCloseCd + "] " + _kbmCertCloseMsg );
+		}
+		return;
+	}
+	
+	if ( !cmnScrpt_kbMobileCertDigitSignPush_isMobile ) {
+		$("#ctfFnsKBMCert").off().on("click", function(){
+			cmnScrpt_kbMobileCertDigitSignPush_step2();
+		});
+	}
+	
+	cmnScrpt_kbMobileCertDigitSignPush_obj_set(userNm, birthday, phoneNo, formObj, encData, cbFunc);
+	cmnScrpt_kbMobileCertDigitSignPush_step1();
+}
+
+function cmnScrpt_kbMobileCertDigitSignPush_step1(){
+	if ( !cmnScrpt_kbMobileCertDigitSignPush_validationInptDat(cmnScrpt_kbMobileCertDigitSignPush_obj) ) {
+		cmnScrpt_kbMobileCertDigitSignPush_exeClbc();
+		return;
+	}
+	
+	var data = {
+		certType: "kbMobileCertDigitSign",
+		certStep: "pushSend"
+	};
+	
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertDigitSignPush_obj.userNm) ) {
+		data["userNm"] = cmnScrpt_kbMobileCertDigitSignPush_obj.userNm;
+	}
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertDigitSignPush_obj.birthday) ) {
+		data["birthday"] = cmnScrpt_kbMobileCertDigitSignPush_obj.birthday;
+	}
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertDigitSignPush_obj.phoneNo) ) {
+		data["telNo"] = cmnScrpt_kbMobileCertDigitSignPush_obj.phoneNo;
+	}
+	
+	kcmn.conversion.extend(data, cmnScrpt_kbMobileCertDigitSignPush_obj.encData);
+	
+	var paramForm = kcmn.conversion.makeParamForm(data, cmnScrpt_kbMobileCertDigitSignPush_obj.formObj);
+	svcf_Ajax(cmnScrpt_kbMobileCertDigitSignPush_cmnCtfTranId, paramForm, {callbackFn : cmnScrpt_kbMobileCertDigitSignPush_step1Callback});
+}
+
+function cmnScrpt_kbMobileCertDigitSignPush_step1Callback(result){
+	result = kcmn.conversion.convertJSONObject(result);
+	
+	if ( kcmn.isNull(result.serialNo) ) {
+		cmnScrpt_kbMobileCertDigitSignPush_exeClbc(result);
+		return;
+	}
+	
+	cmnScrpt_kbMobileCertDigitSignPush_serialNo = result.serialNo;
+	
+	if ( cmnScrpt_kbMobileCertDigitSignPush_isMobile ) {
+		$.cxhia.confirm({
+			title : cmnScrpt_kbMobileCertDigitSignPush_confirmTitle, 
+			message : cmnScrpt_kbMobileCertDigitSignPush_confirmMsg, 
+			okButtonName : "인증완료",
+			cancelButtonName : "닫기"
+		}, function(res){  
+			if(res == "ok"){
+				cmnScrpt_kbMobileCertDigitSignPush_step2();
+			}
+		});
+	} else {
+		$.openDimPop('popKBMCertNotice');
+	}
+}
+
+function cmnScrpt_kbMobileCertDigitSignPush_step2(){
+	if ( kcmn.isNull(cmnScrpt_kbMobileCertDigitSignPush_serialNo) ) {
+		cmnScrpt_kbMobileCertDigitSignPush_exeClbc();
+		return;
+	}
+	
+	var data = {
+		certType: "kbMobileCertDigitSign",
+		certStep: "signVerificationRequest",
+		serialNo: cmnScrpt_kbMobileCertDigitSignPush_serialNo
+	};
+	
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertDigitSignPush_obj.userNm) ) {
+		data["userNm"] = cmnScrpt_kbMobileCertDigitSignPush_obj.userNm;
+	}
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertDigitSignPush_obj.birthday) ) {
+		data["birthday"] = cmnScrpt_kbMobileCertDigitSignPush_obj.birthday;
+	}
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertDigitSignPush_obj.phoneNo) ) {
+		data["telNo"] = cmnScrpt_kbMobileCertDigitSignPush_obj.phoneNo;
+	}
+	
+	kcmn.conversion.extend(data, cmnScrpt_kbMobileCertDigitSignPush_obj.encData);
+	
+	var paramForm = kcmn.conversion.makeParamForm(data, cmnScrpt_kbMobileCertDigitSignPush_obj.formObj);
+	svcf_Ajax(cmnScrpt_kbMobileCertDigitSignPush_cmnCtfTranId, paramForm, {callbackFn : cmnScrpt_kbMobileCertDigitSignPush_step2Callback});
+}
+
+function cmnScrpt_kbMobileCertDigitSignPush_step2Callback(result){
+	result = kcmn.conversion.convertJSONObject(result);
+	
+	cmnScrpt_kbMobileCertDigitSignPush_exeClbc(result);
+}
+
+function cmnScrpt_kbMobileCertDigitSignPush_validationInptDat(obj) {
+	var rstVl = true;
+	
+	if ( kcmn.isNull(obj) ) {
+		return false;
+	}
+	
+	/*
+	$.each(obj, function(k,v){
+		if ( k=="prcdpVlnSkipYn" ) {
+			return true;//continue
+		}
+		
+		if ( kcmn.isNull(v) ) {
+			rstVl = false;
+		}
+	});
+	*/
+	
+	return rstVl;
+}
+
+function cmnScrpt_kbMobileCertDigitSignPush_exeClbc(obj){
+	const cb = cmnScrpt_kbMobileCertDigitSignPush_obj.cbFunc;
+	cmnScrpt_kbMobileCertDigitSignPush_obj_set();
+	cmnScrpt_kbMobileCertDigitSignPush_serialNo = "";
+	
+	if ( kcmn.isNull(obj) ) {
+		obj = {};
+	}
+	
+	if ( kcmn.isFunc(cb) ) {
+		kcmn.execFunc(cb, obj);
+	}
+}
+</script>
+
+
+
+		
+
+
+
+
+
+
+
+
+
+
+
+<!-- Header Start 브랜드전략부 스크립트 -->
+<!-- Header Start Facebook Pixel Code -->
+<script>
+console.log("extnl_advr_header_mobile_script START");
+console.log(new Date().getTime());
+</script>
+
+<script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '1106645302825785');
+  fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=1106645302825785&ev=PageView&noscript=1"
+/></noscript>
+
+
+<!-- Facebook 추적용크립트 start  -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window,document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '903978756394602');
+fbq('track', 'PageView');
+</script>
+<noscript>
+<img height="1" width="1"
+src="https://www.facebook.com/tr?id=903978756394602&ev=PageView
+&noscript=1"/>
+</noscript>
+<!-- Facebook 추적용크립트 end  -->
+
+
+
+<!-- Header End Facebook Pixel Code -->
+<!-- Header End -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 전략영업부 스크립트 -->
+<!-- WIDERPLANET  SCRIPT START 2018.7.4 -->
+
+
+<!-- // WIDERPLANET SCRIPT END 2018.7.4 --> 
+
+
+<!-- Mobon Tracker v3.1 [공용] start -->
+<script type="text/javascript">
+<!--
+    function mobRf(){
+        var rf = new EN();
+        rf.setSSL(true);
+        rf.sendRf();
+    }
+//-->
+</script>
+
+<script src="https://cdn.megadata.co.kr/js/enliple_min2.js" defer="defer" onload="mobRf()"></script>
+
+<!-- Mobon Tracker v3.1 [공용] end -->
+
+<!-- 크리테오 Start -->
+
+<script type="text/javascript" src="//static.criteo.net/js/ld/ld.js" async="true"></script>
+
+<script type="text/javascript"> window.criteo_q = window.criteo_q || []; window.criteo_q.push(
+{ event: "setAccount", account: 51697 },
+{ event: "setEmail", email: "Email address" },
+{ event: "setSiteType", type: "m" },
+{ event: "viewHome" }
+);
+</script>
+<!-- 크리테오 End -->
+
+<!-- 온누리DMC Start -->
+<script type='text/javascript'>
+    !function (w,d,s,u,t,ss,fs) {
+        if(w.ex2cts)return;t=w.ex2cts={};if(!window.t) window.t = t;
+        t.push = function() {t.callFunc?t.callFunc.apply(t,arguments) : t.cmd.push(arguments);};
+        t.cmd=[];ss = document.createElement(s);ss.async=!0;ss.src=u;
+        fs=d.getElementsByTagName(s)[0];fs.parentNode.insertBefore(ss,fs);
+    }(window,document,'script','//st2.exelbid.com/js/cts.js');
+    ex2cts.push('init', '5b3b0a60f1c49a53378b4567');
+</script>
+<!-- 온누리DMC End -->
+
+<!-- 네이버 공통 스크립트 Mobile start -->
+<!-- 공통 적용 스크립트 , 모든 페이지에 노출되도록 설치. 단 전환페이지 설정값보다 항상 하단에 위치해야함 --> 
+
+<script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
+
+<script type="text/javascript"> 
+if (!wcs_add) var wcs_add={};
+wcs_add["wa"] = "s_1a7f5ba2e091";
+if (!_nasa) var _nasa={};
+if(window.wcs){
+wcs.inflow("kbcard.com");
+wcs_do(_nasa);
+}
+
+</script>
+
+<!-- 네이버 추적용 스크립트 start -->
+
+<script type="text/javascript">
+if (!wcs_add) var wcs_add={};
+    wcs_add["wa"] = "s_3dfd8c7cf91c";
+    var  advUrl = location.href;
+    var nHostname = new URL(advUrl).hostname; 
+     if(window.wcs) {
+       wcs.inflow(nHostname);
+     }
+     wcs_do();
+</script>
+
+<!-- 네이버 추적용 스크립트 end -->
+
+<!-- 네이버 공통 스크립트 Mobile end -->
+ 
+<!-- START TICTOK PIXEL SCRIPT -->
+<script>
+!function (w, d, t) {
+  w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
+
+  ttq.load('CD2FNJ3C77U4MDGIGJ50');
+  ttq.page();
+}(window, document, 'ttq');
+</script>
+
+<!-- END TICTOK PIXEL SCRIPT -->
+
+<!-- Twitter conversion tracking base code -->
+<script>
+!function(e,t,n,s,u,a){e.twq||(s=e.twq=function(){s.exe?s.exe.apply(s,arguments):s.queue.push(arguments);
+},s.version='1.1',s.queue=[],u=t.createElement(n),u.async=!0,u.src='https://static.ads-twitter.com/uwt.js',
+a=t.getElementsByTagName(n)[0],a.parentNode.insertBefore(u,a))}(window,document,'script');
+twq('config','o9o60');
+</script>
+<!-- End Twitter conversion tracking base code -->
+ 
+ 
+<!-- 브랜드전략부 스크립트 -->
+ 
+
+<!-- Start Facebook Pixel Code -->
+
+<!-- End Facebook Pixel Code -->
+
+
+
+<!--  카카오 추적용 스트립트 적용 2026.05.29 Start -->
+
+
+    <script type="text/javascript" charset="UTF-8" src="//t1.daumcdn.net/kas/static/kp.js"></script>
+
+   <script type="text/javascript">
+        kakaoPixel("7986772202218765936").pageView();
+   </script>
+
+<!--  카카오 추적용 스트립트 적용 2026.05.29 End -->
+
+ 
+
+
+
+
+
+
+
+
+	<script type="text/javascript">
+	(function(d, s, id) {
+		var js, fjs = d.getElementsByTagName(s)[0];
+		
+		if (d.getElementById(id)) {return;}
+		
+		js = d.createElement(s); js.id = id;
+		js.async = true;
+		js.src = 'https://static.kbdmp.com/ma/kb_v0.01.js';
+		fjs.parentNode.insertBefore(js, fjs);
+		
+		js.addEventListener("load", function(event) {
+			ma.config('client_id', "WA-1016");
+			ma.config('isCookie', true);
+			ma.init();
+		});
+	}(document, 'script', 'KBDMP'));
+		
+	</script>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<title>해외이용 가이드>해외이용·송금>편의서비스 | KB 국민카드</title>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <link rel="stylesheet" href="/CMN/common/mobile/css/basic.css">
+<link rel="stylesheet" href="/CMN/common/mobile/css/sv.css"> -->
+
+
+
+
+	<script src="/CMN/common/js/lib/jquery-ui.min.js" charset="UTF-8"></script>
+	<script src="/CMN/common/js/lib/lodash.min.js" charset="UTF-8"></script>
+	<script src="/CMN/common/mobile/js/utils.js" charset="UTF-8"></script>
+	<script src="/CMN/common/mobile/js/cxhia.js?202104061121" charset="UTF-8"></script>
+	
+	<!-- dark 모드 -->
+	
+
+
+
+
+
+
+
+
+
+
+<!-- Mobile Content Type START -->
+   
+  <script>
+    if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    	document.querySelector('html').classList.add('dark');
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+        const newColorScheme = event.matches ? "dark" : "light";
+        
+        if(newColorScheme == 'dark') {
+        	document.querySelector('html').classList.add('dark');
+        } else {
+        	document.querySelector('html').classList.remove('dark');
+        }
+    })
+    </script>
+    
+    <link rel="stylesheet" href="/CMN/common/mobile/css/dark.css?20241023" media="(prefers-color-scheme: dark)">
+
+	
+	<!-- 전체 공통 영역 처리 페이지 -->
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+(function(j,en,ni,fer) {
+j['dmndata']=[];j['jenniferFront']=function(args){window.dmndata.push(args)};
+j['dmnatime']=new Date();j['dmnanocookie']=false;
+j['dmnajennifer']="JENNIFER_FRONT@INTG1246316512080923681,1785141892932,1030,";
+j['dmnajenniferCustomLoad']=false;
+var a=en.createElement(ni);a.src=fer;a.async=true;en.getElementsByTagName(ni)[0].parentNode.appendChild(a);
+}(window,document,'script','/CMN/common/js/jennifer/jennifer.1.0.0.js'));
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+const appNm          = "kbpay";
+const webTken        = "686df36e405f41c19ac9dda088995477";
+const toutInit       = 0;
+const toutEvt        = 3000;
+const enabledChkTout = 1000;
+const enabledMaxCnt  = 100;
+const consoleFlag    = false;
+var enabledChkCnt    = 1;
+
+(function(a_,i_,r_,_b,_r,_i,_d,_g,_e){if(!a_[_b]){var n=function(){var c=i_.createElement(r_);c.onerror=function(){g.queue.filter(function(a){return 0<=_d.indexOf(a[0])}).forEach(function(a){a=a[1];a=a[a.length-1];"function"===typeof a&&a("error occur when load airbridge")})};c.async=1;c.src=_r;"complete"===i_.readyState?i_.head.appendChild(c):a_.addEventListener("load",function h(){a_.removeEventListener("load",h);i_.head.appendChild(c)})},g={queue:[],get isSDKEnabled(){return!1}};_i.concat(_d).forEach(function(c){var a=c.split("."),h=a.pop();a.reduce(function(p,q){return p[q]=p[q]||{}},g)[h]=function(){g.queue.push([c,arguments])}});a_[_b]=g;0<_g?(_b=new (a_.XDomainRequest||a_.XMLHttpRequest),_i=function(){},_b.open("GET",_r),_b.timeout=_g,_b.onload=function(){n()},_b.onerror=_i,_b.onprogress=_i,_b.ontimeout=_i,_b.send()):n()}})(window,document,"script","airbridge","//static.airbridge.io/sdk/latest/airbridge.min.js","init startTracking stopTracking fetchResource openBanner setBanner setDownload setDownloads openDeeplink setDeeplinks sendWeb setUserAgent setMobileAppData setUserID clearUserID setUserEmail clearUserEmail setUserPhone clearUserPhone setUserAttribute removeUserAttribute clearUserAttributes setUserAlias removeUserAlias clearUserAlias clearUser setUserId setUserAttributes addUserAlias setDeviceAlias removeDeviceAlias clearDeviceAlias setDeviceIFV setDeviceIFA setDeviceGAID events.send events.signIn events.signUp events.signOut events.purchased events.addedToCart events.productDetailsViewEvent events.homeViewEvent events.productListViewEvent events.searchResultViewEvent".split(" "),["events.wait","createTouchpoint"],0);
+
+$(function(){
+	setTimeout(function(){
+		cmnScrpt_airbridgeWebSDK_init();
+	}, toutInit);
+});
+
+
+function cmnScrpt_airbridgeWebSDK_isEnabled(cb){
+	var rstVl = false;
+	try {
+		rstVl = airbridge.isSDKEnabled;
+	} catch(e) {
+		rstVl = false;
+	}
+	
+	if ( consoleFlag ) {
+		console.log("%ccmnScrpt_airbridgeWebSDK_isEnabled("+enabledChkCnt+"): " + rstVl, "color:green");
+	}
+	
+	if ( !rstVl && (enabledChkCnt < enabledMaxCnt) ) {
+		enabledChkCnt++;
+		setTimeout(function(){
+			cmnScrpt_airbridgeWebSDK_isEnabled(cb);
+		}, enabledChkTout);
+	} else {
+		if ( kcmn.isFunc(cb) ) {
+			kcmn.execFunc(cb);
+		}
+	}
+	
+	return rstVl;
+}
+
+
+function cmnScrpt_airbridgeWebSDK_init(){
+	airbridge.init({
+		app: appNm,
+		webToken: webTken
+	});
+}
+
+
+function cmnScrpt_airbridgeWebSDK_setUser(id, email, phone, objAlias, objAttr){
+	if ( !cmnScrpt_airbridgeWebSDK_isEnabled() ) {
+		return false;
+	}
+	
+	const userId    = kcmn.isNull(id)?"":id;
+	const userEmail = kcmn.isNull(email)?"":email;
+	const userPhone = kcmn.isNull(phone)?"":phone;
+	
+	if ( userId != "" ) {
+		airbridge.setUserID(userId);
+	}
+	
+	if ( userEmail != "" ) {
+		airbridge.setUserEmail(userEmail);
+	}
+	
+	if ( userPhone != "" ) {
+		airbridge.setUserPhone(userPhone);
+	}
+	
+	if ( !kcmn.isNull(objAlias) && objAlias.constructor === Object ) {
+		$.each(objAlias, function(k,v){
+			if ( !kcmn.isNull(k) ) {
+				airbridge.setUserAlias(k,v);
+			}
+		});
+	}
+	
+	if ( !kcmn.isNull(objAttr) && objAttr.constructor === Object ) {
+		$.each(objAttr, function(k,v){
+			if ( !kcmn.isNull(k) ) {
+				airbridge.setUserAttribute(k,v);
+			}
+		});
+	}
+}
+
+
+function cmnScrpt_airbridgeWebSDK_clearUser(){
+	if ( !cmnScrpt_airbridgeWebSDK_isEnabled() ) {
+		return false;
+	}
+	
+	airbridge.clearUser();
+}
+
+
+function cmnScrpt_airbridgeWebSDK_setDevice(objDevice){
+	if ( !cmnScrpt_airbridgeWebSDK_isEnabled() ) {
+		return false;
+	}
+	
+	if ( !kcmn.isNull(objDevice) && objDevice.constructor === Object ) {
+		$.each(objDevice, function(k,v){
+			if ( !kcmn.isNull(k) ) {
+				airbridge.setDeviceAlias(k,v);
+			}
+		});
+	}
+}
+
+
+function cmnScrpt_airbridgeWebSDK_removeDevice(ky){
+	if ( !cmnScrpt_airbridgeWebSDK_isEnabled() ) {
+		return false;
+	}
+	
+	if ( !kcmn.isNull(ky) ) {
+		airbridge.removeDeviceAlias(ky);
+	}
+}
+
+
+function cmnScrpt_airbridgeWebSDK_clearDevice(){
+	if ( !cmnScrpt_airbridgeWebSDK_isEnabled() ) {
+		return false;
+	}
+	
+	airbridge.clearDeviceAlias(ky);
+}
+
+
+function cmnScrpt_airbridgeWebSDK_sendEvent(category, label, action, value, objSemanticAttr, objCustomAttr, cb){
+	/*
+	if ( !cmnScrpt_airbridgeWebSDK_isEnabled() ) {
+		return false;
+	}
+	*/
+	
+	cmnScrpt_airbridgeWebSDK_isEnabled(function(){
+		
+		const eventCategory = kcmn.isNull(category)?"":category;
+		const eventLabel    = kcmn.isNull(label)?"":label;
+		const eventAction   = kcmn.isNull(action)?"":action;
+		const eventValue    = kcmn.isNull(value)?"":value;
+		
+		var objSend = {};
+		
+		if ( eventCategory == "" ) {
+			return false;
+		}
+		
+		if ( eventLabel != "" ) {
+			objSend["label"] = eventLabel;
+		}
+		
+		if ( eventAction != "" ) {
+			objSend["action"] = eventAction;
+		}
+		
+		if ( eventValue != "" ) {
+			objSend["value"] = eventValue;
+		}
+		
+		var semanticAttr = {};
+		if ( !kcmn.isNull(objSemanticAttr) && objSemanticAttr.constructor === Object ) {
+			$.each(objSemanticAttr, function(k,v){
+				if ( !kcmn.isNull(k) ) {
+					semanticAttr[k] = v;
+				}
+			});
+			objSend["semanticAttributes"] = semanticAttr;
+		}
+		
+		var customAttr = {};
+		if ( !kcmn.isNull(objCustomAttr) && objCustomAttr.constructor === Object ) {
+			$.each(objCustomAttr, function(k,v){
+				if ( !kcmn.isNull(k) ) {
+					customAttr[k] = v;
+				}
+			});
+			objSend["customAttributes"] = customAttr;
+		}
+		
+		airbridge.events.send(eventCategory, objSend);
+		airbridge.events.wait(toutEvt, function(err){
+			if ( kcmn.isFunc(cb) ) {
+				kcmn.execFunc(cb, err);
+			}
+		});
+		
+	});
+}
+
+
+
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+	
+</script>
+
+
+
+
+
+
+
+
+
+
+<style> 
+.md-h1 {margin-bottom: 8px; font-size:24px; font-weight: 600; line-height:32px; letter-spacing:-.2px;} 
+.md-h2 {margin-bottom: 8px; font-size: 20px; font-weight: 600; line-height: 32px; letter-spacing:-.2px;} 
+.md-h3 {margin-bottom: 8px; font-size: 18px; font-weight: 600; line-height: 26px; letter-spacing:-.2px; } 
+.md-h4 {margin-bottom: 8px; font-size: 16px; font-weight: 600;line-height: 26px; letter-spacing:-.2px; } 
+.md-b { font-weight: 600; } 
+.md-i { font-style: italic;} 
+.md-ul > li {position: relative;margin-bottom: 8px;padding-left: 12px;font-size: 16px;line-height:24px;color: var(--gray090);} 
+.md-ul > li::before { content: ""; display: block; position: absolute; top: 10px; left: 0; width: 8px; height: 1px; border-radius: 50%; background-color: currentColor; } 
+.md-ul > li > ul { margin: 8px 0 16px; } 
+.md-ol{counter-reset: item;} 
+.md-ol > li {counter-increment: item; position: relative; margin-bottom: 8px; padding-left: 24px; font-size: 16px; line-height:24px; color: var(--gray090);} 
+.md-ol > li::before {content: counter(item) "."; position: absolute; left: 0; top: 0; width: 20px; text-align: right; } 
+.md-tb { table-layout: fixed; word-wrap: break-word; word-break: break-all; text-align: center; position: relative; } 
+.md-tb caption { text-align: left; }  
+.md-tb th, .md-tb td { vertical-align: middle; padding: 15px; border-top: 1px solid #d1d1d1; border-bottom: 1px solid #d1d1d1; border-right: 1px solid #d1d1d1; color: var(--gray090); font-size: 14px; line-height: 22px; text-align: left; } 
+.md-tb th:last-child, .md-tb td:last-child { border-right: 0; } 
+.md-tb th { background: var(--gray015); } 
+</style>
+<script>
+const cmnScrpt_md_mdChngDftLnSptr = "\n";//마크다운 변환 기본 개행문자
+const cmnScrpt_md_mdChngDftMdTblSptr = "|";//마크다운 테이블 컬럼 구분자
+var cmnScrpt_md_mdChngFlagChkTbl = false;//마크다운 테이블 변환 진행 여부 구분 플래그
+var cmnScrpt_md_mdChngTblClmnCnt = 0;//마크다운 테이블 컬럼 수
+var cmnScrpt_md_mdChngOlUlStack = [];//마크다운 ol, ul 들여쓰기 판단을 위한 객체
+
+/*
+$(function(){
+	
+});
+*/
+
+
+function cmnScrpt_md_mdChngAllStr(trgtStr, lnSptr){
+	var rstVl = "";
+
+	if ( kcmn.isNull(trgtStr) ) {
+		return rstVl;
+	}
+
+	if ( kcmn.isNull(lnSptr) ) {
+		lnSptr = cmnScrpt_md_mdChngDftLnSptr;
+	}
+
+	try {
+		const trgtArr = trgtStr.split(lnSptr);
+		var currVl = "";
+
+		$(trgtArr).each(function(k,v){
+			var flagLast = (k==trgtArr.length-1);
+			//check Table
+			currVl = cmnScrpt_md_mdChngTable(trgtArr, k);//table
+			currVl = cmnScrpt_md_mdChngOlUlLst(currVl, flagLast);//olul
+			currVl = cmnScrpt_md_mdChngBoldItalic(currVl);
+			currVl = cmnScrpt_md_mdChngHeading(currVl);
+			currVl = cmnScrpt_md_mdChngLine(currVl);
+			
+			rstVl += currVl;
+
+			if ( !cmnScrpt_md_mdChngFlagChkTbl && (k < trgtArr.length-1) ) {
+				if ( !kcmn.validation.startsWith(currVl, "<h") ) {
+					rstVl += "<br>";
+				} 
+			}
+		});
+
+	} catch (e) {
+		return trgtStr;
+	}
+
+	return rstVl;
+}
+
+
+function cmnScrpt_md_mdChngTable(trgtArr, currIdx){
+	var rstVl = "";
+	var currStr = trgtArr[currIdx];
+	var tblClmn = null;
+
+	try {
+		if ( kcmn.validation.startsWith(currStr, cmnScrpt_md_mdChngDftMdTblSptr) && kcmn.validation.endsWith(currStr, cmnScrpt_md_mdChngDftMdTblSptr) ) {
+			tblClmn = currStr.split(cmnScrpt_md_mdChngDftMdTblSptr);
+			//최초 여부 확인
+			if ( !kcmn.isTrue(cmnScrpt_md_mdChngFlagChkTbl) ) {//header
+				cmnScrpt_md_mdChngFlagChkTbl = true;
+				cmnScrpt_md_mdChngTblClmnCnt = tblClmn.length-1;
+				rstVl += "<table class=\"md-tb\">";
+				rstVl += "<caption>마크다운 변환 테이블</caption>";
+				rstVl += "<thead><tr>";
+
+				$(tblClmn).each(function(k,v){
+					if ( k==0 || k==cmnScrpt_md_mdChngTblClmnCnt ) {
+						return;
+					}
+					rstVl += "<th scope=\"col\">";
+					rstVl += v.trim();
+					rstVl += "</th>";
+				});
+
+				rstVl += "</tr></thead><tbody>";
+			} else {
+				if ( cmnScrpt_md_mdChngTblClmnCnt != (tblClmn.length-1) ) {
+					throw new Error("Invalid Column Count");
+				}
+
+				if ( /^\|?[\s\-.| :]+\|?$/.test(currStr) && (currStr.indexOf("-") != -1) ) {//header second line
+					return rstVl;//return empty str, nothing to do
+				} else {//body
+					rstVl += "<tr>";
+					$(tblClmn).each(function(k,v){
+						if ( k==0 || k==cmnScrpt_md_mdChngTblClmnCnt ) {
+							return;
+						}
+						rstVl += "<td>";
+						rstVl += v.trim();
+						rstVl += "</td>";
+					});
+					rstVl += "</tr>";
+				}
+			}
+		} else {
+			//테이블 형태가 아닌 경우 테이블 종료 시점 확인
+			if ( kcmn.isTrue(cmnScrpt_md_mdChngFlagChkTbl) ) {
+				cmnScrpt_md_mdChngFlagChkTbl = false;
+				cmnScrpt_md_mdChngTblClmnCnt = 0;
+				rstVl += "</tbody></table><br>" + currStr;
+			} else {
+				rstVl = currStr;
+			}
+		}
+	} catch (e) {
+		return currStr;
+	}
+	
+	return rstVl;
+}
+
+
+function cmnScrpt_md_mdChngOlUlLst(trgtStr, flagLast){//last flag 필요
+	var rstVl = "";
+	
+	try {
+		var stack = cmnScrpt_md_mdChngOlUlStack;
+		if ( kcmn.isNull(trgtStr) ) {
+			while( stack.length > 0 ) {
+				rstVl += "</li></"+stack.pop().type+">";
+			}
+			return rstVl;
+		}
+
+		const ulMatch = trgtStr.match( /^(\s*)([*+-])\s+(.*)$/ );
+		const olMatch = trgtStr.match( /^(\s*)(\d+)\.\s+(.*)$/ );
+		const match   = ulMatch||olMatch;
+
+		if ( match ) {
+			const indent = match[1].length;
+			const   type = ulMatch?"ul":"ol";
+			const   cont = match[3];
+
+			if ( stack.length===0 || indent>stack[stack.length-1].indent ) {
+				rstVl += "<"+type+" class=\"md-"+type+"\"><li>"+cont;
+				stack.push({indent, type});
+			} else if ( indent<stack[stack.length-1].indent ) {
+				while( (stack.length > 0) && (indent < stack[stack.length-1].indent) ) {
+					rstVl += "</li></"+stack.pop().type+">";
+				}
+
+				if ( stack.length===0 ) {
+					rstVl += "<"+type+" class=\"md-"+type+"\"><li>"+cont;
+					stack.push({indent, type});
+				} else {
+					rstVl += "</li><li>"+cont;
+				}
+			} else {
+				rstVl += "</li><li>"+cont;
+			}
+		} else {
+			
+			while( stack.length > 0 ) {
+				rstVl += "</li></"+stack.pop().type+">";
+			}
+
+			rstVl += trgtStr;
+
+			if ( kcmn.isNull(rstVl) ) {
+				rstVl += "<br>";
+			}
+
+		}
+
+		if ( kcmn.isTrue(flagLast) ) {
+			while( stack.length > 0 ) {
+				rstVl += "</li></"+stack.pop().type+">";
+			}
+		}
+
+	} catch (e) {
+		return trgtStr;
+	}
+	
+	return rstVl;
+}
+
+
+function cmnScrpt_md_mdChngBoldItalic(trgtStr){
+	var rstVl = "";
+	
+	try {
+		if ( kcmn.isNull(trgtStr) ) {
+			return rstVl;
+		}
+
+		rstVl = trgtStr.replace(/\*\*([^*<]+)\*\*/g, "<strong>$1</strong>");//Bold
+		rstVl = rstVl.replace(/\*([^*<]+)\*/g, "<i>$1</i>");//Italic
+
+	} catch (e) {
+		return trgtStr;
+	}
+	
+	return rstVl;
+}
+
+
+function cmnScrpt_md_mdChngHeading(trgtStr){
+	var rstVl = "";
+
+	try {
+		if ( kcmn.isNull(trgtStr) ) {
+			return rstVl;
+		}
+	
+		const regRst = trgtStr.match(/^(#{1,6})\s+(.*)$/);
+		if ( !kcmn.isNull(regRst) ) {
+			const lvl = regRst[1].length;
+			const content = regRst[2];
+			rstVl += "<h"+lvl+" class=\"md-h"+lvl+"\">";
+			rstVl += content;
+			rstVl += "</h"+lvl+">";
+		} else {
+			rstVl = trgtStr;
+		}
+	} catch (e) {
+		return trgtStr;
+	}
+
+	return rstVl;
+}
+
+
+function cmnScrpt_md_mdChngLine(trgtStr){
+	var rstVl = "";
+	
+	try {
+		if ( kcmn.isNull(trgtStr) ) {
+			return rstVl;
+		}
+
+		const regRst = (/^(\s*[-]{3,}\s*)$/).test(trgtStr);
+		if ( kcmn.isTrue(regRst) ) {
+			rstVl += "<hr/>";
+		} else {
+			rstVl = trgtStr;
+		}
+
+	} catch (e) {
+		return trgtStr;
+	}
+	
+	return rstVl;
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="web">
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+	
+	function getChangeUrl(url) {
+		
+		
+			
+			return url;
+			
+	}
+	
+	
+	function isDARS() {	
+		return false;
+	}
+
+</script>
+
+
+
+
+<script type="text/javascript">
+	
+	$.cxhia.isCaptcha = true;
+	
+	_.templateSettings = {
+	    interpolate: /\[\%\=(.+?)\%\]/gim,
+	    evaluate: /\[\%([\s\S]+?)\%\]/gim,
+	    escape: /\[\%\-(.+?)\%\]/gim
+	};
+	
+	
+	
+	// 타이틀 설정
+	function setMenuName(name) {
+	    $('.topHead > h1').html(name);
+	}
+	
+	// 타이틀 타입 설정
+	// 타이틀 타입 설정
+	function setHeaderType(type) {
+		if(type == 0) { // 완료 페이지
+            $('#Wrap').addClass('popupWrap');
+            $('.topHead .backBtn').hide();
+            $('.topHead .backBtn2').hide();
+            $('.topHead .headerMenu').hide();
+            $('.topHead .homeBtn').hide();
+            $('.topHead .btnClose').hide();
+            $(".topHead .cancleBtn").hide();
+        }
+        else if(type == 1) {    // 기본메뉴
+            $('#Wrap').removeClass('popupWrap');
+        
+        
+        
+            
+            $('.topHead .backBtn').show();
+            $('.topHead .headerMenu').show();
+            
+            $('.topHead .backBtn2').hide();
+            $('.topHead .homeBtn').hide();
+            $('.topHead .btnClose').hide();
+            $(".topHead .cancleBtn").hide();
+            
+        
+        
+        }
+        else if(type == 2) {    // 부가메뉴
+            $('#Wrap').removeClass('popupWrap');
+            $('.topHead .backBtn').hide();
+            $('.topHead .backBtn2').hide();
+            $('.topHead .headerMenu').show();
+            $('.topHead .homeBtn').show();
+            $('.topHead .btnClose').hide();
+            $(".topHead .cancleBtn").hide();
+        }
+        else if(type == 3) {    
+            $('#Wrap').removeClass('popupWrap');
+                
+        	$('.topHead .backBtn').show();
+        	$(".topHead .btnClose").show();
+            
+        	$('.topHead .backBtn2').hide();
+            $('.topHead .headerMenu').hide();
+            $('.topHead .homeBtn').hide();
+            $(".topHead .cancleBtn").hide();
+        }
+        else if(type == 4) {    // 풀팝업
+            $('#Wrap').addClass('popupWrap');
+            $('.topHead .backBtn').hide();
+            $('.topHead .backBtn2').hide();
+            $('.topHead .headerMenu').hide();
+            $('.topHead .homeBtn').hide();
+            $('.topHead .btnClose').show();
+            $('.topHead .cancleBtn').hide();
+          	//접근성
+            $('#bodySkip').remove();
+            $('#content, #container').first().focus();
+        }
+        else if(type == 5) {    // KB Pay용 
+            $('#Wrap').removeClass('popupWrap');
+            $('.topHead .backBtn').hide();
+            $('.topHead .backBtn2').show();
+            $('.topHead .headerMenu').hide();
+            $('.topHead .homeBtn').hide();
+            $('.topHead .btnClose').show();
+            $(".topHead .cancleBtn").hide();
+        }else if(type == 6){
+        	$('#Wrap').removeClass('popupWrap');
+        	$('.topHead .backBtn').show();
+        	$(".topHead .cancleBtn").show();
+        	$('.topHead .backBtn2').hide();
+            $('.topHead .headerMenu').hide();
+            $('.topHead .btnClose').hide();
+            $('.topHead .homeBtn').hide();
+        }
+	    
+	    if(!$.cxhia.isApp()) {
+	        // 헤더타입이 풀팝업일때 footer를 표시하지 않는다.
+	        if(type == 4) {
+	            $('footer').hide();
+	        }
+	        else {
+	            $('footer').show();
+	        }
+	    }
+	    
+	    $('.topHead').data('headerType', type);
+	}
+	
+	function getHeaderType() {
+	    return $('.topHead').data('headerType') || 0;
+	}
+	
+	function getMenuName() {
+	    return $('.topHead h1').html();
+	}
+	
+    /*********************************************  
+     * eFDS 처리 AJAX  
+     *********************************************/  
+    function efdsAjax(serviceId, efdsDeviceInfo) {  
+        
+        if (serviceId.search("mainCC") > 0){
+          var serviceIdStrs = serviceId.split(".cms?");
+                    serviceId = serviceId.substring(serviceId.lastIndexOf("/") + 1, serviceId.lastIndexOf(".")) + serviceIdStrs[1];
+        }else{
+            serviceId = serviceId.substring(serviceId.lastIndexOf("/") + 1, serviceId.lastIndexOf("."));    
+        }
+        
+        var gathrUrls = $("#gathrUrls").val();
+        var dscrUrls = $("#dscrUrls").val();
+        var dscrRedirectUrls = $("#dscrRedirectUrls").val();
+        var cardEncData = $("#cardEncData").val();
+        var cardSeq = $("#cardSeq").val();
+        var cardPrdctDstic = $("#cardPrdctDstic").val();
+        var isGathr = "N";
+        var isDscr = "N";
+        var dscrRedirectServiceId = "";
+        
+        var gathrUrlsArray = gathrUrls.split("||");
+        for (var i in gathrUrlsArray){
+            
+            if (serviceId == gathrUrlsArray[i]){
+                isGathr = "Y";
+                break;
+            }
+        }
+        
+        var dscrUrlsArray = dscrUrls.split("||");
+        var dscrRedirectUrlsArray = dscrRedirectUrls.split("||");
+        for (var i in dscrUrlsArray){
+            
+            if (serviceId == dscrUrlsArray[i]){
+                dscrRedirectServiceId = dscrRedirectUrlsArray[i];
+                isDscr = "Y";
+                break;
+            }
+        }
+        
+        var efdsSkip = $("#efdsSkip").val();
+        
+        if (("Y" == isGathr || "Y" == isDscr) && efdsSkip != "Y"){//요청한 url이 수집 or 판별 대상일 때만 호출
+            
+            var request_data = {
+                    efdsDeviceInfo : efdsDeviceInfo,
+                    serviceId : serviceId,
+                    cardEncData : cardEncData,
+                    cardSeq : cardSeq,
+                    isGathr : isGathr,
+                    isDscr : isDscr,
+                    dscrRedirectServiceId : dscrRedirectServiceId,
+                    cardPrdctDstic : cardPrdctDstic
+                };
+            
+            $.ajax({  
+                url : "/CMN/API/MODMCXHMTCMC0001?responseContentType=json",  
+                dataType : "json",
+                data : $.param(request_data),
+                type : "post",  
+                headers : {"cache-control": "no_cache"},  
+                contentType : "application/x-www-form-urlencoded",  
+                async : false,  
+                success : function(data) {  
+                    var resultCd = data[0].resultCd;  
+                    var resultMsg = data[0].resultMsg;
+                    var redirectUrl = data[0].redirectUrl;
+                      
+                    if (resultCd == "UCXH7001"){//추가인증 시
+                        $("#isSupplCertn").val("Y");
+                        $("#redirectUrl").val(redirectUrl);
+                    }else if (resultCd == "UCXH7002" && redirectUrl !=""){//인증거절 시
+                        alert(resultMsg + "\n에러코드: " + resultCd);
+                        location.href = "/" + redirectUrl + ".cms";
+                    }
+                },  
+                    error : function(error) {
+                }  
+            });// Call Ajax  
+        }//if (doAjax)
+    };// efdsAjax()  
+    
+    // 입력 받은 달의 이전 달 마지막날짜 반환
+    function getLastDateOfPreviousMonth(currYear, currMonth){
+        /*
+        var temp = new Date(currYear, currMonth, 0);
+        return temp.getDate();
+        */
+        return 32 - new Date(currYear, currMonth, 32).getDate(); // 20141109_jwp, 말일 계산 방식 변경
+    };
+    
+    //********************************************
+    // 모바일홈 알리미 - 알리미 화면에서 오류 발생 시 알리미 메인 화면으로 이동 (메인은 Native 화면이므로 Mug 함수 호출)
+    //********************************************
+    function ShowPushList(){
+        KbPushService.map.ShowPushList(null, null);
+    }
+
+</script>
+<script>
+// $(window).load(function() {
+$(window).on("load",function() {
+    if($.cxhia.getOSCode() == 'I') { 
+        $('head').append('<link rel="apple-touch-icon-precomposed" href="https://img1.kbcard.com/LT/cxh/kbcard_img/kbcard_114.png"><link rel="apple-touch-icon-precomposed" sizes="120x120" href="https://img1.kbcard.com/LT/cxh/kbcard_img/kbcard_120.png"><link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://img1.kbcard.com/LT/cxh/kbcard_img/kbcard_144.png"><link rel="apple-touch-icon-precomposed" sizes="152x152" href="https://img1.kbcard.com/LT/cxh/kbcard_img/kbcard_152.png"><link rel="apple-touch-icon-precomposed" sizes="180x180" href="https://img1.kbcard.com/LT/cxh/kbcard_img/kbcard_180.png">') 
+    } else if($.cxhia.getOSCode() == 'A') { 
+        $('head').append('<link rel="shortcut icon" href="https://img1.kbcard.com/LT/cxh/kbcard_img/kbcard_r_128.png"><link rel="shortcut icon" sizes="196x196" href="https://img1.kbcard.com/LT/cxh/kbcard_img/kbcard_r_196.png">')
+    } 
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- DARS 라이브러리 -->
+
+
+
+<script type="text/javascript">
+           
+    var parameter_list = {};
+    var hasSkipRetain = 0; // 페이지 history에 저장 안함 여부
+
+
+
+
+
+var hasStepURI = false;
+
+
+var isLogin_navigator = false;
+
+
+/* PageHistory Javascript Class - start */
+var PageHistory = function(keyName) {
+    this.keyName = keyName;
+};
+
+PageHistory.prototype.count = function() {
+    var ph = sessionStorage.getItem(this.keyName) || '[]';
+    ph = JSON.parse(ph);
+    return ph.length;
+};
+
+PageHistory.prototype.get = function(index) {
+    var ph = sessionStorage.getItem(this.keyName) || '[]';
+    ph = JSON.parse(ph);
+    var lastIndex = ph.length - 1;
+    if(index === undefined) {
+        index = lastIndex;
+    }
+    return ph[index];
+};
+
+PageHistory.prototype.getAll = function() {
+    var ph = sessionStorage.getItem(this.keyName) || '[]';
+    ph = JSON.parse(ph);
+    return ph;
+};
+
+PageHistory.prototype.setAll = function(ph) {
+    ph = JSON.stringify(ph);
+    sessionStorage.setItem(this.keyName, ph);
+};
+
+PageHistory.prototype.set = function(data, index) {
+    var ph = sessionStorage.getItem(this.keyName) || '[]';
+    ph = JSON.parse(ph);
+    var lastIndex = ph.length - 1;
+    if(index === undefined) {
+        index = lastIndex;
+    }
+    $.extend(ph[index], data);
+    ph = JSON.stringify(ph);
+    sessionStorage.setItem(this.keyName, ph);
+};
+
+PageHistory.prototype.add = function(pageInfo) {
+    var ph = sessionStorage.getItem(this.keyName) || '[]';
+    ph = JSON.parse(ph);
+    var lastIndex = ph.length - 1;
+    
+    if(lastIndex > -1) {
+        
+        
+        var lastPageInfo = ph[lastIndex];
+        if(lastPageInfo.uri == pageInfo.uri &&
+            JSON.stringify(lastPageInfo.parameters) == JSON.stringify(pageInfo.parameters)) {
+                this.set(pageInfo);
+                console.log("duplicated navigation detected. skip.");   
+                return false;
+            }
+    }
+
+    ph.push(pageInfo);
+    ph = JSON.stringify(ph);
+    sessionStorage.setItem(this.keyName, ph);
+};
+
+PageHistory.prototype.remove = function(index) {
+    var ph = sessionStorage.getItem(this.keyName) || '[]';
+    ph = JSON.parse(ph);
+    var lastIndex = ph.length - 1;
+    if(index === undefined) {
+        index = lastIndex;
+    }
+    ph.splice(index, 1);
+    ph = JSON.stringify(ph);
+    sessionStorage.setItem(this.keyName, ph);
+};
+
+PageHistory.prototype.clear = function(uri, paramList) {
+    var ph;
+    if(uri) {
+        ph = sessionStorage.getItem(this.keyName) || '[]';
+        ph = JSON.parse(ph);
+        ph = _.filter(ph, function(item) {
+            if(item.parameters && paramList) {
+                return !(item.uri == uri && 
+                    item.parameters.mainCC == paramList.mainCC);
+            }
+            
+            return !(item.uri == uri);
+        });
+        ph = JSON.stringify(ph);
+    }
+    else {
+        ph ='[]';
+    }
+    
+    sessionStorage.setItem(this.keyName, ph);
+};
+
+PageHistory.prototype.shift = function() {
+    var ph = sessionStorage.getItem(this.keyName) || '[]';
+    ph = JSON.parse(ph);
+    ph.shift();
+    ph = JSON.stringify(ph);
+    sessionStorage.setItem(this.keyName, ph);
+};
+
+PageHistory.prototype.findIndex = function(uri) {
+    var ph = sessionStorage.getItem(this.keyName) || '[]';
+    ph = JSON.parse(ph);
+    var index = _.findIndex(ph, function(data) {
+        return data.uri == uri;
+    }); 
+    return index;
+};
+
+PageHistory.prototype.addToHistory = function(data) {
+    
+    try {
+        
+        if(!this.add(data)) {
+            return;
+        }
+    } catch(e) {
+        console.log(e);
+       
+       try {
+           // 용량이 꽉차서 오래된 history를 제거해야함.
+           this.shift();
+       } catch(e) {
+           console.log(e);
+           
+           
+           this.clear();
+           this.add(data);
+       }
+    }
+};
+/* PageHistory Javascript Class - end */
+
+
+var pageHistory = new PageHistory('pageHistory');
+
+
+try {
+    // skip될 uri가 등록되어 있으면 지운다.
+    if(hasSkipRetain == 1) {
+        if(location.search.indexOf('loginCC') == -1 || location.search.indexOf('loginCC=a') != -1) {
+            
+                pageHistory.clear('/SVC/DVIEW/MSDMCXHIASVCD0023', parameter_list);
+            
+        }
+    }
+    
+    if( window.sessionStorage ) {
+        if( !hasSkipRetain ) {
+            var curPageStep = sessionStorage.getItem('curPageStep') || '0';
+            
+            if(hasStepURI) {
+                var data = {
+                    uri: '/SVC/DVIEW/MSDMCXHIASVCD0023',
+                    parameters: parameter_list,
+                    step: ++curPageStep,
+                    backMark: 'N'
+                };
+                
+                pageHistory.addToHistory(data);
+            }
+            else {
+                curPageStep = 0;
+                var data = {
+                    uri: '/SVC/DVIEW/MSDMCXHIASVCD0023',
+                    parameters: parameter_list,
+                    step: 0,
+                    backMark: 'Y'
+                };
+                pageHistory.addToHistory(data);
+            }
+            sessionStorage.setItem('curPageStep', curPageStep);
+        }
+    }
+
+} catch(e) { 
+    // alert(JSON.stringify(e)); //console.log(e); 
+}
+
+/**
+    pageInfo에 해당하는 page로 이동한다.
+*/
+function goWithPageInfo(pageInfo) {
+    if( pageInfo ) {
+        var usePost = true; 
+        if( !usePost ) { // get method
+        
+            var uri = pageInfo.uri;
+            var query_string = ''; 
+            var shouldAddAmp = false;
+            
+            if( pageInfo.parameters ) {
+                $.each( pageInfo.parameters, function(k, v) {
+                    if(shouldAddAmp) {
+                        query_string += '&';
+                    } else {
+                        query_string += '?';
+                        shouldAddAmp = true;
+                    }
+                    
+                    query_string += k + '=' + v;
+                });
+            }
+            
+            pageHistory.remove();
+            window.location.replace( uri + query_string );
+            
+        } else { // post method
+            var uri = pageInfo.uri;
+            var form = $('<form>', {name:'cmnNavigatorPostForm', action: uri, method:'post'});
+            if( pageInfo.parameters ) {
+                $.each( pageInfo.parameters, function(k, v) {
+                    $('<input>', {type:'hidden', name:k, value:v}).appendTo(form);
+                });
+            }
+
+            pageHistory.remove();
+            form.appendTo('body').submit().remove();
+        }
+    } else {
+        
+        console.log('goWithPageInfo: fallback - no valid parameters data in pageInfo. back to main...');
+        backToMain();
+    }
+}
+
+/**
+    backToPrev()와 같은 기능임.
+*/
+function back() {
+    backToPrev();
+}
+
+/**
+    일반적인 닫기시 사용하는 뒤로 이동 기능
+*/
+function backToPrev() {
+    if(hasStepURI && getHeaderType() == 3) {
+        $.cxhia.confirm({
+            message: '종료 시 입력하신 정보가 손실됩니다. 진행 중인 프로세스를 종료하시겠습니까?' 
+        }, function(res) {
+            if(res == 'ok') {
+                $(document).trigger('stepClose');
+                // step이 시작되기 이전
+                backToPrevBackMark();
+            }
+        });
+    }
+    else {
+        try {
+            var pageHistoryLength = pageHistory.count();
+            if( !hasSkipRetain && pageHistoryLength > 0) {
+                
+                pageHistory.remove();
+            }
+            else if( hasSkipRetain == 2) {
+                pageHistory.remove();
+            }
+            
+            if( pageHistoryLength > 0 ) {
+                backToPrevBackMark();
+            }
+            else {
+                console.log('backToPrev: empty history. back to main...');
+                backToNative();
+            }
+        }
+        catch(e) {
+            history.back();
+        }
+    }
+}
+
+/**
+    프로세스화면에서 X버튼을 누르면 호출되고
+    프로세스를 종료하고, 프로세스를 시작하기 전 화면으로 이동
+*/
+function backToPrevBackMark() {
+    var pageInfos = pageHistory.getAll();
+    var lastIndex = _.findLastIndex(pageInfos, function(item, index) {
+        return item.backMark == 'Y';
+    });
+    
+    // 이전이 없으면, 메인으로
+    if(lastIndex == -1) {
+        backToNative();
+    }
+    else {
+        var pageInfo = pageInfos[lastIndex];
+        pageInfos = pageInfos.splice(0, lastIndex + 1);
+        pageHistory.setAll(pageInfos);
+        
+        sessionStorage.setItem('curPageStep', Math.max(0, pageInfo.step - 1));
+
+        goWithPageInfo(pageInfo);
+    }
+}
+
+/**
+    step이 일치하는 마지막  history index로 이동
+    프로세스화면에서 <-버튼을 누르면 호출
+*/
+function backToPrevByStep(step) {
+    var pageInfos = pageHistory.getAll();
+    var lastIndex = _.findLastIndex(pageInfos, function(item, index) {
+        return item.step == step;
+    });
+    
+    var pageInfo = pageInfos[lastIndex];
+    pageInfos = pageInfos.splice(0, lastIndex + 1);
+    pageHistory.setAll(pageInfos);
+    
+    sessionStorage.setItem('curPageStep', Math.max(0, step - 1));
+
+    goWithPageInfo(pageInfo);
+}
+
+/**
+    프로세스화면에서 <-버튼 처리
+*/
+function backToPrevStepPage() {
+    try {
+        var pageInfo = pageHistory.get();
+        if(pageInfo.step == 0) {
+            // 사용자가 직접처리
+            backToPrevOrg();
+        }
+        else if(pageInfo.step == 1) {
+            back();
+        }
+        else {
+            $.cxhia.confirm({
+                message: '최초 단계로 이동하시겠습니까?'
+            }, function(res) {
+                if(res == 'ok') {
+                    $(document).trigger('stepBack');
+                    // step이 시작되는 처음
+                    backToPrevByStep(1);
+                }
+            });
+        }
+
+    } catch(e) {
+        history.back();
+    }
+}
+
+/**
+ 이전 native화면으로 이동, 웹일때는 메인으로 이동 
+*/
+function backToNative() {
+    if($.cxhia.isApp()) {
+    	var info = {	"tabReload": true	};
+        kbmobile.ui.backToNative(info);
+    }
+    else {
+
+        // 메인으로
+        var uri = '/CMN/DVIEW/MOAMCXHIAAMC0002';
+        window.location.replace(uri);
+        
+    }
+}
+    
+/**
+    메인으로 이동
+*/
+function backToMain() {
+    // 이 값은 app에서는 저장되어 있어야 함.
+    pageHistory.clear();
+    var uri = '';
+    if($.cxhia.isApp()) {
+    	kbmobile.preferences.getIntegerValue("last_tab", function(index) {
+			var tabIndex = 0;
+            
+            if ( index != null && typeof(index)=="number" ) {
+                tabIndex = index;
+            }
+            fnDoBackToNative(tabIndex, true);
+	    });
+    }
+    else {
+        uri = '/CMN/DVIEW/MOAMCXHIAAMC0002';
+        window.location.replace(uri);
+    }
+}
+
+/*
+   바로 뒤로 가야할 경우에 사용, 에러 페이지에서 사용한다.
+*/
+function backToPrevOrg() {
+    pageHistory.remove();
+    
+    if(pageHistory.count() > 0) {
+        var pageInfo = pageHistory.get();
+        sessionStorage.setItem('curPageStep', Math.max(0, pageInfo.step - 1));
+        goWithPageInfo(pageInfo);
+    }
+    else {
+        backToMain();
+    }
+}
+    
+
+
+/**
+    현재페이지를 강제로 backMark를 설정한다.
+*/
+function setBackMark() {
+    var pageInfo = pageHistory.get();
+    pageInfo.backMark = 'Y';
+    pageHistory.set(pageInfo);
+};
+
+/**
+    curPageStep을 지운다.
+    setBackMark()와 함께 호출하여 프로세스화면에서 또다른 프로세스화면으로 이동전 호출해야 한다.
+*/
+function resetCurPageStep() {
+    sessionStorage.removeItem('curPageStep');
+}
+
+/**
+    curPageStep를 하나 감소시킨다.
+*/
+function decrementCurPageStep() {
+    var curPageStep = sessionStorage.getItem('curPageStep') || 0;
+    curPageStep = Math.max(0, curPageStep - 1);
+    sessionStorage.setItem('curPageStep', curPageStep);
+}
+
+/**
+    가장 마지막의 uri와 mainCC에 맞는 history로 이동한다.
+    이동시 중간에 쌓여있던 history는 지워진다.
+*/
+function clearTop(pageInfo) {
+    var pageInfos = pageHistory.getAll();
+    var lastIndex = _.findLastIndex(pageInfos, function(item, index) {
+        if(pageInfo.parameters) {
+            return (item.uri == pageInfo.uri && 
+                item.parameters.mainCC == pageInfo.parameters.mainCC);
+        }
+        else {
+            return (item.uri == pageInfo.uri);
+        }
+    });
+    
+    if(lastIndex == -1) {
+        if(!hasSkipRetain) {
+            pageHistory.remove();
+        }
+
+        pageHistory.addToHistory(pageInfo);
+        goWithPageInfo(pageInfo);
+    }
+    else {
+        pageInfos = pageInfos.splice(0, lastIndex + 1);
+        pageHistory.setAll(pageInfos);
+        goWithPageInfo(pageInfo);
+    }
+}
+
+/**
+    마지막 history 하나를 지운다.
+*/
+function sessionremove(){
+    pageHistory.remove();           
+}
+
+/**
+    이동전에 back시에 선택된 tab으로 돌아오기위한 tabIdx를 변경
+*/
+function setTabIndexToSessionStorage(idx) {
+    try {
+        var data = pageHistory.get();
+        $.extend(true, data, {
+            parameters: {
+                tabIdx : '' + idx
+            }
+        });
+        pageHistory.set(data);
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+//통합검색 back 버튼 pageHistroy 
+function searchBack(){
+	
+	 var arr = [];
+ 	 var pageInfos = pageHistory.getAll();
+ 	 var url = "/CMN/DVIEW/MOAMCXHIACMC0020";
+		for(var i=0; i < pageInfos.length; i++){
+			 
+		var delValue = pageInfos[i].uri;
+		
+		if(url != delValue){
+			pageInfos.splice(i, 1);
+			i--;
+		}
+	}
+		if(pageInfos.length > 0){
+		for(var i=0; i < pageInfos.length; i++){
+			if(i==0 || i == pageInfos.length -2){
+				arr.push(pageInfos[i]);
+				}
+			}
+		}
+
+		pageHistory.setAll(arr);
+		
+	 	backToPrevBackMark();
+}
+
+</script>
+
+
+<script type="text/javascript">
+
+	// 2014.11.18 고시철 상품별제휴업체제공동의중 js펑션호출하는 부분이 있어 추가(cxp소스 참조)
+	function clickPDM0492440New(rid, strTemp,code){
+	  var aTemp = strTemp.split("|");
+	  var LAYPOP = $('.popCont #dispPDM0492440_'+code);
+
+		var txt0 = aTemp[0];                    
+		var initTextObj0 = LAYPOP.find("#infoPutDesDstic");
+		if(initTextObj0.length == 0) {
+			initTextObj0 = LAYPOP.find("#정보제공목적내용");
+		}
+		if(txt0 != null){
+			initTextObj0[0].innerHTML = txt0; 
+		}else{
+			initTextObj0[0].innerHTML = "-";    
+		}
+		
+		var txt1 = aTemp[1];
+		var initTextObj1 = LAYPOP.find("#infoPutLstDstic1");
+		if(initTextObj1.length == 0) {
+			initTextObj1 = LAYPOP.find("#정보제공항목내용1");
+		}
+		if(txt1 != null){
+			initTextObj1[0].innerHTML = txt1;
+		}else{
+			initTextObj1[0].innerHTML = "-";    
+		}
+		
+		var txt2 = aTemp[2];
+		var initTextObj2 = LAYPOP.find("#infoPutLstDstic2");
+		if(initTextObj2.length == 0) {
+			initTextObj2 = LAYPOP.find("#정보제공항목내용2");
+		}
+		if(txt2 != null && txt2!= ""){
+			initTextObj2[0].innerHTML = txt2;
+		}else{
+			initTextObj2[0].innerHTML = "-";    
+		}
+		
+		var txt3 = aTemp[3];
+		var initTextObj3 = LAYPOP.find("#infoPutDueDstic");
+		if(initTextObj3.length  == 0) {
+			initTextObj3 = LAYPOP.find("#정보보유기간내용");
+		}
+		if(txt3 != null){
+			initTextObj3[0].innerHTML = txt3;
+		}else{
+			initTextObj3[0].innerHTML = "-";    
+		}
+	}
+
+</script>
+
+<input type="hidden" id="cardSeq" name="cardSeq" value="" >
+
+
+
+<!--sub main T1C-->
+
+<div id="bodySkip" style="position:absolute;top:-1000px;left:0;width:100%;background:rgba(0,0,0,.16)">
+    <a href="#contentStart" style="display:block;padding:6px;font-size:10px">본문바로가기</a>    
+</div>
+
+
+
+<div id="Wrap" class="">
+
+
+
+
+
+<!-- App 햄버거 동작 삭제 -->
+<!--     <script>
+//     (function($) {
+
+//         $(document).on('backbutton', function(e) {
+//             if($(document).triggerHandler('android-backbutton')) {
+//                 return;
+//             }
+            
+//             back();
+//         });   
+//     })(jQuery);
+</script> -->
+ 
+	
+	
+		
+		<div id="header" class="topHead"> 
+	        <div class="homeBtn" style="display:none"><button type="button">메인으로 이동</button></div>
+	        <div class="backBtn" style="display:none"><button type="button">이전페이지</button></div>
+	        <div class="backBtn2" style="display:none"><button type="button">이전페이지</button></div>
+	        <h1 class="fs4"></h1>
+	          
+	        <div class="headerMenu" style="display:none"><button type="button" class="hmBtn">전체메뉴보기</button></div>
+	        
+	        <div class="btnClose" style="display:none"><a href="#" role="button">닫기</a></div>
+	        <div class="cancleBtn" style="display:none"><button type="button" class="header__btn header__btn--cancel">취소</button></div>
+	    </div>
+	   
+
+
+<script>
+try{
+    var isIframe = (self != top); //해당 window의 Iframe여부 확인 
+    var isParentChatbot = top.location.href.indexOf('CCBM0001') > -1 || top.location.href.indexOf('CCBM0003') > -1;// 부모창이 챗봇인지 확인(유태경 대리님 요청 0001 추가)
+    var isShowBackBtn = new RegExp(top.showBackBtnCms).test(location.pathname); // 뒤로가기 삭제여부 체크
+    if(isIframe && isParentChatbot) {
+        // 기본 헤더 버튼 삭제
+        var btnClose = document.querySelector('.btnClose'),
+            homeBtn = document.querySelector('.homeBtn'),
+            headerMenu = document.querySelector('.headerMenu'),
+            backBtn = document.querySelector('.backBtn');
+
+        if(!isShowBackBtn) backBtn.remove();
+        btnClose.remove();
+        homeBtn.remove();
+        headerMenu.remove();
+
+        var chatbotDiv = document.createElement('div'),
+            chatbotBtn = document.createElement('button');
+        chatbotDiv.className = 'chatbotBtn';
+        chatbotDiv.appendChild(chatbotBtn);
+        document.querySelector('.topHead').appendChild(chatbotDiv);
+
+
+        /* 헤더영역 스타일시트 추가 */
+        function appendStyle(text) {
+            var styleNode = document.createElement('style');
+            styleNode.type = 'text/css';
+            styleNode.appendChild(document.createTextNode(text));
+            document.head.appendChild(styleNode);
+        }
+        
+        appendStyle('.chatbotBtn{position:absolute;right:16px;top:16px;z-index:991}');
+        appendStyle('.chatbotBtn button{padding:12px;width:24px;height:24px;background:url(https://img1.kbcard.com/cxo/images/mtalk/chatbot/images/btn_pop_down.png) no-repeat center center;background-size:24px;color:transparent;line-height:0;font-size:0;}');
+        appendStyle('.chatbotBtn button:after{content:"";position:absolute;top:-8px;right:-8px;bottom:-8px;left:-8px}');
+        appendStyle('.minContent{min-height:auto !important}');
+
+        chatbotBtn.onclick = function() {
+            top.helperBotEvent.onBotBtnSlideCloseClick();
+        }
+    }
+}catch(e){ 
+    
+}
+</script>
+
+<div id="contentStart" class="blind">본문시작</div>
+<!--//sub main T1C-->
+<!-- M1C 시작 -->
+
+	
+	<!-- [content] 본문내용 시작 -->
+	<div id="main_content">
+		<style>
+.basic_list li {margin-left:16px;}
+.basic_list li:last-child{border-bottom:1px solid #ccc;}
+</style>
+<script type="text/javascript">
+	//kbpay3.0 화면으로 이동
+	
+	//kbpay3.0 화면으로 이동
+
+	setMenuName('해외이용 가이드');
+	setHeaderType(1); 
+</script>
+
+<div id="content">
+    <section class="container">
+    	<div class="infoBox">
+            <p>해외 가기 전/후,<br>안전하고 실용적인 서비스</p>
+        </div>
+
+		<ul class="basic_list">
+			<li>
+				<a href="/SVC/DVIEW/MSDMCXHIASVCD0024">해외 출국/결제 전</a>
+			</li>
+			<li>
+				<a href="/SVC/DVIEW/MSDMCXHIASVCD0026">해외 체류/결제 중</a>
+			</li>
+			<li>
+				<a href="/SVC/DVIEW/MSDMCXHIASVCD0028">해외 귀국/결제 후</a>
+			</li>
+			<li>
+				<a href="/SVC/DVIEW/MSDMCXHIASVCD0030">해외 온라인/인터넷 결제</a>
+			</li>
+			<li>
+				<a href="/SVC/DVIEW/MSDMCXHIASVCD0031">해외 이의제기 신청 · 조회</a>
+			</li>
+			<li>
+				<a href="/SVC/DVIEW/MSDMCXHIASVCD0032">해외이용 FAQ</a>
+			</li>
+		</ul>
+	</section>
+</div>
+	</div>
+	<!-- [content] 본문내용 끝 -->
+	
+	<!-- [footer] 영역 시작 -->
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- M1C 끝 -->
+
+
+
+<script type="lodash_template" id="tplMessageBox">
+	<div id="messageBoxLayerPopup" class="layerWrap alertWrap pop-wrap">
+		<div class="pop-container">
+	  		[% if(title.length > 0) { %]
+			<div class="popTop pop-header">
+		  		<strong class="fs2 tit-dep1">[%= title %]</strong>
+			</div>
+			[% } %]
+
+			<div class="pop-inner">
+				<div class="popCont cont-area">
+					<div class="cenTxt fs2">[%= message %]</div>
+				</div>
+				[% if(isAlert) { %]
+				<div class="btnBox fixed-area btn-wrap">
+					<a id="btnOK_messageBoxLayerPopup" href="#" class="fs2 btn btn--yellow" role="button">[%= okButtonName %]</a>
+				</div>
+				[% } else { %]
+				<div class="btnBox col2 fixed-area btn-wrap">
+					<a id="btnCancel_messageBoxLayerPopup" href="#" class="fs2 close btn js-btn-pop-close" role="button">[%= cancelButtonName %]</a>
+					<a id="btnOK_messageBoxLayerPopup" href="#" class="fs2 btn btn--yellow" role="button">[%= okButtonName %]</a>
+				</div>
+				[% } %]
+			</div>
+		<div>
+	</div>
+</script>
+
+<script>
+	
+	var tplMessageBox = _.template($('#tplMessageBox').html());
+	
+	function messageBoxMsgChng(trgtMsg) {
+		var oriMsg = trgtMsg || "";
+		var rstMsg = oriMsg;
+		
+		if ( oriMsg != "" ) {
+			var regStr = "^\\[[A-Z]{4}\\d{4}\\]";
+			var tgRegExp = RegExp(regStr, "");
+			var testVl = tgRegExp.test(oriMsg);
+
+			if ( testVl ) {
+				var cutStr = oriMsg.substring(0, 10);
+				var rstStr = oriMsg.substring(10) + " " + cutStr;
+				rstMsg = rstStr.trim();
+			}
+		}
+		
+		return rstMsg;
+	}
+	
+	$.cxhia.alert = function(obj, callback) {
+		if(typeof KBCARD_GLOBAL == 'undefined' && !commonJs.layerPopup.config) commonJs.layerPopup.init();
+		if(obj.title == 'Alert') obj.title = "";
+		
+		var strHtml = tplMessageBox({
+			title: obj.title || "",
+			message: messageBoxMsgChng(obj.message),
+			isAlert: true,
+			okButtonName: obj.okButtonName || '확인'
+		});
+
+		
+		
+		$('.alertWrap').remove();
+		$('body').append(strHtml);
+
+		if(typeof KBCARD_GLOBAL == 'undefined') {
+			commonJs.layerPopup.openPopup('#messageBoxLayerPopup');
+		} else {
+			openPopup('#messageBoxLayerPopup');
+		}
+		
+		$('#btnOK_messageBoxLayerPopup').off().on('click', function(e) {
+			setTimeout(function() {
+				if(callback) {
+					callback("ok");
+				}
+			}, 1);
+			if(typeof KBCARD_GLOBAL == 'undefined') {
+				commonJs.layerPopup.closePopup('#messageBoxLayerPopup');
+			} else {
+				closePopup('#messageBoxLayerPopup');
+			}
+			return false;
+		});
+	};
+	
+	$.cxhia.confirm = function(obj, callback) {
+		if(typeof KBCARD_GLOBAL == 'undefined' && !commonJs.layerPopup.config) commonJs.layerPopup.init();
+		if(obj.title == 'Confirm') obj.title = "알림";
+
+		var strHtml = tplMessageBox({
+			title: obj.title || "",
+			message: obj.message,
+			isAlert: false,
+			okButtonName: obj.okButtonName || '확인',
+			cancelButtonName: obj.cancelButtonName || '취소'
+		});
+		
+		
+		
+		$('.alertWrap').remove();
+		$('body').append(strHtml);
+
+		if(typeof KBCARD_GLOBAL == 'undefined') {
+			commonJs.layerPopup.openPopup('#messageBoxLayerPopup');
+		} else {
+			openPopup('#messageBoxLayerPopup');
+		}
+		
+		$('#btnCancel_messageBoxLayerPopup').off().on('click', function(e) {
+			setTimeout(function() {
+				callback("cancel");
+			}, 1);
+			if(typeof KBCARD_GLOBAL == 'undefined') {
+				commonJs.layerPopup.closePopup('#messageBoxLayerPopup');
+			} else {
+				closePopup('#messageBoxLayerPopup');
+			}
+			return false;
+		});
+		
+		$('#btnOK_messageBoxLayerPopup').off().on('click', function(e) {
+			setTimeout(function() {
+				callback("ok");
+			}, 1);
+			if(typeof KBCARD_GLOBAL == 'undefined') {
+				commonJs.layerPopup.closePopup('#messageBoxLayerPopup');
+			} else {
+				closePopup('#messageBoxLayerPopup');
+			}
+			return false;
+		});
+	};
+</script>
+
+
+
+
+<script type="lodash_template" id="tplMessageBox2">
+    <div id="messageBoxLayerPopup2" class="layerWrap newType pop-wrap">
+        <div class="pop-container">
+            [% if(title != '') { %]
+            <div class="popTop pop-header">
+                <strong class="tit-dep1">[%= title %] <span class="fc14">[%= title2 %]</span></strong>
+            </div>
+            [% } %]
+            
+            <div class="pop-inner">
+                    <div class="popCont cont-area">
+                        <p>[%= message %]</p>
+                    </div>
+
+                [% if(isAlert) { %]
+                    <span class="popClose btnBox pop-close fixed-area btn-wrap">
+                        <a id="btnOK_messageBoxLayerPopup2" href="#" class="btn btn--yellow">[%= okButtonName %]</a>
+                    </span>
+                [% } else { %]
+                    <span class="popClose btnBox fixed-area btn-wrap">
+                        <a id="btnCancel_messageBoxLayerPopup2" href="#" class="w50 close btn js-btn-pop-close">[%= cancelButtonName %]</a>
+                        <a id="btnOK_messageBoxLayerPopup2" href="#" class="w50 btn btn--yellow">[%= okButtonName %]</a>
+                    </span>
+                [% } %]
+            </div>
+        </div>
+    </div>
+</script>
+
+<script>
+    
+    var tplMessageBox2 = _.template($('#tplMessageBox2').html());
+    
+    $.cxhia.alert2 = function(obj, callback, contAlign) {
+        if(typeof KBCARD_GLOBAL == 'undefined' && !commonJs.layerPopup.config) commonJs.layerPopup.init();
+        
+        var strHtml = tplMessageBox2({
+            title: obj.title || "",
+            title2: obj.title2 || "",
+            message: obj.message,
+            isAlert: true,
+            okButtonName: obj.okButtonName || '확인'
+        });
+        
+        $('.newType').remove();
+        $('body').append(strHtml);
+        
+        //console.log("[ Suezo ] contAlign : " + contAlign);
+        
+        // 차세대변경사항
+        if (contAlign != undefined && contAlign != "") {
+            if (contAlign == "left" || contAlign  == "right" || contAlign == "center") {
+                $(".layerWrap.newType .popCont").attr("style", "text-align: " + contAlign + " !important");
+            }
+        }
+        
+        if(typeof KBCARD_GLOBAL == 'undefined') {
+			commonJs.layerPopup.openPopup('#messageBoxLayerPopup2');
+		} else {
+			openPopup('#messageBoxLayerPopup2');
+		}
+
+        $('#btnOK_messageBoxLayerPopup2').off().on('click', function(e) {
+            setTimeout(function() {
+                if(callback) {
+                    callback("ok");
+                }
+            }, 1);
+
+            if(typeof KBCARD_GLOBAL == 'undefined') {
+				commonJs.layerPopup.closePopup('#messageBoxLayerPopup2');
+			} else {
+				closePopup('#messageBoxLayerPopup2');
+			}
+            return false;
+        });
+    };
+    
+    $.cxhia.confirm2 = function(obj, callback) {
+       if(typeof KBCARD_GLOBAL == 'undefined' && !commonJs.layerPopup.config) commonJs.layerPopup.init();
+        
+        var strHtml = tplMessageBox2({
+            title: obj.title || "",
+            title2: obj.title2 || "",
+            message: obj.message,
+            isAlert: false,
+            okButtonName: obj.okButtonName || '확인',
+            cancelButtonName: obj.cancelButtonName || '취소'
+        });
+        
+        $('.newType').remove();
+        $('body').append(strHtml);
+
+        if(typeof KBCARD_GLOBAL == 'undefined') {
+			commonJs.layerPopup.openPopup('#messageBoxLayerPopup2');
+		} else {
+			openPopup('#messageBoxLayerPopup2');
+		}
+        
+        $('#btnCancel_messageBoxLayerPopup2').off().on('click', function(e) {
+            setTimeout(function() {
+                callback("cancel");
+            }, 1);
+            if(typeof KBCARD_GLOBAL == 'undefined') {
+				commonJs.layerPopup.closePopup('#messageBoxLayerPopup2');
+			} else {
+				closePopup('#messageBoxLayerPopup2');
+			}
+            return false;
+        });
+        
+        $('#btnOK_messageBoxLayerPopup2').off().on('click', function(e) {
+            setTimeout(function() {
+                callback("ok");
+            }, 1);
+            if(typeof KBCARD_GLOBAL == 'undefined') {
+				commonJs.layerPopup.closePopup('#messageBoxLayerPopup2');
+			} else {
+				closePopup('#messageBoxLayerPopup2');
+			}
+            return false;
+        });
+    };
+</script>
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+    .blind {
+	  overflow: hidden;
+	  position: absolute;
+	  width: 1px;
+	  height: 1px;
+	  font-size: 1px;
+	  line-height: 0;
+	  margin: -1px;
+	  clip: rect(0 0 0 0);
+	}
+	
+	.chatbot {
+	  position: fixed;
+	  z-index: 101;
+	  right: 24px!important;
+	  top: calc(100vh - 128px);
+	  bottom: auto!important;
+	}
+	
+	.chatbot__inner {
+	  position: relative;
+	}
+	
+	.chatbot__item {
+	  overflow: hidden;
+	  position: relative;
+	  z-index: 1;
+	  width: 48px;
+	  height: 48px;
+	  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.24);
+	  border-radius: 100%;
+	}
+	
+	.chatbot__ico {
+	  display: block;
+	  width: 100%;
+	  height: 100%;
+	  background: #fc0 url(https://img1.kbcard.com/home_re/mo/img/main/img-chatbot.svg) no-repeat center;
+	  background-size: 48px;
+	}
+	
+	.chatbot__close {
+	  position: absolute;
+	  z-index: 2;
+	  top: -12px;
+	  right: -12px;
+	  width: 24px;
+	  height: 24px;
+	  border-radius: 100%;
+	  background: rgb(105, 110, 118) url(https://img1.kbcard.com/home_re/mo/ico/14/ico-1-close-white.svg) no-repeat center;
+	  background-size: 14px;
+	}
+	
+	.chatbot__txt {
+	  position: absolute;
+	  top: 6px;
+	  right: 38px;
+	  opacity: 0;
+	  animation: chatbotTxt 4s .5s forwards;
+	}
+	
+	.chatbot__txt > em {
+	  overflow: hidden;
+	  display: inline-block;
+	  max-width: calc(100vw - 76px);
+	  height: 36px;
+	  background-color: #222;
+	  padding: 6px 28px 6px 16px;
+	  border-top-right-radius: 0; 
+	  border-bottom-right-radius: 0;
+	  border-top-left-radius: 18px; 
+	  border-bottom-left-radius: 18px;
+	  color: #fff;
+	  line-height: 24px;
+	  white-space: nowrap;
+	  text-overflow: ellipsis;
+	  box-sizing: border-box;
+	}
+    
+    .chatbot__txt * {
+       font-weight: 600!important;
+       line-height: 24px;
+       vertical-align: top;
+    }
+    
+    .chatbot__txt > em sup {
+      position: relative;
+      top: -0.5em;
+    }
+    
+	.chatbot__txt--event {
+	  animation: chatbotTxt2 6s 1s infinite;
+	}
+	
+	.chatbot__txt--event > em {
+	  background-color: #5f5be8;
+	}
+	
+	@keyframes chatbotTxt {
+	  from {
+	    transform: translateX(24px);
+	    opacity: 0;
+	  }
+	  50% {
+	    transform: translateX(0);
+	    opacity: 1;
+	  }
+	  to {
+	    transform: translateX(24px);
+	    opacity: 0;
+	  }
+	}
+	
+	@keyframes chatbotTxt2 {
+	  from {
+	    transform: translateX(24px);
+	    opacity: 0;
+	  }
+	  30% {
+	    transform: translateX(0);
+	    opacity: 1;
+	  }
+	  60% {
+        transform: translateX(0);
+        opacity: 1;
+	  }
+	  to {
+	    transform: translateX(24px);
+	    opacity: 0;
+	  }
+	}
+</style>
+<script>
+	var chatId = localStorage.getItem('chatId');
+	var rvtsServiceConnect = true;
+    var chatbotServiceConnect = 'true';
+	var realYn = 'R';
+	var rvtsUrl = '';
+	var domainId = 'NODE0000000048';
+	var btnMoveToChatbotParam = null;
+	var menuURI = 'MSDMCXHIASVCD0023';
+    var showIconMenuIds = ['MMOM0101', 'MOEM0201', 'MMOM0301', 'MOAM0202', 'MMOM0401'];
+	var rejectIconMenuIds = ['CCBM0002'];
+    var chatbotIconIds = '#chatbotFloatBanner, #eNomixBannerWrapper';
+    var isChatbotIconMove = false;
+    var isChatbotIconClick = false;
+    
+    // 챗봇 슬라이딩 팝업에서 호출한 경우 배너와 챗봇을 노출하지 않는다.
+    var hasSlideIframe = false;
+    if($('#slideIframe', parent.document).length > 0)
+    {
+        hasSlideIframe = true;
+    }
+    
+    var isRvtsConnect = window['isMTalkBanner'];
+    if(isRvtsConnect == undefined)
+    {
+        isRvtsConnect = false;
+    }
+    
+    var currUrl = location.href;
+    
+    if(realYn == 'R')
+    {
+        rvtsUrl = 'https://mtalk.kbcard.com:18080/master';
+        domainId = 'NODE0000000016';
+    }
+    else
+    {
+        rvtsUrl = 'https://dmtalk.kbcard.com:18080/master';
+    }
+    
+    function rvtsStart() {
+        (function() {
+            try {
+                var e, i, n = window, o = document, s = "script", a = arguments,
+                r = ["config", "identify", "debug", "start"] ,
+                b = ["ebs.json"],
+                z = rvtsUrl + '/js/',
+                c = function()
+                    {
+                        var t, i = this;
+                        for (i._e = [], t = 0; r.length > t; t++)
+                            (function(t) {
+                                i[t] = function() {
+                                    return i._e.push([t].concat(Array.prototype.slice.call(arguments,0))),i
+                                };
+                            })(r[t])
+                    };
+                for (n._w = n._w || {}, t = 0; a.length > t; t++)
+                {
+                    n._w[a[t]] = n[a[t]] = n[a[t]] || new c;
+                }
+                for (var j in b) 
+                {
+                    i = o.createElement(s);
+                    i.defer = true;
+                    i.src = z + b[j];
+                    e = o.getElementsByTagName(s)[0];
+                    e.parentNode.insertBefore(i, e);
+                }
+            } catch(e) { console.log(e); }
+        })("ecc");
+        ecc.config({domainId: domainId, staticUrl: currUrl, channelType: 'MW'});
+        ecc.identify({customerId: ''}); 
+        ecc.start(true);
+    }
+    
+    function checkIconClick() {
+    	if (isChatbotIconClick) {
+    		return isChatbotIconClick;
+    	} else {
+    		isChatbotIconClick = true;
+    		return false;
+    	}
+    }
+    
+	function moveToChatbot(rvtsActionValue) {
+		if (checkIconClick()) {
+			return;
+		}
+		console.log("event.currentTarget.className:"+event.currentTarget.className);
+		console.log("event.target.className:"+event.target.className);
+		
+		
+        var paramServicePoint = {
+            'MMOM0101' : 'MN_MYKB',
+            'MOEM0201' : 'MN_BNFT',
+            'MMOM0301' : 'MN_FNC',
+            'MMOM0401' : 'FNC_FLO',
+            'MOAM0202' : 'MN_VEMR'
+        };
+        
+        var urlParam = {};
+        if (paramServicePoint.hasOwnProperty(menuURI)) {
+        	urlParam.servicePoint = paramServicePoint[menuURI];
+        }
+	    var uri = rvtsActionValue ? rvtsActionValue : '/CMN/DVIEW/CCBM0001';
+	    if(Object.keys(urlParam).length > 0) {
+	    	uri += (rvtsActionValue ? '&' : '?') + $.param(urlParam);
+    	}
+	    
+	    if(event.target.className == "chatbot__ico"){
+	    	uri = '/CMN/DVIEW/CCBM0001';
+		    if(Object.keys(urlParam).length > 0) {
+		    	uri = uri + '?servicePoint=' + paramServicePoint[menuURI];
+	    	}
+	    }
+	    console.log("[common rvts.jsp] uri:"+uri);
+	    window.location.href = uri;
+	    setTimeout(function() {
+	    	isChatbotIconClick = false;
+	    }, 500);
+	}
+	
+    function chatbotFloatView() { 
+    	localStorage.setItem('hideChatbotIcon', 'N');
+		if ($('#eNomixBannerWrapper').length > 0 && $('#eNomixBannerWrapper').is(':visible')) {
+			return;
+		}
+		
+		//금융 탭 외 플로팅 제외. -- kbpay 화면연결일때 플로팅 미노출 
+		if(!location.href.includes('MMOM0401')){
+			return;
+		}
+		
+		if (localStorage.getItem('chatbotIconTop'))
+		{
+		    $('#chatbotFloatBanner').css('top', localStorage.getItem('chatbotIconTop'));
+		}
+        $('#chatbotFloatBanner').show();
+        $('.btnShare').hide();
+    }
+    
+    function chatbotFloatHide() {
+		var param = {
+		   'showChatbotFloatYn' : 'N'
+		};
+		$.ajax({ 
+			type : 'POST',
+			url:'/CMN/API/CCBA0006',
+			dataType : 'json',
+			async : false,
+			data : param,
+			contentType : 'application/x-www-form-urlencoded;charset=UTF-8',
+			success : function(data) {
+			    // Do nothing
+			}
+		});
+
+	    $(chatbotIconIds).hide();
+        localStorage.setItem('hideChatbotIcon', 'Y');
+    }
+       
+	function getRvtsStatus(url, callback) {
+	    var dummy = new Date().getTime();
+	    var s = document.createElement("script");
+	    s.onerror = callback.error;
+	    s.type = 'text/javascript';
+	    s.src = url + '?callback=statecb&dmy='+dummy;
+	    (document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(s);
+	    window['statecb'] = callback.success;
+	}
+
+	function appChatbotShow() {		
+	    if (isRvtsConnect) { // 항상 배너를 노출할 메뉴 구분
+	        if (rvtsServiceConnect) { // RVTS로 배너를 노출할 지 구분
+	            getRvtsStatus(rvtsUrl + "/services/rest/ActiveLog/state", {
+	                success: rvtsStart, 
+	                error: function() {
+	                    if (showIconMenuIds.includes(menuURI)) {
+	                        chatbotFloatView();
+	                    }
+	                }
+	            });
+	        } else { // RVTS 사용안할 시 기본 배너 노출
+	            chatbotFloatView();
+	        }
+	    }		
+	}
+       
+	function refreshChatbotIcon() {
+        if (chatbotServiceConnect == 'false') {   
+            return;
+        }
+	    if ($.cxhia.isApp() && showIconMenuIds.includes(menuURI)) {
+		 	kbmobile.preferences.getStringValue("showChatbot", function(chatbotBanner) {
+		 		if (chatbotBanner != 'N') {
+		 			if (localStorage.getItem('hideChatbotIcon') == null || localStorage.getItem('hideChatbotIcon') == undefined || localStorage.getItem('hideChatbotIcon') == '') {
+		 				appChatbotShow();
+		 			} else if (localStorage.getItem('hideChatbotIcon') == 'Y' && $(chatbotIconIds).is(':visible')) {
+		                 $(chatbotIconIds).hide();
+		             } else if (localStorage.getItem('hideChatbotIcon') == 'N') {
+		                 if (localStorage.getItem('chatbotIconTop')) {
+		                     $(chatbotIconIds).css('top', localStorage.getItem('chatbotIconTop'))
+		                 }
+		                 if ($(chatbotIconIds).is(':visible')) {
+		                 	return;
+		                 } else {
+		                 	if ($('#eNomixBannerWrapper').length > 0 && !$('#eNomixBannerWrapper').is(':visible')) {
+		                 	    $('#eNomixBannerWrapper').show();
+		                 	} else {
+		                 		if ($('script[src*="'+rvtsUrl+'"]').length > 0) {
+		                 			chatbotFloatView();
+		                 		} else {
+		                 		    appChatbotShow();
+		                 		}
+		                 	} 
+		                 }
+		             }
+		 		} else {
+		 			$(chatbotIconIds).hide();
+		 		}
+		 	});
+	    }
+	}
+
+    var chatbotStartY = 0;
+    var chatbotMoveY = 0;
+    var chatbotEndY = 0;
+    var chatMove = 0;
+    var chatBtm = 0;
+    var chatMaxBottom = 0;
+    var bodyCls = '';
+    var chatbotTop = navigator.userAgent && navigator.userAgent.indexOf("kbpayia") > -1 ? 22 : 80;
+    
+    function setCbTouchEvent_IOS() {
+		$(document).off('touchstart', '.js-drag-chatbot');
+		$(document).on('touchstart', '.js-drag-chatbot', function(e){
+			if(e.type == 'touchstart') {
+				var winTop = $(window).scrollTop();
+				chatbotStartY = e.originalEvent.changedTouches[0].screenY - winTop;
+				
+				$('body').addClass('locked').css({
+					position: 'fixed',
+					top: winTop * -1,
+					left: 0,
+					width: '100%'
+				});
+				
+				var winHei = $(window).height();
+				var headHei = $('#header').outerHeight();
+				var chatHei = $(this).outerHeight();
+				chatBtm = parseInt($(this).css('top'));
+				chatMaxBottom = winHei - chatHei - chatbotTop;
+			}
+		});
+	
+		$(document).off('touchmove', '.js-drag-chatbot');
+		$(document).on('touchmove', '.js-drag-chatbot', function(e){
+			chatbotMoveY = e.originalEvent.changedTouches[0].screenY;
+			chatMove = chatbotStartY - chatbotMoveY;
+	
+			if (chatMove != 0) {
+				$(this).css({'top':chatBtm - chatMove});
+				isChatbotIconMove = true;
+			}
+		});
+	
+		$(document).off('touchend', '.js-drag-chatbot');
+		$(document).on('touchend', '.js-drag-chatbot', function(e){
+			if(chatBtm + (chatMove * -1) > chatMaxBottom){
+				$(this).css({'top': chatMaxBottom});
+			}else if(chatBtm - chatMove < 60){
+				$(this).css({'top': 60});
+			}
+
+			localStorage.setItem('chatbotIconTop', $(this).css('top'));
+			// 좌표 변수 초기화
+			chatbotStartY = 0;
+			chatbotMoveY = 0;
+			chatbotEndY = 0;
+			chatMove = 0;
+			chatBtm = 0;
+			chatMaxBottom = 0;
+			
+			//body 스크롤 초기화
+			var $scroll = Math.abs($('body').offset().top);
+			$('body').removeClass('locked').attr('style','');
+			$(window).scrollTop($scroll);
+			
+			if (isChatbotIconMove) {
+				isChatbotIconMove = false;
+			} else {
+				$(e.target)[0].click();
+			}
+		});
+	}
+    
+    function setCbTouchEvent_AOS() {
+		$(document).off('touchstart', '.js-drag-chatbot');
+		$(document).on('touchstart', '.js-drag-chatbot', function(e){
+			if(e.type == 'touchstart') {
+				var winTop = $(window).scrollTop();
+				chatbotStartY = e.originalEvent.changedTouches[0].screenY;
+				
+				$('body').addClass('locked').css({
+					position: 'fixed',
+					top: winTop * -1,
+					left: 0,
+					width: '100%'
+				});
+				
+				var winHei = $(window).height();
+				var headHei = $('#header').outerHeight();
+				var chatHei = $(this).outerHeight();
+				chatBtm = parseInt($(this).css('top'));
+				// chatMaxBottom = winHei - chatHei - chatbotTop;
+			}
+		});
+
+		$(document).off('touchmove', '.js-drag-chatbot');
+		$(document).on('touchmove', '.js-drag-chatbot', function(e){
+			chatbotMoveY = e.originalEvent.changedTouches[0].screenY;
+			chatMove = chatbotStartY - chatbotMoveY;
+			$(this).css({'top':chatBtm - chatMove});
+		});
+
+		$(document).off('touchend', '.js-drag-chatbot');
+		$(document).on('touchend', '.js-drag-chatbot', function(e){
+			if(chatBtm + (chatMove * -1) > chatMaxBottom){
+				$(this).css({'top': chatMaxBottom});
+			}else if(chatBtm - chatMove < 60){
+				$(this).css({'top': 60});
+			}
+
+			localStorage.setItem('chatbotIconTop', $(this).css('top'));
+			// 좌표 변수 초기화
+			chatbotStartY = 0;
+			chatbotMoveY = 0;
+			chatbotEndY = 0;
+			chatMove = 0;
+			chatBtm = 0;
+			// chatMaxBottom = 0;
+			
+			//body 스크롤 초기화
+			var $scroll = Math.abs($('body').offset().top);
+			$('body').removeClass('locked').attr('style','');
+			$(window).scrollTop($scroll);
+		});
+	}
+	
+	//챗봇 z-index 값 조절
+	var eNomixBannerWrapperZindex = "101"
+	var flagENomixBannerWrapperChk = true;
+	function chkChatbotZindex(){
+		$(document).on("DOMNodeInserted", function(e){
+			if ( !flagENomixBannerWrapperChk ) {
+				return;
+			}
+			if ( $(e.target).prop("id") == "eNomixBannerWrapper" ) {
+				console.log("%c[common rvts.jsp] Node Insert: "+$(e.target).prop("id"), "color:red");
+				$(e.target).css("z-index", eNomixBannerWrapperZindex);
+				flagENomixBannerWrapperChk = false;
+				console.log("%c[common rvts.jsp] "+$(e.target).prop("id")+" z-index is changed: "+eNomixBannerWrapperZindex, "color:red");
+			}
+		});
+	}
+	
+	//$(document).ready(function() {
+    window.addEventListener('load', function() {
+    	
+    	/* 기존 document deviceready 이벤트 시 로직 시점 변경 start */
+    	if ($.cxhia.isApp()) {
+	    	if(hasSlideIframe || rejectIconMenuIds.includes(menuURI)) {
+			    return;
+			}
+			
+			var chatbotId = 'null';
+			if(chatbotId != 'null' && chatbotId != '') {// 챗봇화면->화면연결 : rvts 호출이나 앱 설정을 따르지 않음
+					chatbotFloatView();
+			    return;
+			}
+	           
+	        if(chatbotServiceConnect == "false") {   
+	            return;
+	        }
+	        
+	        var showChatbotFloatFlag = 'Y';
+	        
+	        /**
+	        * chatbotBanner
+	        * Y : 옵션에서 버튼 활성화
+	        * N : 옵션에서 버튼 비활성화
+	        */
+	        kbmobile.preferences.getStringValue("showChatbot", function(chatbotBanner) {
+	        	if (chatbotBanner != 'N' && showChatbotFloatFlag == 'Y') {
+	        		chkChatbotZindex();//chatbot z-index 조절을 위한 함수 호출
+	        		appChatbotShow();
+	       		}
+	        });
+    	}
+        /* 기존 document deviceready 이벤트 시 로직 시점 변경 end */
+        
+        
+    	//챗봇 최초 위치 세팅
+    	$('.chatbot').css({top: $(window).outerHeight() - ($('.chatbot:visible').outerHeight() + chatbotTop)});
+    	
+		if (showIconMenuIds.includes(menuURI)) {
+			$(document).on('visibilitychange', refreshChatbotIcon);
+		}
+		
+		if ($.cxhia.isApp()) {
+	        if (_isIOS) {
+	            setCbTouchEvent_IOS();
+	        } else {
+	        	
+	        	var fixedToastH = $('#fixedToast').length ? $('#fixedToast').outerHeight() + parseInt($('#fixedToast').css('bottom')) : 0;
+	        	
+	        	if (navigator.userAgent.indexOf('kbpayia') > -1) {
+	        		chatMaxBottom = $(window).outerHeight() - 70 - fixedToastH;
+                } else {
+                	chatMaxBottom = $(window).outerHeight() - 128;
+                };
+                
+                //홈앱에서 가려지는 현상 있어 chatbotIonTop값을 초기화
+                if(localStorage.getItem('chatbotIconTop') == null) {
+                	localStorage.setItem('chatbotIconTop', chatMaxBottom +'px');                	
+                }
+	            setCbTouchEvent_AOS();
+	        }
+	    }
+    });
+    
+    /* // 채팅 배너 앱에서만 동작
+    $(document).on('deviceready', function(e) {
+		
+    }); */
+    console.log("[common rvts.jsp] (rvtsServiceConnect:"+rvtsServiceConnect+") (isRvtsConnect:"+isRvtsConnect+") (chatbotServiceConnect:"+chatbotServiceConnect+") (hasSlideIframe:"+hasSlideIframe+")");
+</script>
+<div id="chatbotFloatBanner" class="chatbot js-drag-chatbot" style="display:none;">
+    <div class="chatbot__inner">
+        <div class="chatbot__item">
+            <a href="#" id="btnMoveToChatbot" class="chatbot__ico" onclick="moveToChatbot(); return false;" style="cursor:pointer;"><span class="blind">챗봇</span></a>
+        </div>
+        <a href="#" id="chatbotFloatClose" class="chatbot__close" onclick="chatbotFloatHide(); return false;" style="cursor:pointer;"><span class="blind">챗봇 닫기</span></a>
+        <span class="chatbot__txt chatbot__txt--basic"><em onclick="moveToChatbot(); return false;" style="cursor:pointer;">챗봇상담</em></span>
+    </div>
+</div>
+
+<script>
+	
+    // Header 양쪽 버튼 처리 + footer처리
+    $(function() {     
+    
+    
+          $('.topHead .btnClose, .topHead .cancleBtn').on('click', function(e) {
+        back();
+        return false;
+      });
+               
+          
+	
+		
+      $('.topHead .backBtn').on('click', function(e) {
+    	  
+        if(getHeaderType() != 3) {
+          back();
+        }
+        else {
+          backToPrevStepPage();
+        }
+        return false;
+      });
+      
+      $('.closeBtn').on('click', function(e) {
+        if(!hasStepURI) {
+          pageHistory.remove();
+        }       
+        backToPrevBackMark();
+        return false;
+      });
+    
+      
+      
+    
+	    $('.homeBtn, .btnHome, a[href="/"]').on('click', function(e) {
+	      backToMain();
+	      return false;
+	    });	    
+     
+	}); //$(function()	
+</script>
+<style>
+.fMenu li a {padding:8px 10px !important}
+
+@media screen and (max-width: 320px){
+	.fMenu li a {padding:8px 6px !important}
+}
+</style>
+
+<!-- Footer -->  
+ <!--//모바일통합 앱이 아니면-->
+  <footer style="display:none">
+    <!-- 특정 타입 -->
+    <div id="moveSns" style="display:none"> 
+      <a href="#Wrap" class="topMove">맨위로</a>
+      <ul class="sns">
+        <li><a href="https://blog.naver.com/kbcheckcard" class="blog" title="KB국민카드 블로그 이동"></a></li>
+        <li><a href="https://www.facebook.com/kbkookmincard" class="facebook" title="KB국민카드 페이스북 이동"></a></li>
+        <li><a href="https://instagram.com/kb_kookmincard" class="instar" title="KB국민카드 인스타그램 이동"></a></li>
+      </ul>
+    </div>
+    <!-- //특정 타입 -->
+	 
+    	<a href="tel:1588-1688" title="고객센터 전화연결" class="cs">고객센터 1588-1688</a>
+    
+    <ul class="fMenu">
+      
+      <li><a href="/CMN/DVIEW/MOAMCXHIAAMC0002" class="fs_1">HOME</a></li>
+      
+      <li><a href="/SVC/DVIEW/MSGMCXHIACSC0013" class="fs_1">이용약관</a></li>
+      <li><a href="/SVC/DVIEW/MSGMCXHIACSC0017" class="fs_1"><strong class="fB">개인정보 처리방침</strong></a></li>
+      <li><a href="/SVC/DVIEW/MKAM0840" class="fs_1">상품공시실</a></li>
+    </ul>
+    <div class="addrCopy">
+      <address>서울특별시 종로구 새문안로 3길 30</address> 
+      <p class="copyright">(C) KB KOOKMINCARD</p>
+    </div>
+  </footer>
+
+
+</div><!--/ wrap -->
+<!--sub main B1C-->
+<script src="/CMN/common/mobile/js/common.js?20231219" charset="UTF-8"></script>
+	
+
+ 
+
+<!--인증문자 미 수신 안내-->
+<div id="popAlertCertSMS" class="layerWrap alertWrap2 pop-wrap" style="display:none">
+	<div class="pop-container">
+		<div class="popTop pop-header">
+			<strong class="fs2 tit-dep1">인증문자 미 수신 안내</strong>
+		</div>
+
+		<div class="pop-inner">
+			<div class="popCont cont-area left ta-l" >
+				<p>KB국민카드 대표번호(1588-1688)가 차단되어 있거나, 명의도용 차단서비스를 이용중이라면 인증번호 안내 문자메시지를 받지 못할 수 있습니다.</p>
+
+				<p class="fB fw-bold mt16">휴대폰에서 차단 확인 및 변경 방법</p>
+				<ol class="list-num list-num--s fs_2">
+					<li>1. 설정 → 애플리케이션 → 메시지 → 메시지설정 → 스팸 및 차단 번호 관리 <br>(아이폰 : 설정 → 앱 → 메시지 → 차단된 연락처)</li>
+					<li>2. 목록에서 KB국민카드 대표번호(1588-1688) 삭제</li>
+				</ol>
+				<p class="refer txt-refer mt12">명의도용 차단서비스 이용여부는 나이스평가정보 고객센터(1600-1522) 또는 가입된 통신사를 통해 확인해 주세요</p>
+				<p class="mt16 mb24">KB국민카드 고객센터: <a href="tel:1588-1688">1588-1688</a></p>
+			</div>
+		</div>
+		<div class="btnBox fixed-area btn-wrap">
+			<a href="javascript:void(0);" onclick="if(typeof(closePopup) !== 'undefined') {closePopup('#popAlertCertSMS')} else {commonJs.layerPopup.closePopup('#popAlertCertSMS')};" class="fs2 btn btn--yellow">확인</a>
+		</div>
+	</div>
+</div>
+<!--//인증문자 미 수신 안내-->
+	<!-- [footer] 영역 끝 -->
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+function getLoadEventEnd(cb){
+	window.addEventListener("load", (e) => {
+		requestAnimationFrame(() => {
+			var rstVl = -1;
+			
+			try {
+				const navi = performance.getEntriesByType("navigation")[0];
+				if ( typeof(navi) != "undefined" && typeof( navi.loadEventEnd ) == "number" ) {
+					rstVl = Math.round(navi.loadEventEnd);
+				} else {
+					throw new Error("Navigation Timing Level 2 not supported");
+				}
+			} catch(e) {
+				//console.warn("getLoadEventEnd failed: ", e.message);
+				return Metric_Loadtime(cb);
+			}
+			
+			//console.log("getLoadEventEnd result: ", rstVl);
+			return cb(String(rstVl));
+		});
+	});
+}
+/**
+* 해당 함수는 반드시 getLoadEventEnd 실패시에만 호출하도록 한다.
+* 페이지 속도 = navigationStart 부터 loadEventEnd 까지의 경과 시간(ms)
+* navigationSTart : 사용자가 현재 문서를 로드하기 위해 액션을 취한 시점( 예: 링크 클릭, 주소 입력 )
+* loadEventEnd : window.onload 이벤트가 끝난 시점
+*/
+function Metric_Loadtime(cb){
+	var loadtime = -1;
+	try{
+		if(window.performance.timing){ // Timing API
+			const loadEventEnd = window.performance.timing.loadEventEnd;
+			const navigationStart = window.performance.timing.navigationStart;
+			
+			if(typeof loadEventEnd !== "number" || typeof navigationStart !== "number"){
+				throw new Error("Invalid timing data from Timing API.");
+			} else {
+				loadtime = loadEventEnd - navigationStart;
+			}
+			if(loadtime < 0 || !Number.isFinite(loadtime)){
+				throw new Error("Calculated load is invalid: " + loadtime);
+			}
+		} else {
+			throw new Error("No performance timing API available.");
+		}
+	}catch (error){
+		loadtime = -1;
+		//console.warn("Metric_Loadtime failed: ", error.message);
+	}
+	//console.log("Metric_Loadtime result: ", loadtime);
+	return cb(String(loadtime));
+}
+</script>
+
+		<!-- Google Tag Manager -->
+		
+		
+		<script>
+		window.addEventListener("load", function() {
+		(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+			'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+			})(window,document,'script','dataLayer',"GTM-NQ7S8FJ");
+		});
+		</script>
+		<!-- End Google Tag Manager -->
+		
+		<!-- Google Tag Manager (noscript) -->
+		<noscript>
+			<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NQ7S8FJ" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+		</noscript>
+		<!-- End Google Tag Manager (noscript) -->
+		<script type='text/javascript'>
+		//<![CDATA[
+			
+			try {
+				window.dataLayer = window.dataLayer || [];
+				window.dataLayer.push({
+					'dimension1': '',
+					'dimension2': 'N',
+					'dimension3': 'U',
+					'dimension4': 'MOBILE WEB',
+					'dimension5': '모바일',
+					'dimension6': '서비스',
+					'dimension7': 'MSDMCXHIASVCD0023?mainCC=',
+					'dimension10': '해외이용 가이드>해외이용·송금>편의서비스',
+					'dimension11': '',
+					'dimension12': '',
+					'dimension13': '',
+					'dimension20': '',
+					'dimension21': ''
+	
+				});
+			} catch (e) {}
+		
+			try { 
+			
+			
+			 
+			
+			} catch (e) {}
+			
+			getLoadEventEnd(function(loadEventEnd){
+				window.dataLayer.push({'dimension40': loadEventEnd});
+			});
+		//]]>
+		</script>
+
+	
+		
+
+			<!-- anti-flicker snippet (recommended)  -->
+			<!-- 
+			<style>.async-hide { opacity: 0 !important} </style>
+			<script>(function(a,s,y,n,c,h,i,d,e){s.className+=' '+y;h.start=1*new Date;
+			h.end=i=function(){s.className=s.className.replace(RegExp(' ?'+y),'')};
+			(a[n]=a[n]||[]).hide=h;setTimeout(function(){i();h.end=null},c);h.timeout=c;
+			})(window,document.documentElement,'async-hide','dataLayer',2000,
+			{'OPT-TW8PRM3':true});</script>
+			 -->
+			
+			<!-- Optimize 수동 설치 코드 -->
+			<!-- <script src="https://www.googleoptimize.com/optimize.js?id=OPT-TW8PRM3"></script> -->
+			
+			
+				<script type="text/javascript">
+				var AndroidWebview = 'GA_Android';			// Android userAgent
+				var iOS_Webview_WK = 'GA_iOS_WK';			// WKWebView userAgent
+				var CommonData = new Object;
+				var isMoveFlag = false;
+				var browserInfo = navigator.userAgent;
+				
+				/*const offset = new Date().getTimezoneOffset()*60000;
+				const timeNow = new Date(Date.now() - offset);
+				const timestamp =  timeNow.toISOString();
+				const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+				*/
+				const timeNow = new Date();
+				const timestamp =  timeNow.toISOString();
+				const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+				
+				
+				/* 오브젝트 선언 */
+				var KB_GA4DATA = ({
+					'location': 'MSDMCXHIASVCD0023?mainCC=',
+					'title': '해외이용 가이드>해외이용·송금>편의서비스',
+					'semiMbrIdf':''
+				});
+				
+				//통합로그 적재를 위한 오브젝트 선언
+				var KB_TOTDATA = ({
+					'stype': 'kbmobileweb',
+					'userId': 'WAPUSER',
+					'timestamp':timestamp,
+					'timezone':timezone,
+					'clientip':'180.68.29.173',
+					'user-agent':'KB-AI-Challenge-Research/0.1 (student contest submission; respects robots.txt)'
+				});
+				
+				getLoadEventEnd(function(loadEventEnd){
+					
+					
+					//모바일 웹 전용 값 설정
+					
+					
+						KB_GA4DATA["dimension9"] = "MOBILE WEB";
+						KB_TOTDATA["dimension9"] = "MOBILE WEB";
+					
+					
+					//dimension13 전송 값 길이 조절
+					var urlStr = location.href;
+					var urlCheckDelim = "MSDMCXHIASVCD0023";//DVIEW 및 VIEW 모두 포함
+					var urlCheckLimit = 100;
+					
+					if ( urlStr.length > urlCheckLimit ) {
+						var startIndex = urlStr.indexOf(urlCheckDelim);
+						var endIndex = startIndex + urlCheckLimit;
+						urlStr  = urlStr.substring(startIndex, endIndex);
+					}
+
+					var refererURL = ""
+
+					//모바일 웹 및 통합앱 값 설정
+					KB_GA4DATA["dimension10"] = "카드";
+					KB_GA4DATA["dimension11"] = "서비스";
+					KB_GA4DATA["dimension12"] = "MSDMCXHIASVCD0023";
+					KB_GA4DATA["dimension13"] = urlStr;
+					KB_GA4DATA["dimension27"] = refererURL;
+					KB_GA4DATA["dimension40"] = loadEventEnd;
+
+					KB_TOTDATA["dimension10"] = "카드";
+					KB_TOTDATA["dimension11"] = "서비스";
+					KB_TOTDATA["dimension12"] = "MSDMCXHIASVCD0023";
+					KB_TOTDATA["dimension13"] = urlStr;
+					KB_TOTDATA["dimension27"] = refererURL;
+					KB_TOTDATA["dimension40"] = loadEventEnd;
+					
+					GA_Screen(KB_GA4DATA);
+				});
+				
+				function Convert_Element(RemoveValue){
+				  var return_Value = new Object();
+				  for(key in RemoveValue){
+				      if(RemoveValue[key] === "" || RemoveValue[key] === undefined || RemoveValue[key] === null){
+				    delete RemoveValue[key]
+				      }
+				  }
+				  return_Value = RemoveValue;
+				  return return_Value
+				}
+				
+								
+				//하이브리드 코드
+				function Hybrid(GADATA){
+				  var emptyObject = JSON.parse(JSON.stringify(Convert_Element(CommonData)));
+				  emptyObject = jQuery.extend(emptyObject, Convert_Element(GADATA));
+				 
+				  var sendGa4Data = kbmobile.device.sendGa4Data; 
+				  if(typeof sendGa4Data != 'undefined')
+				  {
+					  if(_isMobileAppKIA || _isMobileAppKAP)
+					  	{
+					  		sendGa4Data(emptyObject);
+					  	} else { console.log("Hybrid 함수 에러") }
+				  }				  
+				}
+				
+				//초기 화면 코드
+				//브라우저 버전에 따른 분기 처리 코드 추가 필요 
+				function GA_Screen(Object){
+				  try{
+				  	CommonData = Object;
+				    CommonData.type = "P"
+				    
+					        var keyword = Object.dimension35;
+				            if(keyword!='undefined'){
+				    	       KB_TOTDATA['dimension35'] = keyword;
+				            }					    
+				            GA_totallogSend(KB_TOTDATA);
+				    
+				    
+				    Hybrid(CommonData); 
+				    
+				  }catch(e){
+				    if(e.message.indexOf("dataLayer")){ console.log("GA_Screen 함수호출 필요");}
+				    else{ console.log("APP 코드 시 ERROR") }
+				  }
+				}
+				  
+				// 이벤트 코드 
+				function GA_Event(Object){
+					try{
+						
+							  var eventName = Object.dimension28;
+						      if(eventName!='undefined'){
+						    	  KB_TOTDATA['dimension28'] = eventName;
+						      }
+							  var eventDetailName = Object.dimension29;
+						      if(eventDetailName!='undefined'){
+						    	 KB_TOTDATA['dimension29'] = eventDetailName;
+						     }
+						     GA_totallogSend(KB_TOTDATA);
+					 
+						
+						if(_isMobileAppKIA || _isMobileAppKAP) {
+							GAData = Object;
+							GAData.type = "E";
+							Hybrid(GAData);
+						}
+					}catch(e){
+						if ( e.message.indexOf("dataLayer") ) {
+							console.log("GA_Event 함수 에러");
+						} else {
+							console.log("APP 코드 시 ERROR");
+						}
+					}
+				}
+				
+				//카드 발급 프로세스 popup Layer 수집
+				function GA_CardIssuedLayer(Object){
+					GAData = Object
+					var urlStr = GAData.strUrl;
+					
+					KB_GA4DATA["dimension13"] = urlStr;
+					KB_TOTDATA["dimension13"] = urlStr;
+					GA_Screen(KB_GA4DATA);
+				}
+				
+				
+				function GA_totallogSend(Object){
+					$.ajax({
+						url : "/CMN/API/KBDATAM?responseContentType=json",
+						data : Object,
+						dataType : "json",
+						type : "post",
+						headers : {"cache-control": "no_cache"},
+						contentType : "application/x-www-form-urlencoded;charset=UTF-8",
+						success : function(data){
+							console.log(data);
+						},
+						error : function(e) {
+							console.error(e);
+						},
+						complete : function (xhr, status) {
+							if (window.redirectUrlAfterGa) location.href = window.redirectUrlAfterGa;
+						}
+					});
+				};
+				
+				</script>
+					
+		
+
+		<script type='text/javascript'>
+		//<![CDATA[
+		
+		
+		
+		
+		
+			
+				try {
+					localStorage.removeItem("mwAutoLogoutTime");
+				} catch (e) {}
+			
+		
+		//]]>
+		
+		</script>
+
+
+
+
+</body>
+</html>

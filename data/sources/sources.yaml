@@ -1,0 +1,81 @@
+# 수집 대상 정의
+#
+# 원칙 (AGENTS.md 절대규칙 4번)
+#  - robots.txt 를 확인하고, 자동 수집이 금지된 도메인은 스크립트로 받지 않는다
+#  - 공시·안내 페이지만 수집한다. 로그인 뒤 개인화 페이지는 수집 대상이 아니다
+#  - 요청 간격을 두고, URL 목록 지정 방식으로만 받는다 (전체 순회 금지)
+
+meta:
+  robots_checked_at: "2026-07-27"
+  crawl_delay_sec: 1.5
+  timeout_sec: 20
+  user_agent: "KB-AI-Challenge-Research/0.1 (student contest submission; respects robots.txt)"
+
+# ── 도메인별 robots.txt 판정 (2026-07-27 확인) ──
+domains:
+  - host: m.kbcard.com
+    allowed: true
+    robots: "Allow: /CMN/ /BON/ /CRD/ /SVC/ /FNC/ /home /cards · Disallow: /MKB/ 외 2건"
+  - host: kbthink.com
+    allowed: true
+    robots: "User-agent: * / Allow: /"
+  - host: www.kbstar.com
+    allowed: true
+    robots: "User-agent: * / Allow: /"
+  - host: obank.kbstar.com
+    allowed: false
+    robots: "User-agent: * / Disallow: /  (검색엔진 봇만 Allow)"
+    note: "자동 수집 금지. 아래 manual 항목으로 수동 확보한다."
+
+# ── 자동 수집 대상 ──
+targets:
+  # 목표 ①: 해외 온라인 결제
+  - id: card_overseas_faq
+    goal: overseas_payment_online
+    title: "해외이용 FAQ"
+    url: "https://m.kbcard.com/SVC/DVIEW/MSDMCXHIASVCD0032"
+
+  - id: card_overseas_before
+    goal: overseas_payment_online
+    title: "해외 체류/결제 전 안내"
+    url: "https://m.kbcard.com/SVC/DVIEW/MSDMCXHIASVCD0025?selectedTap=5"
+
+  - id: card_overseas_guide
+    goal: overseas_payment_online
+    title: "해외이용 가이드"
+    url: "https://m.kbcard.com/SVC/DVIEW/MSDMCXHIASVCD0023"
+
+  - id: card_overseas_general
+    goal: overseas_payment_online
+    title: "해외이용 종합안내"
+    url: "https://m.kbcard.com/SVC/DVIEW/MSDMCXHIASVC0028?mainCC=a&selectedGuidIndex=1"
+
+  - id: card_overseas_online
+    goal: overseas_payment_online
+    title: "해외 온라인/인터넷 결제"
+    url: "https://m.kbcard.com/CXHIASVCD0030.cms"
+
+  - id: card_overseas_after
+    goal: overseas_payment_online
+    title: "해외 귀국/결제 후 안내"
+    url: "https://m.kbcard.com/SVC/DVIEW/MSDMCXHIASVCD0029?selectedTap=1"
+
+  # 목표 ②: 비대면 계좌개설
+  - id: kbthink_safeblock
+    goal: account_open_nonface
+    title: "비대면 계좌개설 안심차단으로 보이스피싱 피해 예방하기"
+    url: "https://kbthink.com/main/living-finance/talk-cardnews/2025/remote-account-opening-security-block.html"
+
+# ── 수동 확보 대상 (자동 수집 금지) ──
+# robots.txt 로 자동 수집이 금지된 페이지.
+# 사람이 브라우저로 직접 열람해 data/raw/manual/ 에 저장하고, 아래 메타를 함께 기록한다.
+manual:
+  - id: obank_nonface_safeblock
+    goal: account_open_nonface
+    title: "비대면 계좌개설 안심차단 서비스"
+    url: "https://obank.kbstar.com/quics?page=C112454"
+    reason: "obank.kbstar.com robots.txt 가 일반 UA 전체 Disallow → 자동 수집하지 않음"
+    method: "브라우저 직접 열람 후 본문 저장"
+    captured_by: "현찬"
+    captured_at: "2026-07-27"
+    status: "확보됨(화면 확인). 텍스트 파일로 정리 필요"

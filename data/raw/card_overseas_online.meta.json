@@ -1,0 +1,13 @@
+{
+  "id": "card_overseas_online",
+  "goal": "overseas_payment_online",
+  "title": "해외 온라인/인터넷 결제",
+  "url": "https://m.kbcard.com/CXHIASVCD0030.cms",
+  "host": "m.kbcard.com",
+  "fetched_at": "2026-07-27T17:44:54+09:00",
+  "http_status": 200,
+  "content_type": "text/html; charset=UTF-8",
+  "bytes": 112020,
+  "sha256": "429ce5e63feb92778a0167ce79606e68e3b68ad51c6472603eb5c18037f0847a",
+  "collection_method": "auto"
+}

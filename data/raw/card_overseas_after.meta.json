@@ -1,0 +1,13 @@
+{
+  "id": "card_overseas_after",
+  "goal": "overseas_payment_online",
+  "title": "해외 귀국/결제 후 안내",
+  "url": "https://m.kbcard.com/SVC/DVIEW/MSDMCXHIASVCD0029?selectedTap=1",
+  "host": "m.kbcard.com",
+  "fetched_at": "2026-07-27T17:44:55+09:00",
+  "http_status": 200,
+  "content_type": "text/html; charset=UTF-8",
+  "bytes": 118851,
+  "sha256": "cf9e05e1c20cac6d40032551508b4361f9058b5cbd6a636a107596ff7aa33686",
+  "collection_method": "auto"
+}

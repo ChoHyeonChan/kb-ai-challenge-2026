@@ -1,0 +1,11 @@
+{
+  "profile_id": "account_safeblock",
+  "description": "안심차단이 켜진 줄 모르고 비대면 계좌개설을 시도하는 사용자",
+  "card": {},
+  "account": {
+    "nonface_open_block": true
+  },
+  "context": {
+    "account_type": "수시입출금"
+  }
+}

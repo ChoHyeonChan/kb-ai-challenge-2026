@@ -1,0 +1,5 @@
+# 줄바꿈 정규화 — Windows/macOS 혼용 팀에서 diff 노이즈 방지
+* text=auto eol=lf
+*.bat text eol=crlf
+*.png binary
+*.pdf binary

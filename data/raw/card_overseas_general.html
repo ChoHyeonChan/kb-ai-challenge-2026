@@ -1,0 +1,4449 @@
+
+
+
+
+
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width">
+	<meta name="format-detection" content="telephone=no, address=no, email=no">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="naver-site-verification" content="7ddfffea478904bf5ce1edc9061292f312fcecdd">
+	<meta name="google-site-verification" content="wx5GqAlwMOvToSkcMHNDI1Mou1m01Kl62BwJhUiNP1c">
+	<link rel="preload" href="/CMN/common/fonts/KBFGTextL_subset.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+	<link rel="preload" href="/CMN/common/fonts/KBFGTextB_subset.woff2" as="font" type="font/woff2" crossorigin="anonymous">
+	
+	<link rel="stylesheet" href="/CMN/common/mobile/css/common.css">
+	<link rel="stylesheet" href="/CMN/common/mobile/css/keasy_common.css">
+	<link rel="stylesheet" href="/CMN/common/mobile/css/advance.css">
+	<link rel="stylesheet" href="/CMN/mobile/css/banner.css"><!-- 카드신청 완료 배너 -->
+	
+	<script type="text/javascript" charset="utf-8" src="/CMN/common/js/lib/jquery-2.1.3.min.js"></script>
+	<script type="text/javascript" charset="utf-8" src="/CMN/common/js/lib/jquery-ui.min.js"></script>
+
+	
+
+
+
+
+
+
+
+
+
+
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Mobile Content Type START -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<script type="text/javascript">
+	var deviceType = "";
+	var tranNm = "해외이용종합안내>해외이용·송금>편의서비스";
+	
+	//Page진입시 해당페이지의 진입 이벤트 기본수집
+	//앱미업데이트시 스크립트 오류방지를 위해 try{}catch 추가 2024.08.01 KHB
+	function setPageInitInfoToDmp(){
+        if(deviceType =="aOS" && typeof(MoleculeAgent) != 'undefined') {
+           try{
+               MoleculeAgent.setCustomView(tranNm);
+               MoleculeAgent.setCollectView(location.href);
+           }catch(e){
+        	   console.log(e);
+           }
+        }else if (deviceType == "iOS" && typeof(webkit) != 'undefined') {
+        	try{
+               webkit.messageHandlers.setCustomView.postMessage(tranNm);
+               webkit.messageHandlers.setCollectView.postMessage(location.href);
+            }catch(e){
+            	console.log(e);
+            }
+        }
+	}
+	
+	
+	//이용대금 명세서, 최근이용내역, 개인화영역 이벤트 정보수집
+	function setEventItemToDmp(eventType, eventCategory, item){
+		// 안드로이드 디바이스일 경우
+		if (deviceType === "aOS" && typeof(MoleculeAgent) != 'undefined'){  
+			  try{
+			     MoleculeAgent.setEvent(eventType, eventCategory, "", JSON.stringify(item));
+			  }catch(e){
+				  console.log(e);
+	          }
+	    } else if (deviceType === "iOS" ) {       // iOS 디바이스일 경우
+		    const event = {
+			   "eventType": eventType,
+			   "eventCategory": eventCategory,
+			   "eventLabel": "",
+			   "eventAttribute": JSON.stringify(item)
+			}
+	        try{
+			   webkit.messageHandlers.setEvent.postMessage(event);
+			}catch(e){
+				console.log(e);
+	        }
+	    }
+	}
+
+	</script>
+	
+	<script>
+        
+		$(function () {
+			setPageInitInfoToDmp();
+		});
+</script>
+		
+
+
+
+<script type="text/javascript">
+var _isMobileApp         = false;
+var _isAndroid           = false;
+var _isIOS               = false;
+var _isMobileAppKIA      = false;
+var _isMobileAppKAP      = false;
+var _isMobileAppKLP      = false;
+var _isMobileAppKBC      = false;
+var _isWebAjaxPtcolUse   = false;
+var _mobileAppId         = null;
+var _mobileAppVer        = null;
+var _mobileAppName       = null;
+var _mobileUuid          = null;
+var _blockchainCertURL   = "https://m.kbcard.com/CMN/vestpin/html/vestpin/server/index.html";
+var _inAppChnCd          = "";
+var _isKbpaySchemeUse    = true;
+var _kbpayStoreAOS       = "https://play.google.com/store/apps/details?id=com.kbcard.cxh.appcard&hl=ko";
+var _kbpayStoreIOS       = "https://itunes.apple.com/kr/app/kb-pay/id695436326?mt=8";
+var _appLinkTitleForCert = "KB Pay";
+var _kbmCertCloseFlag    = false;
+var _kbmCertCloseCd      = "";
+var _kbmCertCloseMsg     = "";
+var _GNBdisplay = "Y";
+
+
+var _isKbpay = false;
+if(window.navigator && navigator.userAgent && (navigator.userAgent.indexOf('kbpayia') > -1)){
+	_isKbpay = true;
+}
+</script>
+
+<!-- Common Javascript File Import START -->
+<script src="/CMN/common/js/kbcard.common.js?202307050001" charset="UTF-8"></script>
+<script src="/CMN/common/js/kbcard.common.communication.js?202011020000" charset="UTF-8"></script>
+<script src="/CMN/common/js/kbcard.common.input-validation.js?202011020000" charset="UTF-8"></script>
+<script src="/CMN/common/js/kbcard.common.input-restrict.js?202011020000" charset="UTF-8"></script>
+<script src="/CMN/common/js/kbcard.common.conversion.js?202011020000" charset="UTF-8"></script>
+<script src="/CMN/common/js/kbcard.common.browser.js?202011020000" charset="UTF-8"></script>
+<script src="/CMN/common/js/kbcard.common.window.js?202011020000" charset="UTF-8"></script>
+<!-- Common Javascript File Import END -->
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+const cmnScrpt_kbMobileCertSlfCfmPush_confirmTitle = '맨 위 알림 메시지를 확인 해주세요';
+const cmnScrpt_kbMobileCertSlfCfmPush_confirmMsg   = '고객님 상단 PUSH 알림 메시지로 인증을 요청하였습니다.<br><p class="refer mt20">알림 메시지를 받지 못하셨을 경우 창을 닫고 인증하기를 다시 시도해 주세요.</p>';
+const cmnScrpt_kbMobileCertSlfCfmPush_cmnCtfTranId = '/CMN/API/HODM0007';
+var cmnScrpt_kbMobileCertSlfCfmPush_isMobile = false;
+var cmnScrpt_kbMobileCertSlfCfmPush_obj = {};
+var cmnScrpt_kbMobileCertSlfCfmPush_certTxId = "";
+
+$(function(){
+	if ( typeof(_isMobileApp) != "undefined" ) {
+		cmnScrpt_kbMobileCertSlfCfmPush_isMobile = true;
+	}
+});
+
+function cmnScrpt_kbMobileCertSlfCfmPush_obj_set(userNm, birthday, phoneNo, formObj, encData, prcdpVlnSkipYn, cbFunc) {
+	cmnScrpt_kbMobileCertSlfCfmPush_obj = {
+		userNm: userNm,
+		birthday: birthday,
+		phoneNo: phoneNo,
+		formObj: formObj,
+		encData: encData,
+		prcdpVlnSkipYn: prcdpVlnSkipYn,
+		cbFunc: cbFunc
+	};
+}
+
+
+function cmnScrpt_kbMobileCertSlfCfmPush_start(userNm, birthday, phoneNo, formObj, encData, prcdpVlnSkipYn, cbFunc){
+	if ( kcmn.isTrue(_kbmCertCloseFlag) ) {
+		if ( cmnScrpt_kbMobileCertSlfCfmPush_isMobile ) {
+			$.cxhia.alert({
+				message : "[" + _kbmCertCloseCd + "] " + _kbmCertCloseMsg
+			});
+		} else {
+			alert( "[" + _kbmCertCloseCd + "] " + _kbmCertCloseMsg );
+		}
+		return;
+	}
+	
+	if ( !cmnScrpt_kbMobileCertSlfCfmPush_isMobile ) {
+		$("#ctfFnsKBMCert").off().on("click", function(){
+			cmnScrpt_kbMobileCertSlfCfmPush_step2();
+		});
+	}
+	
+	cmnScrpt_kbMobileCertSlfCfmPush_obj_set(userNm, birthday, phoneNo, formObj, encData, prcdpVlnSkipYn, cbFunc);
+	cmnScrpt_kbMobileCertSlfCfmPush_certTxId = "";
+	cmnScrpt_kbMobileCertSlfCfmPush_step1();
+}
+
+function cmnScrpt_kbMobileCertSlfCfmPush_step1(){
+	/*
+	if ( !cmnScrpt_kbMobileCertSlfCfmPush_validationInptDat(cmnScrpt_kbMobileCertSlfCfmPush_obj) ) {
+		cmnScrpt_kbMobileCertSlfCfmPush_exeClbc();
+		return;
+	}
+	*/
+	
+	var data = {
+		certType: "kbMobileCertSlfCfmPush",
+		certStep: "dmdPsh"
+	};
+	
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertSlfCfmPush_obj.userNm) ) {
+		data["userNm"] = cmnScrpt_kbMobileCertSlfCfmPush_obj.userNm;
+	}
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertSlfCfmPush_obj.birthday) ) {
+		data["birthday"] = cmnScrpt_kbMobileCertSlfCfmPush_obj.birthday;
+	}
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertSlfCfmPush_obj.phoneNo) ) {
+		data["phoneNo"] = cmnScrpt_kbMobileCertSlfCfmPush_obj.phoneNo;
+	}
+	kcmn.conversion.extend(data, cmnScrpt_kbMobileCertSlfCfmPush_obj.encData);
+	
+	var paramForm = kcmn.conversion.makeParamForm(data, cmnScrpt_kbMobileCertSlfCfmPush_obj.formObj);
+	svcf_Ajax(cmnScrpt_kbMobileCertSlfCfmPush_cmnCtfTranId, paramForm, {callbackFn : cmnScrpt_kbMobileCertSlfCfmPush_step1Callback});
+}
+
+function cmnScrpt_kbMobileCertSlfCfmPush_step1Callback(result){
+	result = kcmn.conversion.convertJSONObject(result);
+	
+	if ( kcmn.isNull(result.result) ) {
+		cmnScrpt_kbMobileCertSlfCfmPush_exeClbc(result);
+		return;
+	}
+	
+	cmnScrpt_kbMobileCertSlfCfmPush_certTxId = result.result.certTxId;
+	
+	if ( cmnScrpt_kbMobileCertSlfCfmPush_isMobile ) {
+		$.cxhia.confirm({
+			title : cmnScrpt_kbMobileCertSlfCfmPush_confirmTitle, 
+			message : cmnScrpt_kbMobileCertSlfCfmPush_confirmMsg, 
+			okButtonName : "인증완료",
+			cancelButtonName : "닫기"
+		}, function(res){  
+			if(res == "ok"){
+				cmnScrpt_kbMobileCertSlfCfmPush_step2();
+			}
+		});
+	} else {
+		$.openDimPop('popKBMCertNotice');
+	}
+}
+
+function cmnScrpt_kbMobileCertSlfCfmPush_step2(){
+	if ( kcmn.isNull(cmnScrpt_kbMobileCertSlfCfmPush_certTxId) ) {
+		cmnScrpt_kbMobileCertSlfCfmPush_exeClbc();
+		return;
+	}
+	
+	var data = {
+		certType: "kbMobileCertSlfCfmPush",
+		certStep: "rstInq",
+		certTxId: cmnScrpt_kbMobileCertSlfCfmPush_certTxId
+	};
+	
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertSlfCfmPush_obj.userNm) ) {
+		data["userNm"] = cmnScrpt_kbMobileCertSlfCfmPush_obj.userNm;
+	}
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertSlfCfmPush_obj.birthday) ) {
+		data["birthday"] = cmnScrpt_kbMobileCertSlfCfmPush_obj.birthday;
+	}
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertSlfCfmPush_obj.phoneNo) ) {
+		data["phoneNo"] = cmnScrpt_kbMobileCertSlfCfmPush_obj.phoneNo;
+	}
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertSlfCfmPush_obj.prcdpVlnSkipYn) ) {
+		data["prcdpVlnSkipYn"] = cmnScrpt_kbMobileCertSlfCfmPush_obj.prcdpVlnSkipYn;
+	}
+	kcmn.conversion.extend(data, cmnScrpt_kbMobileCertSlfCfmPush_obj.encData);
+	
+	var paramForm = kcmn.conversion.makeParamForm(data, cmnScrpt_kbMobileCertSlfCfmPush_obj.formObj);
+	svcf_Ajax(cmnScrpt_kbMobileCertSlfCfmPush_cmnCtfTranId, paramForm, {callbackFn : cmnScrpt_kbMobileCertSlfCfmPush_step2Callback});
+}
+
+function cmnScrpt_kbMobileCertSlfCfmPush_step2Callback(result){
+	result = kcmn.conversion.convertJSONObject(result);
+	
+	cmnScrpt_kbMobileCertSlfCfmPush_exeClbc(result);
+}
+
+function cmnScrpt_kbMobileCertSlfCfmPush_validationInptDat(obj) {
+	var rstVl = true;
+	
+	if ( kcmn.isNull(obj) ) {
+		return false;
+	}
+	
+	$.each(obj, function(k,v){
+		if ( k=="prcdpVlnSkipYn" ) {
+			return true;//continue
+		}
+		
+		if ( kcmn.isNull(v) ) {
+			rstVl = false;
+		}
+	});
+	
+	return rstVl;
+}
+
+function cmnScrpt_kbMobileCertSlfCfmPush_exeClbc(obj){
+	const cb = cmnScrpt_kbMobileCertSlfCfmPush_obj.cbFunc;
+	cmnScrpt_kbMobileCertSlfCfmPush_obj_set();
+	cmnScrpt_kbMobileCertSlfCfmPush_certTxId = "";
+	
+	if ( kcmn.isNull(obj) ) {
+		obj = {};
+	}
+	
+	if ( kcmn.isFunc(cb) ) {
+		kcmn.execFunc(cb, obj);
+	}
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+<script>
+const cmnScrpt_kbMobileCertDigitSignPush_confirmTitle = '맨 위 알림 메시지를 확인 해주세요';
+const cmnScrpt_kbMobileCertDigitSignPush_confirmMsg   = '고객님 상단 PUSH 알림 메시지로 인증을 요청하였습니다.<br><p class="refer mt20">알림 메시지를 받지 못하셨을 경우 창을 닫고 인증하기를 다시 시도해 주세요.</p>';
+const cmnScrpt_kbMobileCertDigitSignPush_cmnCtfTranId = '/CMN/API/HODM0007';
+var cmnScrpt_kbMobileCertDigitSignPush_isMobile = false;
+var cmnScrpt_kbMobileCertDigitSignPush_obj = {};
+var cmnScrpt_kbMobileCertDigitSignPush_serialNo = "";
+
+$(function(){
+	if ( typeof(_isMobileApp) != "undefined" ) {
+		cmnScrpt_kbMobileCertDigitSignPush_isMobile = true;
+	}
+});
+
+function cmnScrpt_kbMobileCertDigitSignPush_obj_set(userNm, birthday, phoneNo, formObj, encData, cbFunc) {
+	cmnScrpt_kbMobileCertDigitSignPush_obj = {
+		userNm: userNm,
+		birthday: birthday,
+		phoneNo: phoneNo,
+		formObj: formObj,
+		encData: encData,
+		cbFunc: cbFunc
+	};
+}
+
+
+function cmnScrpt_kbMobileCertDigitSignPush_start(userNm, birthday, phoneNo, formObj, encData, cbFunc){
+	if ( kcmn.isTrue(_kbmCertCloseFlag) ) {
+		if ( cmnScrpt_kbMobileCertDigitSignPush_isMobile ) {
+			$.cxhia.alert({
+				message : "[" + _kbmCertCloseCd + "] " + _kbmCertCloseMsg
+			});
+		} else {
+			alert( "[" + _kbmCertCloseCd + "] " + _kbmCertCloseMsg );
+		}
+		return;
+	}
+	
+	if ( !cmnScrpt_kbMobileCertDigitSignPush_isMobile ) {
+		$("#ctfFnsKBMCert").off().on("click", function(){
+			cmnScrpt_kbMobileCertDigitSignPush_step2();
+		});
+	}
+	
+	cmnScrpt_kbMobileCertDigitSignPush_obj_set(userNm, birthday, phoneNo, formObj, encData, cbFunc);
+	cmnScrpt_kbMobileCertDigitSignPush_step1();
+}
+
+function cmnScrpt_kbMobileCertDigitSignPush_step1(){
+	if ( !cmnScrpt_kbMobileCertDigitSignPush_validationInptDat(cmnScrpt_kbMobileCertDigitSignPush_obj) ) {
+		cmnScrpt_kbMobileCertDigitSignPush_exeClbc();
+		return;
+	}
+	
+	var data = {
+		certType: "kbMobileCertDigitSign",
+		certStep: "pushSend"
+	};
+	
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertDigitSignPush_obj.userNm) ) {
+		data["userNm"] = cmnScrpt_kbMobileCertDigitSignPush_obj.userNm;
+	}
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertDigitSignPush_obj.birthday) ) {
+		data["birthday"] = cmnScrpt_kbMobileCertDigitSignPush_obj.birthday;
+	}
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertDigitSignPush_obj.phoneNo) ) {
+		data["telNo"] = cmnScrpt_kbMobileCertDigitSignPush_obj.phoneNo;
+	}
+	
+	kcmn.conversion.extend(data, cmnScrpt_kbMobileCertDigitSignPush_obj.encData);
+	
+	var paramForm = kcmn.conversion.makeParamForm(data, cmnScrpt_kbMobileCertDigitSignPush_obj.formObj);
+	svcf_Ajax(cmnScrpt_kbMobileCertDigitSignPush_cmnCtfTranId, paramForm, {callbackFn : cmnScrpt_kbMobileCertDigitSignPush_step1Callback});
+}
+
+function cmnScrpt_kbMobileCertDigitSignPush_step1Callback(result){
+	result = kcmn.conversion.convertJSONObject(result);
+	
+	if ( kcmn.isNull(result.serialNo) ) {
+		cmnScrpt_kbMobileCertDigitSignPush_exeClbc(result);
+		return;
+	}
+	
+	cmnScrpt_kbMobileCertDigitSignPush_serialNo = result.serialNo;
+	
+	if ( cmnScrpt_kbMobileCertDigitSignPush_isMobile ) {
+		$.cxhia.confirm({
+			title : cmnScrpt_kbMobileCertDigitSignPush_confirmTitle, 
+			message : cmnScrpt_kbMobileCertDigitSignPush_confirmMsg, 
+			okButtonName : "인증완료",
+			cancelButtonName : "닫기"
+		}, function(res){  
+			if(res == "ok"){
+				cmnScrpt_kbMobileCertDigitSignPush_step2();
+			}
+		});
+	} else {
+		$.openDimPop('popKBMCertNotice');
+	}
+}
+
+function cmnScrpt_kbMobileCertDigitSignPush_step2(){
+	if ( kcmn.isNull(cmnScrpt_kbMobileCertDigitSignPush_serialNo) ) {
+		cmnScrpt_kbMobileCertDigitSignPush_exeClbc();
+		return;
+	}
+	
+	var data = {
+		certType: "kbMobileCertDigitSign",
+		certStep: "signVerificationRequest",
+		serialNo: cmnScrpt_kbMobileCertDigitSignPush_serialNo
+	};
+	
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertDigitSignPush_obj.userNm) ) {
+		data["userNm"] = cmnScrpt_kbMobileCertDigitSignPush_obj.userNm;
+	}
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertDigitSignPush_obj.birthday) ) {
+		data["birthday"] = cmnScrpt_kbMobileCertDigitSignPush_obj.birthday;
+	}
+	if ( !kcmn.isNull(cmnScrpt_kbMobileCertDigitSignPush_obj.phoneNo) ) {
+		data["telNo"] = cmnScrpt_kbMobileCertDigitSignPush_obj.phoneNo;
+	}
+	
+	kcmn.conversion.extend(data, cmnScrpt_kbMobileCertDigitSignPush_obj.encData);
+	
+	var paramForm = kcmn.conversion.makeParamForm(data, cmnScrpt_kbMobileCertDigitSignPush_obj.formObj);
+	svcf_Ajax(cmnScrpt_kbMobileCertDigitSignPush_cmnCtfTranId, paramForm, {callbackFn : cmnScrpt_kbMobileCertDigitSignPush_step2Callback});
+}
+
+function cmnScrpt_kbMobileCertDigitSignPush_step2Callback(result){
+	result = kcmn.conversion.convertJSONObject(result);
+	
+	cmnScrpt_kbMobileCertDigitSignPush_exeClbc(result);
+}
+
+function cmnScrpt_kbMobileCertDigitSignPush_validationInptDat(obj) {
+	var rstVl = true;
+	
+	if ( kcmn.isNull(obj) ) {
+		return false;
+	}
+	
+	/*
+	$.each(obj, function(k,v){
+		if ( k=="prcdpVlnSkipYn" ) {
+			return true;//continue
+		}
+		
+		if ( kcmn.isNull(v) ) {
+			rstVl = false;
+		}
+	});
+	*/
+	
+	return rstVl;
+}
+
+function cmnScrpt_kbMobileCertDigitSignPush_exeClbc(obj){
+	const cb = cmnScrpt_kbMobileCertDigitSignPush_obj.cbFunc;
+	cmnScrpt_kbMobileCertDigitSignPush_obj_set();
+	cmnScrpt_kbMobileCertDigitSignPush_serialNo = "";
+	
+	if ( kcmn.isNull(obj) ) {
+		obj = {};
+	}
+	
+	if ( kcmn.isFunc(cb) ) {
+		kcmn.execFunc(cb, obj);
+	}
+}
+</script>
+
+
+
+		
+
+
+
+
+
+
+
+
+
+
+
+<!-- Header Start 브랜드전략부 스크립트 -->
+<!-- Header Start Facebook Pixel Code -->
+<script>
+console.log("extnl_advr_header_mobile_script START");
+console.log(new Date().getTime());
+</script>
+
+<script>
+  !function(f,b,e,v,n,t,s)
+  {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+  n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+  if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+  n.queue=[];t=b.createElement(e);t.async=!0;
+  t.src=v;s=b.getElementsByTagName(e)[0];
+  s.parentNode.insertBefore(t,s)}(window, document,'script',
+  'https://connect.facebook.net/en_US/fbevents.js');
+  fbq('init', '1106645302825785');
+  fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+  src="https://www.facebook.com/tr?id=1106645302825785&ev=PageView&noscript=1"
+/></noscript>
+
+
+<!-- Facebook 추적용크립트 start  -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window,document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '903978756394602');
+fbq('track', 'PageView');
+</script>
+<noscript>
+<img height="1" width="1"
+src="https://www.facebook.com/tr?id=903978756394602&ev=PageView
+&noscript=1"/>
+</noscript>
+<!-- Facebook 추적용크립트 end  -->
+
+
+
+<!-- Header End Facebook Pixel Code -->
+<!-- Header End -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- 전략영업부 스크립트 -->
+<!-- WIDERPLANET  SCRIPT START 2018.7.4 -->
+
+
+<!-- // WIDERPLANET SCRIPT END 2018.7.4 --> 
+
+
+<!-- Mobon Tracker v3.1 [공용] start -->
+<script type="text/javascript">
+<!--
+    function mobRf(){
+        var rf = new EN();
+        rf.setSSL(true);
+        rf.sendRf();
+    }
+//-->
+</script>
+
+<script src="https://cdn.megadata.co.kr/js/enliple_min2.js" defer="defer" onload="mobRf()"></script>
+
+<!-- Mobon Tracker v3.1 [공용] end -->
+
+<!-- 크리테오 Start -->
+
+<script type="text/javascript" src="//static.criteo.net/js/ld/ld.js" async="true"></script>
+
+<script type="text/javascript"> window.criteo_q = window.criteo_q || []; window.criteo_q.push(
+{ event: "setAccount", account: 51697 },
+{ event: "setEmail", email: "Email address" },
+{ event: "setSiteType", type: "m" },
+{ event: "viewHome" }
+);
+</script>
+<!-- 크리테오 End -->
+
+<!-- 온누리DMC Start -->
+<script type='text/javascript'>
+    !function (w,d,s,u,t,ss,fs) {
+        if(w.ex2cts)return;t=w.ex2cts={};if(!window.t) window.t = t;
+        t.push = function() {t.callFunc?t.callFunc.apply(t,arguments) : t.cmd.push(arguments);};
+        t.cmd=[];ss = document.createElement(s);ss.async=!0;ss.src=u;
+        fs=d.getElementsByTagName(s)[0];fs.parentNode.insertBefore(ss,fs);
+    }(window,document,'script','//st2.exelbid.com/js/cts.js');
+    ex2cts.push('init', '5b3b0a60f1c49a53378b4567');
+</script>
+<!-- 온누리DMC End -->
+
+<!-- 네이버 공통 스크립트 Mobile start -->
+<!-- 공통 적용 스크립트 , 모든 페이지에 노출되도록 설치. 단 전환페이지 설정값보다 항상 하단에 위치해야함 --> 
+
+<script type="text/javascript" src="//wcs.naver.net/wcslog.js"></script>
+
+<script type="text/javascript"> 
+if (!wcs_add) var wcs_add={};
+wcs_add["wa"] = "s_1a7f5ba2e091";
+if (!_nasa) var _nasa={};
+if(window.wcs){
+wcs.inflow("kbcard.com");
+wcs_do(_nasa);
+}
+
+</script>
+
+<!-- 네이버 추적용 스크립트 start -->
+
+<script type="text/javascript">
+if (!wcs_add) var wcs_add={};
+    wcs_add["wa"] = "s_3dfd8c7cf91c";
+    var  advUrl = location.href;
+    var nHostname = new URL(advUrl).hostname; 
+     if(window.wcs) {
+       wcs.inflow(nHostname);
+     }
+     wcs_do();
+</script>
+
+<!-- 네이버 추적용 스크립트 end -->
+
+<!-- 네이버 공통 스크립트 Mobile end -->
+ 
+<!-- START TICTOK PIXEL SCRIPT -->
+<script>
+!function (w, d, t) {
+  w.TiktokAnalyticsObject=t;var ttq=w[t]=w[t]||[];ttq.methods=["page","track","identify","instances","debug","on","off","once","ready","alias","group","enableCookie","disableCookie"],ttq.setAndDefer=function(t,e){t[e]=function(){t.push([e].concat(Array.prototype.slice.call(arguments,0)))}};for(var i=0;i<ttq.methods.length;i++)ttq.setAndDefer(ttq,ttq.methods[i]);ttq.instance=function(t){for(var e=ttq._i[t]||[],n=0;n<ttq.methods.length;n++)ttq.setAndDefer(e,ttq.methods[n]);return e},ttq.load=function(e,n){var i="https://analytics.tiktok.com/i18n/pixel/events.js";ttq._i=ttq._i||{},ttq._i[e]=[],ttq._i[e]._u=i,ttq._t=ttq._t||{},ttq._t[e]=+new Date,ttq._o=ttq._o||{},ttq._o[e]=n||{};var o=document.createElement("script");o.type="text/javascript",o.async=!0,o.src=i+"?sdkid="+e+"&lib="+t;var a=document.getElementsByTagName("script")[0];a.parentNode.insertBefore(o,a)};
+
+  ttq.load('CD2FNJ3C77U4MDGIGJ50');
+  ttq.page();
+}(window, document, 'ttq');
+</script>
+
+<!-- END TICTOK PIXEL SCRIPT -->
+
+<!-- Twitter conversion tracking base code -->
+<script>
+!function(e,t,n,s,u,a){e.twq||(s=e.twq=function(){s.exe?s.exe.apply(s,arguments):s.queue.push(arguments);
+},s.version='1.1',s.queue=[],u=t.createElement(n),u.async=!0,u.src='https://static.ads-twitter.com/uwt.js',
+a=t.getElementsByTagName(n)[0],a.parentNode.insertBefore(u,a))}(window,document,'script');
+twq('config','o9o60');
+</script>
+<!-- End Twitter conversion tracking base code -->
+ 
+ 
+<!-- 브랜드전략부 스크립트 -->
+ 
+
+<!-- Start Facebook Pixel Code -->
+
+<!-- End Facebook Pixel Code -->
+
+
+
+<!--  카카오 추적용 스트립트 적용 2026.05.29 Start -->
+
+
+    <script type="text/javascript" charset="UTF-8" src="//t1.daumcdn.net/kas/static/kp.js"></script>
+
+   <script type="text/javascript">
+        kakaoPixel("7986772202218765936").pageView();
+   </script>
+
+<!--  카카오 추적용 스트립트 적용 2026.05.29 End -->
+
+ 
+
+
+
+
+
+
+
+
+	<script type="text/javascript">
+	(function(d, s, id) {
+		var js, fjs = d.getElementsByTagName(s)[0];
+		
+		if (d.getElementById(id)) {return;}
+		
+		js = d.createElement(s); js.id = id;
+		js.async = true;
+		js.src = 'https://static.kbdmp.com/ma/kb_v0.01.js';
+		fjs.parentNode.insertBefore(js, fjs);
+		
+		js.addEventListener("load", function(event) {
+			ma.config('client_id', "WA-1016");
+			ma.config('isCookie', true);
+			ma.init();
+		});
+	}(document, 'script', 'KBDMP'));
+		
+	</script>
+		
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<title>해외이용종합안내>해외이용·송금>편의서비스 | KB 국민카드</title>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	
+	<script type="text/javascript" charset="utf-8" src="/CMN/common/js/lib/lodash.min.js"></script>
+	<script type="text/javascript" charset="utf-8" src="/CMN/common/mobile/js/utils.js?20220905"></script>
+ 	<script type="text/javascript" charset="utf-8" src="/CMN/common/mobile/js/cxhia.js?202104061121"></script> 	
+	<script type="text/javascript" charset="utf-8" src="/CMN/common/js/cmn.js"></script>
+	
+	<!-- dark 모드 -->
+	
+
+
+
+
+
+
+
+
+
+
+<!-- Mobile Content Type START -->
+   
+  <script>
+    if(window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+    	document.querySelector('html').classList.add('dark');
+    }
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+        const newColorScheme = event.matches ? "dark" : "light";
+        
+        if(newColorScheme == 'dark') {
+        	document.querySelector('html').classList.add('dark');
+        } else {
+        	document.querySelector('html').classList.remove('dark');
+        }
+    })
+    </script>
+    
+    <link rel="stylesheet" href="/CMN/common/mobile/css/dark.css?20241023" media="(prefers-color-scheme: dark)">
+
+	
+	<!-- 전체 공통 영역 처리 페이지 -->
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+(function(j,en,ni,fer) {
+j['dmndata']=[];j['jenniferFront']=function(args){window.dmndata.push(args)};
+j['dmnatime']=new Date();j['dmnanocookie']=false;
+j['dmnajennifer']="JENNIFER_FRONT@INTG1494793184137156583,1785141894606,1030,";
+j['dmnajenniferCustomLoad']=false;
+var a=en.createElement(ni);a.src=fer;a.async=true;en.getElementsByTagName(ni)[0].parentNode.appendChild(a);
+}(window,document,'script','/CMN/common/js/jennifer/jennifer.1.0.0.js'));
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+const appNm          = "kbpay";
+const webTken        = "686df36e405f41c19ac9dda088995477";
+const toutInit       = 0;
+const toutEvt        = 3000;
+const enabledChkTout = 1000;
+const enabledMaxCnt  = 100;
+const consoleFlag    = false;
+var enabledChkCnt    = 1;
+
+(function(a_,i_,r_,_b,_r,_i,_d,_g,_e){if(!a_[_b]){var n=function(){var c=i_.createElement(r_);c.onerror=function(){g.queue.filter(function(a){return 0<=_d.indexOf(a[0])}).forEach(function(a){a=a[1];a=a[a.length-1];"function"===typeof a&&a("error occur when load airbridge")})};c.async=1;c.src=_r;"complete"===i_.readyState?i_.head.appendChild(c):a_.addEventListener("load",function h(){a_.removeEventListener("load",h);i_.head.appendChild(c)})},g={queue:[],get isSDKEnabled(){return!1}};_i.concat(_d).forEach(function(c){var a=c.split("."),h=a.pop();a.reduce(function(p,q){return p[q]=p[q]||{}},g)[h]=function(){g.queue.push([c,arguments])}});a_[_b]=g;0<_g?(_b=new (a_.XDomainRequest||a_.XMLHttpRequest),_i=function(){},_b.open("GET",_r),_b.timeout=_g,_b.onload=function(){n()},_b.onerror=_i,_b.onprogress=_i,_b.ontimeout=_i,_b.send()):n()}})(window,document,"script","airbridge","//static.airbridge.io/sdk/latest/airbridge.min.js","init startTracking stopTracking fetchResource openBanner setBanner setDownload setDownloads openDeeplink setDeeplinks sendWeb setUserAgent setMobileAppData setUserID clearUserID setUserEmail clearUserEmail setUserPhone clearUserPhone setUserAttribute removeUserAttribute clearUserAttributes setUserAlias removeUserAlias clearUserAlias clearUser setUserId setUserAttributes addUserAlias setDeviceAlias removeDeviceAlias clearDeviceAlias setDeviceIFV setDeviceIFA setDeviceGAID events.send events.signIn events.signUp events.signOut events.purchased events.addedToCart events.productDetailsViewEvent events.homeViewEvent events.productListViewEvent events.searchResultViewEvent".split(" "),["events.wait","createTouchpoint"],0);
+
+$(function(){
+	setTimeout(function(){
+		cmnScrpt_airbridgeWebSDK_init();
+	}, toutInit);
+});
+
+
+function cmnScrpt_airbridgeWebSDK_isEnabled(cb){
+	var rstVl = false;
+	try {
+		rstVl = airbridge.isSDKEnabled;
+	} catch(e) {
+		rstVl = false;
+	}
+	
+	if ( consoleFlag ) {
+		console.log("%ccmnScrpt_airbridgeWebSDK_isEnabled("+enabledChkCnt+"): " + rstVl, "color:green");
+	}
+	
+	if ( !rstVl && (enabledChkCnt < enabledMaxCnt) ) {
+		enabledChkCnt++;
+		setTimeout(function(){
+			cmnScrpt_airbridgeWebSDK_isEnabled(cb);
+		}, enabledChkTout);
+	} else {
+		if ( kcmn.isFunc(cb) ) {
+			kcmn.execFunc(cb);
+		}
+	}
+	
+	return rstVl;
+}
+
+
+function cmnScrpt_airbridgeWebSDK_init(){
+	airbridge.init({
+		app: appNm,
+		webToken: webTken
+	});
+}
+
+
+function cmnScrpt_airbridgeWebSDK_setUser(id, email, phone, objAlias, objAttr){
+	if ( !cmnScrpt_airbridgeWebSDK_isEnabled() ) {
+		return false;
+	}
+	
+	const userId    = kcmn.isNull(id)?"":id;
+	const userEmail = kcmn.isNull(email)?"":email;
+	const userPhone = kcmn.isNull(phone)?"":phone;
+	
+	if ( userId != "" ) {
+		airbridge.setUserID(userId);
+	}
+	
+	if ( userEmail != "" ) {
+		airbridge.setUserEmail(userEmail);
+	}
+	
+	if ( userPhone != "" ) {
+		airbridge.setUserPhone(userPhone);
+	}
+	
+	if ( !kcmn.isNull(objAlias) && objAlias.constructor === Object ) {
+		$.each(objAlias, function(k,v){
+			if ( !kcmn.isNull(k) ) {
+				airbridge.setUserAlias(k,v);
+			}
+		});
+	}
+	
+	if ( !kcmn.isNull(objAttr) && objAttr.constructor === Object ) {
+		$.each(objAttr, function(k,v){
+			if ( !kcmn.isNull(k) ) {
+				airbridge.setUserAttribute(k,v);
+			}
+		});
+	}
+}
+
+
+function cmnScrpt_airbridgeWebSDK_clearUser(){
+	if ( !cmnScrpt_airbridgeWebSDK_isEnabled() ) {
+		return false;
+	}
+	
+	airbridge.clearUser();
+}
+
+
+function cmnScrpt_airbridgeWebSDK_setDevice(objDevice){
+	if ( !cmnScrpt_airbridgeWebSDK_isEnabled() ) {
+		return false;
+	}
+	
+	if ( !kcmn.isNull(objDevice) && objDevice.constructor === Object ) {
+		$.each(objDevice, function(k,v){
+			if ( !kcmn.isNull(k) ) {
+				airbridge.setDeviceAlias(k,v);
+			}
+		});
+	}
+}
+
+
+function cmnScrpt_airbridgeWebSDK_removeDevice(ky){
+	if ( !cmnScrpt_airbridgeWebSDK_isEnabled() ) {
+		return false;
+	}
+	
+	if ( !kcmn.isNull(ky) ) {
+		airbridge.removeDeviceAlias(ky);
+	}
+}
+
+
+function cmnScrpt_airbridgeWebSDK_clearDevice(){
+	if ( !cmnScrpt_airbridgeWebSDK_isEnabled() ) {
+		return false;
+	}
+	
+	airbridge.clearDeviceAlias(ky);
+}
+
+
+function cmnScrpt_airbridgeWebSDK_sendEvent(category, label, action, value, objSemanticAttr, objCustomAttr, cb){
+	/*
+	if ( !cmnScrpt_airbridgeWebSDK_isEnabled() ) {
+		return false;
+	}
+	*/
+	
+	cmnScrpt_airbridgeWebSDK_isEnabled(function(){
+		
+		const eventCategory = kcmn.isNull(category)?"":category;
+		const eventLabel    = kcmn.isNull(label)?"":label;
+		const eventAction   = kcmn.isNull(action)?"":action;
+		const eventValue    = kcmn.isNull(value)?"":value;
+		
+		var objSend = {};
+		
+		if ( eventCategory == "" ) {
+			return false;
+		}
+		
+		if ( eventLabel != "" ) {
+			objSend["label"] = eventLabel;
+		}
+		
+		if ( eventAction != "" ) {
+			objSend["action"] = eventAction;
+		}
+		
+		if ( eventValue != "" ) {
+			objSend["value"] = eventValue;
+		}
+		
+		var semanticAttr = {};
+		if ( !kcmn.isNull(objSemanticAttr) && objSemanticAttr.constructor === Object ) {
+			$.each(objSemanticAttr, function(k,v){
+				if ( !kcmn.isNull(k) ) {
+					semanticAttr[k] = v;
+				}
+			});
+			objSend["semanticAttributes"] = semanticAttr;
+		}
+		
+		var customAttr = {};
+		if ( !kcmn.isNull(objCustomAttr) && objCustomAttr.constructor === Object ) {
+			$.each(objCustomAttr, function(k,v){
+				if ( !kcmn.isNull(k) ) {
+					customAttr[k] = v;
+				}
+			});
+			objSend["customAttributes"] = customAttr;
+		}
+		
+		airbridge.events.send(eventCategory, objSend);
+		airbridge.events.wait(toutEvt, function(err){
+			if ( kcmn.isFunc(cb) ) {
+				kcmn.execFunc(cb, err);
+			}
+		});
+		
+	});
+}
+
+
+
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+	
+</script>
+
+
+
+
+
+
+
+
+
+
+<style> 
+.md-h1 {margin-bottom: 8px; font-size:24px; font-weight: 600; line-height:32px; letter-spacing:-.2px;} 
+.md-h2 {margin-bottom: 8px; font-size: 20px; font-weight: 600; line-height: 32px; letter-spacing:-.2px;} 
+.md-h3 {margin-bottom: 8px; font-size: 18px; font-weight: 600; line-height: 26px; letter-spacing:-.2px; } 
+.md-h4 {margin-bottom: 8px; font-size: 16px; font-weight: 600;line-height: 26px; letter-spacing:-.2px; } 
+.md-b { font-weight: 600; } 
+.md-i { font-style: italic;} 
+.md-ul > li {position: relative;margin-bottom: 8px;padding-left: 12px;font-size: 16px;line-height:24px;color: var(--gray090);} 
+.md-ul > li::before { content: ""; display: block; position: absolute; top: 10px; left: 0; width: 8px; height: 1px; border-radius: 50%; background-color: currentColor; } 
+.md-ul > li > ul { margin: 8px 0 16px; } 
+.md-ol{counter-reset: item;} 
+.md-ol > li {counter-increment: item; position: relative; margin-bottom: 8px; padding-left: 24px; font-size: 16px; line-height:24px; color: var(--gray090);} 
+.md-ol > li::before {content: counter(item) "."; position: absolute; left: 0; top: 0; width: 20px; text-align: right; } 
+.md-tb { table-layout: fixed; word-wrap: break-word; word-break: break-all; text-align: center; position: relative; } 
+.md-tb caption { text-align: left; }  
+.md-tb th, .md-tb td { vertical-align: middle; padding: 15px; border-top: 1px solid #d1d1d1; border-bottom: 1px solid #d1d1d1; border-right: 1px solid #d1d1d1; color: var(--gray090); font-size: 14px; line-height: 22px; text-align: left; } 
+.md-tb th:last-child, .md-tb td:last-child { border-right: 0; } 
+.md-tb th { background: var(--gray015); } 
+</style>
+<script>
+const cmnScrpt_md_mdChngDftLnSptr = "\n";//마크다운 변환 기본 개행문자
+const cmnScrpt_md_mdChngDftMdTblSptr = "|";//마크다운 테이블 컬럼 구분자
+var cmnScrpt_md_mdChngFlagChkTbl = false;//마크다운 테이블 변환 진행 여부 구분 플래그
+var cmnScrpt_md_mdChngTblClmnCnt = 0;//마크다운 테이블 컬럼 수
+var cmnScrpt_md_mdChngOlUlStack = [];//마크다운 ol, ul 들여쓰기 판단을 위한 객체
+
+/*
+$(function(){
+	
+});
+*/
+
+
+function cmnScrpt_md_mdChngAllStr(trgtStr, lnSptr){
+	var rstVl = "";
+
+	if ( kcmn.isNull(trgtStr) ) {
+		return rstVl;
+	}
+
+	if ( kcmn.isNull(lnSptr) ) {
+		lnSptr = cmnScrpt_md_mdChngDftLnSptr;
+	}
+
+	try {
+		const trgtArr = trgtStr.split(lnSptr);
+		var currVl = "";
+
+		$(trgtArr).each(function(k,v){
+			var flagLast = (k==trgtArr.length-1);
+			//check Table
+			currVl = cmnScrpt_md_mdChngTable(trgtArr, k);//table
+			currVl = cmnScrpt_md_mdChngOlUlLst(currVl, flagLast);//olul
+			currVl = cmnScrpt_md_mdChngBoldItalic(currVl);
+			currVl = cmnScrpt_md_mdChngHeading(currVl);
+			currVl = cmnScrpt_md_mdChngLine(currVl);
+			
+			rstVl += currVl;
+
+			if ( !cmnScrpt_md_mdChngFlagChkTbl && (k < trgtArr.length-1) ) {
+				if ( !kcmn.validation.startsWith(currVl, "<h") ) {
+					rstVl += "<br>";
+				} 
+			}
+		});
+
+	} catch (e) {
+		return trgtStr;
+	}
+
+	return rstVl;
+}
+
+
+function cmnScrpt_md_mdChngTable(trgtArr, currIdx){
+	var rstVl = "";
+	var currStr = trgtArr[currIdx];
+	var tblClmn = null;
+
+	try {
+		if ( kcmn.validation.startsWith(currStr, cmnScrpt_md_mdChngDftMdTblSptr) && kcmn.validation.endsWith(currStr, cmnScrpt_md_mdChngDftMdTblSptr) ) {
+			tblClmn = currStr.split(cmnScrpt_md_mdChngDftMdTblSptr);
+			//최초 여부 확인
+			if ( !kcmn.isTrue(cmnScrpt_md_mdChngFlagChkTbl) ) {//header
+				cmnScrpt_md_mdChngFlagChkTbl = true;
+				cmnScrpt_md_mdChngTblClmnCnt = tblClmn.length-1;
+				rstVl += "<table class=\"md-tb\">";
+				rstVl += "<caption>마크다운 변환 테이블</caption>";
+				rstVl += "<thead><tr>";
+
+				$(tblClmn).each(function(k,v){
+					if ( k==0 || k==cmnScrpt_md_mdChngTblClmnCnt ) {
+						return;
+					}
+					rstVl += "<th scope=\"col\">";
+					rstVl += v.trim();
+					rstVl += "</th>";
+				});
+
+				rstVl += "</tr></thead><tbody>";
+			} else {
+				if ( cmnScrpt_md_mdChngTblClmnCnt != (tblClmn.length-1) ) {
+					throw new Error("Invalid Column Count");
+				}
+
+				if ( /^\|?[\s\-.| :]+\|?$/.test(currStr) && (currStr.indexOf("-") != -1) ) {//header second line
+					return rstVl;//return empty str, nothing to do
+				} else {//body
+					rstVl += "<tr>";
+					$(tblClmn).each(function(k,v){
+						if ( k==0 || k==cmnScrpt_md_mdChngTblClmnCnt ) {
+							return;
+						}
+						rstVl += "<td>";
+						rstVl += v.trim();
+						rstVl += "</td>";
+					});
+					rstVl += "</tr>";
+				}
+			}
+		} else {
+			//테이블 형태가 아닌 경우 테이블 종료 시점 확인
+			if ( kcmn.isTrue(cmnScrpt_md_mdChngFlagChkTbl) ) {
+				cmnScrpt_md_mdChngFlagChkTbl = false;
+				cmnScrpt_md_mdChngTblClmnCnt = 0;
+				rstVl += "</tbody></table><br>" + currStr;
+			} else {
+				rstVl = currStr;
+			}
+		}
+	} catch (e) {
+		return currStr;
+	}
+	
+	return rstVl;
+}
+
+
+function cmnScrpt_md_mdChngOlUlLst(trgtStr, flagLast){//last flag 필요
+	var rstVl = "";
+	
+	try {
+		var stack = cmnScrpt_md_mdChngOlUlStack;
+		if ( kcmn.isNull(trgtStr) ) {
+			while( stack.length > 0 ) {
+				rstVl += "</li></"+stack.pop().type+">";
+			}
+			return rstVl;
+		}
+
+		const ulMatch = trgtStr.match( /^(\s*)([*+-])\s+(.*)$/ );
+		const olMatch = trgtStr.match( /^(\s*)(\d+)\.\s+(.*)$/ );
+		const match   = ulMatch||olMatch;
+
+		if ( match ) {
+			const indent = match[1].length;
+			const   type = ulMatch?"ul":"ol";
+			const   cont = match[3];
+
+			if ( stack.length===0 || indent>stack[stack.length-1].indent ) {
+				rstVl += "<"+type+" class=\"md-"+type+"\"><li>"+cont;
+				stack.push({indent, type});
+			} else if ( indent<stack[stack.length-1].indent ) {
+				while( (stack.length > 0) && (indent < stack[stack.length-1].indent) ) {
+					rstVl += "</li></"+stack.pop().type+">";
+				}
+
+				if ( stack.length===0 ) {
+					rstVl += "<"+type+" class=\"md-"+type+"\"><li>"+cont;
+					stack.push({indent, type});
+				} else {
+					rstVl += "</li><li>"+cont;
+				}
+			} else {
+				rstVl += "</li><li>"+cont;
+			}
+		} else {
+			
+			while( stack.length > 0 ) {
+				rstVl += "</li></"+stack.pop().type+">";
+			}
+
+			rstVl += trgtStr;
+
+			if ( kcmn.isNull(rstVl) ) {
+				rstVl += "<br>";
+			}
+
+		}
+
+		if ( kcmn.isTrue(flagLast) ) {
+			while( stack.length > 0 ) {
+				rstVl += "</li></"+stack.pop().type+">";
+			}
+		}
+
+	} catch (e) {
+		return trgtStr;
+	}
+	
+	return rstVl;
+}
+
+
+function cmnScrpt_md_mdChngBoldItalic(trgtStr){
+	var rstVl = "";
+	
+	try {
+		if ( kcmn.isNull(trgtStr) ) {
+			return rstVl;
+		}
+
+		rstVl = trgtStr.replace(/\*\*([^*<]+)\*\*/g, "<strong>$1</strong>");//Bold
+		rstVl = rstVl.replace(/\*([^*<]+)\*/g, "<i>$1</i>");//Italic
+
+	} catch (e) {
+		return trgtStr;
+	}
+	
+	return rstVl;
+}
+
+
+function cmnScrpt_md_mdChngHeading(trgtStr){
+	var rstVl = "";
+
+	try {
+		if ( kcmn.isNull(trgtStr) ) {
+			return rstVl;
+		}
+	
+		const regRst = trgtStr.match(/^(#{1,6})\s+(.*)$/);
+		if ( !kcmn.isNull(regRst) ) {
+			const lvl = regRst[1].length;
+			const content = regRst[2];
+			rstVl += "<h"+lvl+" class=\"md-h"+lvl+"\">";
+			rstVl += content;
+			rstVl += "</h"+lvl+">";
+		} else {
+			rstVl = trgtStr;
+		}
+	} catch (e) {
+		return trgtStr;
+	}
+
+	return rstVl;
+}
+
+
+function cmnScrpt_md_mdChngLine(trgtStr){
+	var rstVl = "";
+	
+	try {
+		if ( kcmn.isNull(trgtStr) ) {
+			return rstVl;
+		}
+
+		const regRst = (/^(\s*[-]{3,}\s*)$/).test(trgtStr);
+		if ( kcmn.isTrue(regRst) ) {
+			rstVl += "<hr/>";
+		} else {
+			rstVl = trgtStr;
+		}
+
+	} catch (e) {
+		return trgtStr;
+	}
+	
+	return rstVl;
+}
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</head>
+<body class="web">
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+	
+	function getChangeUrl(url) {
+		
+		
+			
+			return url;
+			
+	}
+	
+	
+	function isDARS() {	
+		return false;
+	}
+
+</script>
+
+
+
+
+<script type="text/javascript">
+	
+	$.cxhia.isCaptcha = true;
+	
+	_.templateSettings = {
+	    interpolate: /\[\%\=(.+?)\%\]/gim,
+	    evaluate: /\[\%([\s\S]+?)\%\]/gim,
+	    escape: /\[\%\-(.+?)\%\]/gim
+	};
+	
+	
+	
+	// 타이틀 설정
+	function setMenuName(name) {
+	    $('.topHead > h1').html(name);
+	}
+	
+	// 타이틀 타입 설정
+	// 타이틀 타입 설정
+	function setHeaderType(type) {
+		if(type == 0) { // 완료 페이지
+            $('#Wrap').addClass('popupWrap');
+            $('.topHead .backBtn').hide();
+            $('.topHead .backBtn2').hide();
+            $('.topHead .headerMenu').hide();
+            $('.topHead .homeBtn').hide();
+            $('.topHead .btnClose').hide();
+            $(".topHead .cancleBtn").hide();
+        }
+        else if(type == 1) {    // 기본메뉴
+            $('#Wrap').removeClass('popupWrap');
+        
+        
+        
+            
+            $('.topHead .backBtn').show();
+            $('.topHead .headerMenu').show();
+            
+            $('.topHead .backBtn2').hide();
+            $('.topHead .homeBtn').hide();
+            $('.topHead .btnClose').hide();
+            $(".topHead .cancleBtn").hide();
+            
+        
+        
+        }
+        else if(type == 2) {    // 부가메뉴
+            $('#Wrap').removeClass('popupWrap');
+            $('.topHead .backBtn').hide();
+            $('.topHead .backBtn2').hide();
+            $('.topHead .headerMenu').show();
+            $('.topHead .homeBtn').show();
+            $('.topHead .btnClose').hide();
+            $(".topHead .cancleBtn").hide();
+        }
+        else if(type == 3) {    
+            $('#Wrap').removeClass('popupWrap');
+                
+        	$('.topHead .backBtn').show();
+        	$(".topHead .btnClose").show();
+            
+        	$('.topHead .backBtn2').hide();
+            $('.topHead .headerMenu').hide();
+            $('.topHead .homeBtn').hide();
+            $(".topHead .cancleBtn").hide();
+        }
+        else if(type == 4) {    // 풀팝업
+            $('#Wrap').addClass('popupWrap');
+            $('.topHead .backBtn').hide();
+            $('.topHead .backBtn2').hide();
+            $('.topHead .headerMenu').hide();
+            $('.topHead .homeBtn').hide();
+            $('.topHead .btnClose').show();
+            $('.topHead .cancleBtn').hide();
+          	//접근성
+            $('#bodySkip').remove();
+            $('#content, #container').first().focus();
+        }
+        else if(type == 5) {    // KB Pay용 
+            $('#Wrap').removeClass('popupWrap');
+            $('.topHead .backBtn').hide();
+            $('.topHead .backBtn2').show();
+            $('.topHead .headerMenu').hide();
+            $('.topHead .homeBtn').hide();
+            $('.topHead .btnClose').show();
+            $(".topHead .cancleBtn").hide();
+        }else if(type == 6){
+        	$('#Wrap').removeClass('popupWrap');
+        	$('.topHead .backBtn').show();
+        	$(".topHead .cancleBtn").show();
+        	$('.topHead .backBtn2').hide();
+            $('.topHead .headerMenu').hide();
+            $('.topHead .btnClose').hide();
+            $('.topHead .homeBtn').hide();
+        }
+	    
+	    if(!$.cxhia.isApp()) {
+	        // 헤더타입이 풀팝업일때 footer를 표시하지 않는다.
+	        if(type == 4) {
+	            $('footer').hide();
+	        }
+	        else {
+	            $('footer').show();
+	        }
+	    }
+	    
+	    $('.topHead').data('headerType', type);
+	}
+	
+	function getHeaderType() {
+	    return $('.topHead').data('headerType') || 0;
+	}
+	
+	function getMenuName() {
+	    return $('.topHead h1').html();
+	}
+	
+    /*********************************************  
+     * eFDS 처리 AJAX  
+     *********************************************/  
+    function efdsAjax(serviceId, efdsDeviceInfo) {  
+        
+        if (serviceId.search("mainCC") > 0){
+          var serviceIdStrs = serviceId.split(".cms?");
+                    serviceId = serviceId.substring(serviceId.lastIndexOf("/") + 1, serviceId.lastIndexOf(".")) + serviceIdStrs[1];
+        }else{
+            serviceId = serviceId.substring(serviceId.lastIndexOf("/") + 1, serviceId.lastIndexOf("."));    
+        }
+        
+        var gathrUrls = $("#gathrUrls").val();
+        var dscrUrls = $("#dscrUrls").val();
+        var dscrRedirectUrls = $("#dscrRedirectUrls").val();
+        var cardEncData = $("#cardEncData").val();
+        var cardSeq = $("#cardSeq").val();
+        var cardPrdctDstic = $("#cardPrdctDstic").val();
+        var isGathr = "N";
+        var isDscr = "N";
+        var dscrRedirectServiceId = "";
+        
+        var gathrUrlsArray = gathrUrls.split("||");
+        for (var i in gathrUrlsArray){
+            
+            if (serviceId == gathrUrlsArray[i]){
+                isGathr = "Y";
+                break;
+            }
+        }
+        
+        var dscrUrlsArray = dscrUrls.split("||");
+        var dscrRedirectUrlsArray = dscrRedirectUrls.split("||");
+        for (var i in dscrUrlsArray){
+            
+            if (serviceId == dscrUrlsArray[i]){
+                dscrRedirectServiceId = dscrRedirectUrlsArray[i];
+                isDscr = "Y";
+                break;
+            }
+        }
+        
+        var efdsSkip = $("#efdsSkip").val();
+        
+        if (("Y" == isGathr || "Y" == isDscr) && efdsSkip != "Y"){//요청한 url이 수집 or 판별 대상일 때만 호출
+            
+            var request_data = {
+                    efdsDeviceInfo : efdsDeviceInfo,
+                    serviceId : serviceId,
+                    cardEncData : cardEncData,
+                    cardSeq : cardSeq,
+                    isGathr : isGathr,
+                    isDscr : isDscr,
+                    dscrRedirectServiceId : dscrRedirectServiceId,
+                    cardPrdctDstic : cardPrdctDstic
+                };
+            
+            $.ajax({  
+                url : "/CMN/API/MODMCXHMTCMC0001?responseContentType=json",  
+                dataType : "json",
+                data : $.param(request_data),
+                type : "post",  
+                headers : {"cache-control": "no_cache"},  
+                contentType : "application/x-www-form-urlencoded",  
+                async : false,  
+                success : function(data) {  
+                    var resultCd = data[0].resultCd;  
+                    var resultMsg = data[0].resultMsg;
+                    var redirectUrl = data[0].redirectUrl;
+                      
+                    if (resultCd == "UCXH7001"){//추가인증 시
+                        $("#isSupplCertn").val("Y");
+                        $("#redirectUrl").val(redirectUrl);
+                    }else if (resultCd == "UCXH7002" && redirectUrl !=""){//인증거절 시
+                        alert(resultMsg + "\n에러코드: " + resultCd);
+                        location.href = "/" + redirectUrl + ".cms";
+                    }
+                },  
+                    error : function(error) {
+                }  
+            });// Call Ajax  
+        }//if (doAjax)
+    };// efdsAjax()  
+    
+    // 입력 받은 달의 이전 달 마지막날짜 반환
+    function getLastDateOfPreviousMonth(currYear, currMonth){
+        /*
+        var temp = new Date(currYear, currMonth, 0);
+        return temp.getDate();
+        */
+        return 32 - new Date(currYear, currMonth, 32).getDate(); // 20141109_jwp, 말일 계산 방식 변경
+    };
+    
+    //********************************************
+    // 모바일홈 알리미 - 알리미 화면에서 오류 발생 시 알리미 메인 화면으로 이동 (메인은 Native 화면이므로 Mug 함수 호출)
+    //********************************************
+    function ShowPushList(){
+        KbPushService.map.ShowPushList(null, null);
+    }
+
+</script>
+<script>
+// $(window).load(function() {
+$(window).on("load",function() {
+    if($.cxhia.getOSCode() == 'I') { 
+        $('head').append('<link rel="apple-touch-icon-precomposed" href="https://img1.kbcard.com/LT/cxh/kbcard_img/kbcard_114.png"><link rel="apple-touch-icon-precomposed" sizes="120x120" href="https://img1.kbcard.com/LT/cxh/kbcard_img/kbcard_120.png"><link rel="apple-touch-icon-precomposed" sizes="144x144" href="https://img1.kbcard.com/LT/cxh/kbcard_img/kbcard_144.png"><link rel="apple-touch-icon-precomposed" sizes="152x152" href="https://img1.kbcard.com/LT/cxh/kbcard_img/kbcard_152.png"><link rel="apple-touch-icon-precomposed" sizes="180x180" href="https://img1.kbcard.com/LT/cxh/kbcard_img/kbcard_180.png">') 
+    } else if($.cxhia.getOSCode() == 'A') { 
+        $('head').append('<link rel="shortcut icon" href="https://img1.kbcard.com/LT/cxh/kbcard_img/kbcard_r_128.png"><link rel="shortcut icon" sizes="196x196" href="https://img1.kbcard.com/LT/cxh/kbcard_img/kbcard_r_196.png">')
+    } 
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- DARS 라이브러리 -->
+
+
+
+<script type="text/javascript">
+           
+    var parameter_list = {};
+    var hasSkipRetain = 0; // 페이지 history에 저장 안함 여부
+
+                            parameter_list['selectedGuidIndex'] = '1';
+                        
+                            parameter_list['mainCC'] = 'a';
+                        
+
+
+
+
+var hasStepURI = false;
+
+
+var isLogin_navigator = false;
+
+
+/* PageHistory Javascript Class - start */
+var PageHistory = function(keyName) {
+    this.keyName = keyName;
+};
+
+PageHistory.prototype.count = function() {
+    var ph = sessionStorage.getItem(this.keyName) || '[]';
+    ph = JSON.parse(ph);
+    return ph.length;
+};
+
+PageHistory.prototype.get = function(index) {
+    var ph = sessionStorage.getItem(this.keyName) || '[]';
+    ph = JSON.parse(ph);
+    var lastIndex = ph.length - 1;
+    if(index === undefined) {
+        index = lastIndex;
+    }
+    return ph[index];
+};
+
+PageHistory.prototype.getAll = function() {
+    var ph = sessionStorage.getItem(this.keyName) || '[]';
+    ph = JSON.parse(ph);
+    return ph;
+};
+
+PageHistory.prototype.setAll = function(ph) {
+    ph = JSON.stringify(ph);
+    sessionStorage.setItem(this.keyName, ph);
+};
+
+PageHistory.prototype.set = function(data, index) {
+    var ph = sessionStorage.getItem(this.keyName) || '[]';
+    ph = JSON.parse(ph);
+    var lastIndex = ph.length - 1;
+    if(index === undefined) {
+        index = lastIndex;
+    }
+    $.extend(ph[index], data);
+    ph = JSON.stringify(ph);
+    sessionStorage.setItem(this.keyName, ph);
+};
+
+PageHistory.prototype.add = function(pageInfo) {
+    var ph = sessionStorage.getItem(this.keyName) || '[]';
+    ph = JSON.parse(ph);
+    var lastIndex = ph.length - 1;
+    
+    if(lastIndex > -1) {
+        
+        
+        var lastPageInfo = ph[lastIndex];
+        if(lastPageInfo.uri == pageInfo.uri &&
+            JSON.stringify(lastPageInfo.parameters) == JSON.stringify(pageInfo.parameters)) {
+                this.set(pageInfo);
+                console.log("duplicated navigation detected. skip.");   
+                return false;
+            }
+    }
+
+    ph.push(pageInfo);
+    ph = JSON.stringify(ph);
+    sessionStorage.setItem(this.keyName, ph);
+};
+
+PageHistory.prototype.remove = function(index) {
+    var ph = sessionStorage.getItem(this.keyName) || '[]';
+    ph = JSON.parse(ph);
+    var lastIndex = ph.length - 1;
+    if(index === undefined) {
+        index = lastIndex;
+    }
+    ph.splice(index, 1);
+    ph = JSON.stringify(ph);
+    sessionStorage.setItem(this.keyName, ph);
+};
+
+PageHistory.prototype.clear = function(uri, paramList) {
+    var ph;
+    if(uri) {
+        ph = sessionStorage.getItem(this.keyName) || '[]';
+        ph = JSON.parse(ph);
+        ph = _.filter(ph, function(item) {
+            if(item.parameters && paramList) {
+                return !(item.uri == uri && 
+                    item.parameters.mainCC == paramList.mainCC);
+            }
+            
+            return !(item.uri == uri);
+        });
+        ph = JSON.stringify(ph);
+    }
+    else {
+        ph ='[]';
+    }
+    
+    sessionStorage.setItem(this.keyName, ph);
+};
+
+PageHistory.prototype.shift = function() {
+    var ph = sessionStorage.getItem(this.keyName) || '[]';
+    ph = JSON.parse(ph);
+    ph.shift();
+    ph = JSON.stringify(ph);
+    sessionStorage.setItem(this.keyName, ph);
+};
+
+PageHistory.prototype.findIndex = function(uri) {
+    var ph = sessionStorage.getItem(this.keyName) || '[]';
+    ph = JSON.parse(ph);
+    var index = _.findIndex(ph, function(data) {
+        return data.uri == uri;
+    }); 
+    return index;
+};
+
+PageHistory.prototype.addToHistory = function(data) {
+    
+    try {
+        
+        if(!this.add(data)) {
+            return;
+        }
+    } catch(e) {
+        console.log(e);
+       
+       try {
+           // 용량이 꽉차서 오래된 history를 제거해야함.
+           this.shift();
+       } catch(e) {
+           console.log(e);
+           
+           
+           this.clear();
+           this.add(data);
+       }
+    }
+};
+/* PageHistory Javascript Class - end */
+
+
+var pageHistory = new PageHistory('pageHistory');
+
+
+try {
+    // skip될 uri가 등록되어 있으면 지운다.
+    if(hasSkipRetain == 1) {
+        if(location.search.indexOf('loginCC') == -1 || location.search.indexOf('loginCC=a') != -1) {
+            
+                pageHistory.clear('/SVC/DVIEW/MSDMCXHIASVC0028', parameter_list);
+            
+        }
+    }
+    
+    if( window.sessionStorage ) {
+        if( !hasSkipRetain ) {
+            var curPageStep = sessionStorage.getItem('curPageStep') || '0';
+            
+            if(hasStepURI) {
+                var data = {
+                    uri: '/SVC/DVIEW/MSDMCXHIASVC0028',
+                    parameters: parameter_list,
+                    step: ++curPageStep,
+                    backMark: 'N'
+                };
+                
+                pageHistory.addToHistory(data);
+            }
+            else {
+                curPageStep = 0;
+                var data = {
+                    uri: '/SVC/DVIEW/MSDMCXHIASVC0028',
+                    parameters: parameter_list,
+                    step: 0,
+                    backMark: 'Y'
+                };
+                pageHistory.addToHistory(data);
+            }
+            sessionStorage.setItem('curPageStep', curPageStep);
+        }
+    }
+
+} catch(e) { 
+    // alert(JSON.stringify(e)); //console.log(e); 
+}
+
+/**
+    pageInfo에 해당하는 page로 이동한다.
+*/
+function goWithPageInfo(pageInfo) {
+    if( pageInfo ) {
+        var usePost = true; 
+        if( !usePost ) { // get method
+        
+            var uri = pageInfo.uri;
+            var query_string = ''; 
+            var shouldAddAmp = false;
+            
+            if( pageInfo.parameters ) {
+                $.each( pageInfo.parameters, function(k, v) {
+                    if(shouldAddAmp) {
+                        query_string += '&';
+                    } else {
+                        query_string += '?';
+                        shouldAddAmp = true;
+                    }
+                    
+                    query_string += k + '=' + v;
+                });
+            }
+            
+            pageHistory.remove();
+            window.location.replace( uri + query_string );
+            
+        } else { // post method
+            var uri = pageInfo.uri;
+            var form = $('<form>', {name:'cmnNavigatorPostForm', action: uri, method:'post'});
+            if( pageInfo.parameters ) {
+                $.each( pageInfo.parameters, function(k, v) {
+                    $('<input>', {type:'hidden', name:k, value:v}).appendTo(form);
+                });
+            }
+
+            pageHistory.remove();
+            form.appendTo('body').submit().remove();
+        }
+    } else {
+        
+        console.log('goWithPageInfo: fallback - no valid parameters data in pageInfo. back to main...');
+        backToMain();
+    }
+}
+
+/**
+    backToPrev()와 같은 기능임.
+*/
+function back() {
+    backToPrev();
+}
+
+/**
+    일반적인 닫기시 사용하는 뒤로 이동 기능
+*/
+function backToPrev() {
+    if(hasStepURI && getHeaderType() == 3) {
+        $.cxhia.confirm({
+            message: '종료 시 입력하신 정보가 손실됩니다. 진행 중인 프로세스를 종료하시겠습니까?' 
+        }, function(res) {
+            if(res == 'ok') {
+                $(document).trigger('stepClose');
+                // step이 시작되기 이전
+                backToPrevBackMark();
+            }
+        });
+    }
+    else {
+        try {
+            var pageHistoryLength = pageHistory.count();
+            if( !hasSkipRetain && pageHistoryLength > 0) {
+                
+                pageHistory.remove();
+            }
+            else if( hasSkipRetain == 2) {
+                pageHistory.remove();
+            }
+            
+            if( pageHistoryLength > 0 ) {
+                backToPrevBackMark();
+            }
+            else {
+                console.log('backToPrev: empty history. back to main...');
+                backToNative();
+            }
+        }
+        catch(e) {
+            history.back();
+        }
+    }
+}
+
+/**
+    프로세스화면에서 X버튼을 누르면 호출되고
+    프로세스를 종료하고, 프로세스를 시작하기 전 화면으로 이동
+*/
+function backToPrevBackMark() {
+    var pageInfos = pageHistory.getAll();
+    var lastIndex = _.findLastIndex(pageInfos, function(item, index) {
+        return item.backMark == 'Y';
+    });
+    
+    // 이전이 없으면, 메인으로
+    if(lastIndex == -1) {
+        backToNative();
+    }
+    else {
+        var pageInfo = pageInfos[lastIndex];
+        pageInfos = pageInfos.splice(0, lastIndex + 1);
+        pageHistory.setAll(pageInfos);
+        
+        sessionStorage.setItem('curPageStep', Math.max(0, pageInfo.step - 1));
+
+        goWithPageInfo(pageInfo);
+    }
+}
+
+/**
+    step이 일치하는 마지막  history index로 이동
+    프로세스화면에서 <-버튼을 누르면 호출
+*/
+function backToPrevByStep(step) {
+    var pageInfos = pageHistory.getAll();
+    var lastIndex = _.findLastIndex(pageInfos, function(item, index) {
+        return item.step == step;
+    });
+    
+    var pageInfo = pageInfos[lastIndex];
+    pageInfos = pageInfos.splice(0, lastIndex + 1);
+    pageHistory.setAll(pageInfos);
+    
+    sessionStorage.setItem('curPageStep', Math.max(0, step - 1));
+
+    goWithPageInfo(pageInfo);
+}
+
+/**
+    프로세스화면에서 <-버튼 처리
+*/
+function backToPrevStepPage() {
+    try {
+        var pageInfo = pageHistory.get();
+        if(pageInfo.step == 0) {
+            // 사용자가 직접처리
+            backToPrevOrg();
+        }
+        else if(pageInfo.step == 1) {
+            back();
+        }
+        else {
+            $.cxhia.confirm({
+                message: '최초 단계로 이동하시겠습니까?'
+            }, function(res) {
+                if(res == 'ok') {
+                    $(document).trigger('stepBack');
+                    // step이 시작되는 처음
+                    backToPrevByStep(1);
+                }
+            });
+        }
+
+    } catch(e) {
+        history.back();
+    }
+}
+
+/**
+ 이전 native화면으로 이동, 웹일때는 메인으로 이동 
+*/
+function backToNative() {
+    if($.cxhia.isApp()) {
+    	var info = {	"tabReload": true	};
+        kbmobile.ui.backToNative(info);
+    }
+    else {
+
+        // 메인으로
+        var uri = '/CMN/DVIEW/MOAMCXHIAAMC0002';
+        window.location.replace(uri);
+        
+    }
+}
+    
+/**
+    메인으로 이동
+*/
+function backToMain() {
+    // 이 값은 app에서는 저장되어 있어야 함.
+    pageHistory.clear();
+    var uri = '';
+    if($.cxhia.isApp()) {
+    	kbmobile.preferences.getIntegerValue("last_tab", function(index) {
+			var tabIndex = 0;
+            
+            if ( index != null && typeof(index)=="number" ) {
+                tabIndex = index;
+            }
+            fnDoBackToNative(tabIndex, true);
+	    });
+    }
+    else {
+        uri = '/CMN/DVIEW/MOAMCXHIAAMC0002';
+        window.location.replace(uri);
+    }
+}
+
+/*
+   바로 뒤로 가야할 경우에 사용, 에러 페이지에서 사용한다.
+*/
+function backToPrevOrg() {
+    pageHistory.remove();
+    
+    if(pageHistory.count() > 0) {
+        var pageInfo = pageHistory.get();
+        sessionStorage.setItem('curPageStep', Math.max(0, pageInfo.step - 1));
+        goWithPageInfo(pageInfo);
+    }
+    else {
+        backToMain();
+    }
+}
+    
+
+
+/**
+    현재페이지를 강제로 backMark를 설정한다.
+*/
+function setBackMark() {
+    var pageInfo = pageHistory.get();
+    pageInfo.backMark = 'Y';
+    pageHistory.set(pageInfo);
+};
+
+/**
+    curPageStep을 지운다.
+    setBackMark()와 함께 호출하여 프로세스화면에서 또다른 프로세스화면으로 이동전 호출해야 한다.
+*/
+function resetCurPageStep() {
+    sessionStorage.removeItem('curPageStep');
+}
+
+/**
+    curPageStep를 하나 감소시킨다.
+*/
+function decrementCurPageStep() {
+    var curPageStep = sessionStorage.getItem('curPageStep') || 0;
+    curPageStep = Math.max(0, curPageStep - 1);
+    sessionStorage.setItem('curPageStep', curPageStep);
+}
+
+/**
+    가장 마지막의 uri와 mainCC에 맞는 history로 이동한다.
+    이동시 중간에 쌓여있던 history는 지워진다.
+*/
+function clearTop(pageInfo) {
+    var pageInfos = pageHistory.getAll();
+    var lastIndex = _.findLastIndex(pageInfos, function(item, index) {
+        if(pageInfo.parameters) {
+            return (item.uri == pageInfo.uri && 
+                item.parameters.mainCC == pageInfo.parameters.mainCC);
+        }
+        else {
+            return (item.uri == pageInfo.uri);
+        }
+    });
+    
+    if(lastIndex == -1) {
+        if(!hasSkipRetain) {
+            pageHistory.remove();
+        }
+
+        pageHistory.addToHistory(pageInfo);
+        goWithPageInfo(pageInfo);
+    }
+    else {
+        pageInfos = pageInfos.splice(0, lastIndex + 1);
+        pageHistory.setAll(pageInfos);
+        goWithPageInfo(pageInfo);
+    }
+}
+
+/**
+    마지막 history 하나를 지운다.
+*/
+function sessionremove(){
+    pageHistory.remove();           
+}
+
+/**
+    이동전에 back시에 선택된 tab으로 돌아오기위한 tabIdx를 변경
+*/
+function setTabIndexToSessionStorage(idx) {
+    try {
+        var data = pageHistory.get();
+        $.extend(true, data, {
+            parameters: {
+                tabIdx : '' + idx
+            }
+        });
+        pageHistory.set(data);
+    } catch(e) {
+        console.error(e);
+    }
+}
+
+//통합검색 back 버튼 pageHistroy 
+function searchBack(){
+	
+	 var arr = [];
+ 	 var pageInfos = pageHistory.getAll();
+ 	 var url = "/CMN/DVIEW/MOAMCXHIACMC0020";
+		for(var i=0; i < pageInfos.length; i++){
+			 
+		var delValue = pageInfos[i].uri;
+		
+		if(url != delValue){
+			pageInfos.splice(i, 1);
+			i--;
+		}
+	}
+		if(pageInfos.length > 0){
+		for(var i=0; i < pageInfos.length; i++){
+			if(i==0 || i == pageInfos.length -2){
+				arr.push(pageInfos[i]);
+				}
+			}
+		}
+
+		pageHistory.setAll(arr);
+		
+	 	backToPrevBackMark();
+}
+
+</script>
+
+
+<script type="text/javascript">
+
+	// 2014.11.18 고시철 상품별제휴업체제공동의중 js펑션호출하는 부분이 있어 추가(cxp소스 참조)
+	function clickPDM0492440New(rid, strTemp,code){
+	  var aTemp = strTemp.split("|");
+	  var LAYPOP = $('.popCont #dispPDM0492440_'+code);
+
+		var txt0 = aTemp[0];                    
+		var initTextObj0 = LAYPOP.find("#infoPutDesDstic");
+		if(initTextObj0.length == 0) {
+			initTextObj0 = LAYPOP.find("#정보제공목적내용");
+		}
+		if(txt0 != null){
+			initTextObj0[0].innerHTML = txt0; 
+		}else{
+			initTextObj0[0].innerHTML = "-";    
+		}
+		
+		var txt1 = aTemp[1];
+		var initTextObj1 = LAYPOP.find("#infoPutLstDstic1");
+		if(initTextObj1.length == 0) {
+			initTextObj1 = LAYPOP.find("#정보제공항목내용1");
+		}
+		if(txt1 != null){
+			initTextObj1[0].innerHTML = txt1;
+		}else{
+			initTextObj1[0].innerHTML = "-";    
+		}
+		
+		var txt2 = aTemp[2];
+		var initTextObj2 = LAYPOP.find("#infoPutLstDstic2");
+		if(initTextObj2.length == 0) {
+			initTextObj2 = LAYPOP.find("#정보제공항목내용2");
+		}
+		if(txt2 != null && txt2!= ""){
+			initTextObj2[0].innerHTML = txt2;
+		}else{
+			initTextObj2[0].innerHTML = "-";    
+		}
+		
+		var txt3 = aTemp[3];
+		var initTextObj3 = LAYPOP.find("#infoPutDueDstic");
+		if(initTextObj3.length  == 0) {
+			initTextObj3 = LAYPOP.find("#정보보유기간내용");
+		}
+		if(txt3 != null){
+			initTextObj3[0].innerHTML = txt3;
+		}else{
+			initTextObj3[0].innerHTML = "-";    
+		}
+	}
+
+</script>
+
+<input type="hidden" id="cardSeq" name="cardSeq" value="" >
+
+
+
+<!--sub main T1C-->
+
+<div id="bodySkip" style="position:absolute;top:-1000px;left:0;width:100%;background:rgba(0,0,0,.16)">
+    <a href="#contentStart" style="display:block;padding:6px;font-size:10px">본문바로가기</a>    
+</div>
+
+
+
+<div id="Wrap" class="">
+
+
+
+
+
+<!-- App 햄버거 동작 삭제 -->
+<!--     <script>
+//     (function($) {
+
+//         $(document).on('backbutton', function(e) {
+//             if($(document).triggerHandler('android-backbutton')) {
+//                 return;
+//             }
+            
+//             back();
+//         });   
+//     })(jQuery);
+</script> -->
+ 
+	
+	
+		
+		<div id="header" class="topHead"> 
+	        <div class="homeBtn" style="display:none"><button type="button">메인으로 이동</button></div>
+	        <div class="backBtn" style="display:none"><button type="button">이전페이지</button></div>
+	        <div class="backBtn2" style="display:none"><button type="button">이전페이지</button></div>
+	        <h1 class="fs4"></h1>
+	          
+	        <div class="headerMenu" style="display:none"><button type="button" class="hmBtn">전체메뉴보기</button></div>
+	        
+	        <div class="btnClose" style="display:none"><a href="#" role="button">닫기</a></div>
+	        <div class="cancleBtn" style="display:none"><button type="button" class="header__btn header__btn--cancel">취소</button></div>
+	    </div>
+	   
+
+
+<script>
+try{
+    var isIframe = (self != top); //해당 window의 Iframe여부 확인 
+    var isParentChatbot = top.location.href.indexOf('CCBM0001') > -1 || top.location.href.indexOf('CCBM0003') > -1;// 부모창이 챗봇인지 확인(유태경 대리님 요청 0001 추가)
+    var isShowBackBtn = new RegExp(top.showBackBtnCms).test(location.pathname); // 뒤로가기 삭제여부 체크
+    if(isIframe && isParentChatbot) {
+        // 기본 헤더 버튼 삭제
+        var btnClose = document.querySelector('.btnClose'),
+            homeBtn = document.querySelector('.homeBtn'),
+            headerMenu = document.querySelector('.headerMenu'),
+            backBtn = document.querySelector('.backBtn');
+
+        if(!isShowBackBtn) backBtn.remove();
+        btnClose.remove();
+        homeBtn.remove();
+        headerMenu.remove();
+
+        var chatbotDiv = document.createElement('div'),
+            chatbotBtn = document.createElement('button');
+        chatbotDiv.className = 'chatbotBtn';
+        chatbotDiv.appendChild(chatbotBtn);
+        document.querySelector('.topHead').appendChild(chatbotDiv);
+
+
+        /* 헤더영역 스타일시트 추가 */
+        function appendStyle(text) {
+            var styleNode = document.createElement('style');
+            styleNode.type = 'text/css';
+            styleNode.appendChild(document.createTextNode(text));
+            document.head.appendChild(styleNode);
+        }
+        
+        appendStyle('.chatbotBtn{position:absolute;right:16px;top:16px;z-index:991}');
+        appendStyle('.chatbotBtn button{padding:12px;width:24px;height:24px;background:url(https://img1.kbcard.com/cxo/images/mtalk/chatbot/images/btn_pop_down.png) no-repeat center center;background-size:24px;color:transparent;line-height:0;font-size:0;}');
+        appendStyle('.chatbotBtn button:after{content:"";position:absolute;top:-8px;right:-8px;bottom:-8px;left:-8px}');
+        appendStyle('.minContent{min-height:auto !important}');
+
+        chatbotBtn.onclick = function() {
+            top.helperBotEvent.onBotBtnSlideCloseClick();
+        }
+    }
+}catch(e){ 
+    
+}
+</script>
+
+<div id="contentStart" class="blind">본문시작</div>
+<!--//sub main T1C-->
+<!-- M1C 시작 -->
+
+	
+	<!-- [content] 본문내용 시작 -->
+	<script type="text/javascript">
+    $(document).ready(function(){
+        setMenuName('해외이용종합안내');
+        setHeaderType(1);
+        chgTap();
+
+        // 
+        if($('.tabList').hasClass('jmark')){
+            // count = 탭 갯수
+            var count = $('.tabJs li').length; 
+            // 화살표 입력
+            $('.tabJs').before("<a href='#' class='swipePrev' role='button' aria-label='이전' style='background: #fff'>이전</a>")
+            $('.tabJs').after("<a href='#' class='swipeNext' role='button' aria-label='다음' style='top:-1px; background: #fff;'>다음</a>")
+            //tab에 data 넘버링 먹임
+            for(var i=0; i < count; i++) {
+                $('.tabJs li:eq('+ i +')').attr('data-item',i);
+            }
+            $('.tabJs li.on').attr('title','선택됨');
+
+            // 이전 버튼 
+            $('.jmark .swipePrev').click(function(e){
+                e.preventDefault();
+                var nowTab = $('.tabJs li[aria-hidden="false"]').attr('data-item'); 
+                var nowTab = nowTab-1;
+                if(nowTab == -1){
+                    // nowTab 돌리기
+                    nowTab = 0;
+                }
+                if(nowTab <= count){
+                    //li의 위치값
+                    $('.tabJs li:eq('+ (nowTab) +')').attr('aria-hidden','false').siblings('li').attr('aria-hidden','true');
+                    // 스와이프 초기화
+                    commonJs.swipers.moveTo($('.tabJs'), nowTab);
+
+                    if($('body').hasClass('ios')){
+                        commonJs.goFocus($('.tabJs'), nowTab);
+                    } else{
+                        // 접근성 포커스
+                        setTimeout(function() {commonJs.goFocus($('.tabJs li:eq('+ (nowTab) +')'));}, 500);
+                    }
+                    
+                }
+            });
+            // 다음 버튼
+            $('.jmark .swipeNext').click(function(e){
+                e.preventDefault();
+                var nowTab = $('.tabJs li[aria-hidden="false"]').attr('data-item'); 
+                nowTab++;
+
+                if(nowTab == count){
+                    nowTab = count-1;
+                }
+
+                if(0 <= nowTab){
+                    $('.tabJs li:eq('+ nowTab + ')').attr('aria-hidden','false').siblings('li').attr('aria-hidden','true');
+                    // 스와이프 초기화
+                    commonJs.swipers.moveTo($('.tabJs'), nowTab);
+                    if($('body').hasClass('ios')){
+                        commonJs.goFocus($('.tabJs'), nowTab);
+                    } else{
+                        // 접근성 포커스
+                        setTimeout(function() {commonJs.goFocus($('.tabJs li:eq('+ nowTab + ')'));}, 500);
+                    }
+                    
+                }
+            
+
+            });
+
+
+            // on되어 있는것 말고 다른것들 전부 tap이동 안되게 하기
+            $(window).load(function(){
+                $('.tabJs li.on').attr('aria-hidden','false').siblings('li').attr('aria-hidden','true');
+                $('.benefitTab').css('z-index','100');            
+            });
+        }
+        // 접근성 추가
+        // 
+    });
+    
+    function chgTap(){
+
+        var selectedTapIndex = "1";
+        $('.tabDep1 > li').eq(parseInt(selectedTapIndex) - 1).addClass('on');
+        $(".btnBox .btnL").on("click", function(){
+            $("#layerPopClose").trigger("click");
+        });
+        /*
+        if(selectedTapIndex == '1'){
+            $(.tabDep1 > li).eq(0).addClass('on');
+        }else if(selectedTapIndex == '2'){
+            $(.tabDep1 > li).eq(1).addClass('on');
+        }else if(selectedTapIndex == '3'){
+            $(.tabDep1 > li).eq(2).addClass('on');
+        }else if(selectedTapIndex == '4'){
+            $(.tabDep1 > li).eq(3).addClass('on');
+        }
+        */
+    }
+</script>
+
+<div id="content">
+    <section class="container">
+        <div class="infoBox">
+            해외 가기 전/후,<br> 안전하고 실용적인 서비스 <!-- p20161111 텍스트 수정 -->
+        </div>
+        <div class="tabBox type2">
+            <div class="tabList jmark">
+                <ul class="tabDep1 col3 fs2 tabJs">
+                    <li><a href="#foreignuseTab1">해외 출국 전</a></li>
+                    <li><a href="#foreignuseTab2">해외 체류 중</a></li>
+                    <li><a href="#foreignuseTab3">귀국 후</a></li>
+                    <li><a href="#foreignuseTab4">해외 온라인거래</a></li>
+                </ul>
+            </div>
+            <!-- 해외 출국 전 -->
+            <div id="foreignuseTab1" class="tabCont">
+                <h2 class="hidden">해외 출국 전</h2>
+                <div class="foreignuseTabcont">
+                    <ul class="toggleList">
+                        <li>
+                            <a href="#"><span>해외 이용 한도</span></a>
+                            <div class="toggleView">
+                                <h3 class="depTit3">신용카드</h3>
+                                <p>고객님의 한도는 국내외 합산 관리되며, 통합 잔여한도이내에서 이용가능</p>
+                                <h3 class="depTit3">체크카드</h3>
+                                <p class="sTit">현금인출</p>
+                                <ul class="listType1 mt5">
+                                    <li>1회 한도 : 100만원 상당의 미화(USD)환산액</li>
+                                    <li>1일 한도 : 600만원 상당의 미화(USD)환산액</li>
+                                    <li>월 한도 : 2,000만원 상당의 미화(USD)환산액</li>
+                                </ul>
+                                <p class="sTit">가맹점이용</p>
+                                <ul class="listType2">
+                                    <li>1회 한도 : 개인별 체크카드 한도 내 최대 600만원 상당의 미화(USD)환산액 <br>(단, 마에스트로 카드 1회 한도는 최대 100만원 상당의 미화(USD) 환산액)</li>
+                                    <li>1일 한도 : 개인별 체크카드 한도 내 최대 600만원 상당의 미화(USD)환산액</li>
+                                    <li>월 한도 : 개인별 체크카드 한도 내 최대 2,000만원 상당의 미화(USD)환산액</li>                                                    
+                                </ul>                                               
+                                <p class="refer">거래유형 및 카드종류에 관계없이 회원별 1일 600만원 상당의 미화(USD)환산액까지 사용 가능합니다.</p>
+                                <p class="refer">현금인출 한도는 해외 현지 ATM 설정에 따라 별도 제한이 있을 수 있습니다.</p>
+                                <p class="refer">해외 T&amp;E업종(호텔/항공/렌터카 등)은 회원별 최대 $5,500(USD) 이내 이용 가능합니다.</p>
+                                <p class="refer">T&amp;E업종은 승인시점이 아닌 매입시점에 출금되므로 계좌잔액 부족 시 전액 신용청구되며, 체크카드 결제일에 결제계좌에서 출금됩니다.</p>
+                                <p class="refer">신용청구 전환 누적 시 체크카드 해외 T&amp;E업종 이용에 제한이 있을 수 있습니다.</p>
+
+                                <h3 class="depTit3">해외 이용관련 법 규정</h3>
+                                <p>해외에서 일정금액 초과 사용 시 해외이용 관련 법률에 따라 대외기관에 아래와 같이 해외카드 이용실적 및 외국통화 인출실적이 보고됩니다.</p>
+                                <ul class="listType1 mt5">
+                                    <li>신용/체크/직불카드 등의 대외지급실적(외국통화인출실적 포함) 연간 미화 1만달러 초과 시 : 국세청장, 관세청장(외국환거래규정(제10-6조 3항))</li>
+                                    <li>거주자의 신용/체크/직불카드 등의 대외지급실적(물품구매 내역만 해당함), 해외 단기카드대출(현금서비스) 및 외국통화 인출 실적이 건당 미화 600달러 초과 시 : 관세청장 (관세법 제264조의3 제1항 제6호, 관세법 시행령 제263조의2 제1항 및 별표3 제40호)</li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <a href="#"><span>해외 이용 서비스</span></a>
+                            <div class="toggleView">
+                                <h3 class="depTit3">해외 이용 환율 선택 서비스</h3>
+                                <h3 class="depTit3">서비스 소개</h3>
+                                <p>고객님의 경제적 부담을 덜어드리고자 해외에서 이용하시는 일자에 환율을 적용할 수 있는 서비스</p>
+                                <h3 class="depTit3">대상</h3>
+                                <p>개인/기업카드 중 서비스 신청에 의해 등록한 카드</p>
+                                <p class="refer">"국내전용/체크/마에스트로" 카드 제외</p>
+                                <h3 class="depTit3">환율 적용 방법</h3>
+                                <ol class="numList">
+                                    <li>해외이용 환율선택 기간입력</li>
+                                    <li>기간입력 및 서비스 동의 시 한국시간 기준 해외이용일자의 KB국민은행 최초 고시 전신환매도율 적용
+                                        <ul class="listType1">
+                                            <li>기존 환율 적용 방식 : 해외이용일자가 아닌 해외 이용 전표가 KB국민카드에 접수된 일자의 KB국민은행 최초고시 전신환매도율(송금 시 적용되는 환율)</li>
+                                        </ul>
+                                    </li>
+                                </ol>
+                                <div class="btn mt10"><a href="/SVC/DVIEW/MSDMCXHIASVC0014?selectedTap=6" class="btnS btnWhite">해외이용 환율선택</a></div>
+
+                                <h3 class="depTit3">해외 할부전환(예약) 서비스</h3>
+                                <h3 class="depTit3">서비스 소개</h3>
+                                <p>해외할부전환예약서비스 : 5만원 이상 이용건을(1만원 단위) 가맹점별 할부전환 가능기간까지 나누어 낼 수 있는 서비스</p>
+                                <div class="btn mt10"><a href="/MKB/DVIEW/MMCMCXHIAMKC0054?mainCC=b&isFromMyKB=Y" class="btnS btnWhite">해외할부전환 예약 서비스</a></div>
+                            </div>
+                        </li>
+                        <li id="toggleView1_3">
+                            <a href="#"><span>해외 이용 대금 청구방식 및 수수료</span></a>
+                            <div class="toggleView">
+                                <h3 class="depTit3">신용카드 해외이용 대금청구</h3>
+                                <ol class="numList">
+                                    <li>물품구매(단기카드대출(현금서비스)및 현금인출 포함)</li>
+                                    <li>미화환산 : 현지통화 X 국제브랜드사 환율</li>
+                                    <li>청구 : [(미화환산금액 + 국제브랜드수수료) X 전표매입일 전신환매도율)] + 해외서비스 수수료</li>
+                                </ol>
+                                <p class="refer">KB국민은행 최초 고시 전신환매도율</p>
+
+                                <h3 class="depTit3">체크카드 이용 시 출금시점</h3>
+                                <ul class="listType1">
+                                    <li>일반가맹점 이용 : 승인시점 즉시 출금<br>단 , 승인시점 KB국민은행 전신환매도율(송금 시 적용되는 환율)이 적용되며, 승인시점과 매입시점 차액 발생시 환급 또는 추가 출금 될 수도 있습니다.
+                                        <ul class="listType2">
+                                            <li>승인시점과 매입시점 금액(평균 1주일 소요)이 상이할 때 
+                                                <ul class="listType3">
+                                                    <li>승인금액 &gt; 매입금액 : 차액 환급처리</li>
+                                                    <li>승인금액 &lt; 매입금액 : 차액 추가출금(계좌잔액 부족 시 신용청구)</li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>무승인 / T&amp;E (여행/오락) 업종이용 : 매출전표 매입시점 출금
+                                        <ul class="listType2">
+                                            <li>T&amp;E(Travel&amp;Entertainment) 업종 : 항공, 호텔, 숙박업체, 렌터카, 무인주유 시</li>
+                                            <li>매입시점 KB국민은행 최초고시 전신환매도율(송금 시 적용되는 환율)이 적용되며, 출금시점 계좌잔액 부족 시 신용청구 됩니다.</li>
+                                        </ul>
+                                    </li>
+                                </ul>
+
+                                <h3 class="depTit3">해외 이용 관련 수수료</h3>
+                                <p class="sTit">신용카드</p>
+                                <ul class="listType1">
+                                    <li>국제브랜드 수수료(미화환산금액 기준)
+                                        <ul class="listType2">
+                                            <li>비자 : 1.0% ~ 1.1%</li>
+                                            <li>마스터 : 1.0%</li>
+                                            <li>아멕스 : 1.4%</li>
+                                            <li>유니온페이(K-WORLD UPI 포함) : 0.6% ~ 0.8%</li>            
+                                            <li>JCB : 없음(K-WORLD JCB : 1.0%)</li>                                         
+                                        </ul>
+                                        <p class="refer">국제브랜드 수수료란 국제브랜드사가 부과하는 수수료</p>
+
+                                    </li>
+                                    <li>해외서비스 수수료(원화환산금액 기준)
+                                        <ul class="listType2">
+                                            <li>해외 이용금액 * 0.25%에 해당하는 금액</li>
+                                        </ul>
+                                    </li>
+                                    <li>단기카드대출(현금서비스)수수료
+                                        <ul class="listType2">
+                                            <li>국제브랜드 수수료 + 해외서비스 수수료 + 회원등급별 단기카드대출(현금서비스) 수수료</li>
+                                        </ul>
+                                    </li>                                            
+                                </ul>
+                                <p class="sTit">체크카드</p>
+                                <ul class="listType1">
+                                    <li>국제브랜드 수수료(미화환산금액 기준)
+                                        <ul class="listType2">
+                                            <li>가맹점 이용및 현금 인출
+                                                <ul class="listType3">
+                                                    <li>비자 : 1.0% ~ 1.1%</li>
+                                                    <li>마스터/마에스트로 : 1.0%</li>
+                                                    <li>유니온페이 : 0.6% ~ 0.8%</li>
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                    <li>해외서비스 수수료(미화환산금액 기준)
+                                        <ul class="listType2">
+                                            <li>가맹점 이용
+                                                <ul class="listType3">
+                                                    <li>비자/마스터/유니온페이 : 0.25%</li>
+                                                    <li>마에스트로 : 건당 US $0.5</li>                                                            
+                                                </ul>
+                                            </li>
+                                            <li>현금인출
+                                                <ul class="listType3">
+                                                    <li>비자/마스터/마에스트로/유니온페이 : 건당 US $ 3</li>                                                            
+                                                </ul>
+                                            </li>
+                                            <li>잔액조회
+                                                <ul class="listType3">
+                                                    <li>건당 US $ 0.5</li>
+                                                </ul>
+                                                <p class="refer">2020. 4월 이후 출시 비자카드 신상품 (실제 적용여부는 개별 상품설명서 참조) 에 대해 1.1% 적용 (기존상품 1.0% 적용)</p>
+                                                <p class="refer">유니온페이카드 국제브랜드 수수료의 경우 2021. 12. 31 까지 면제</p>
+                                                <p class="refer">단기카드대출의 경우, 이용일로부터 8일 이내에 선결제 하시는 경우 해외서비스 수수료 면제</p>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                </ul>                                        
+                            </div>
+                        </li>
+                        <li>
+                            <a href="#"><span>해외 업종별/상황별 유의사항</span></a>
+                            <div class="toggleView">
+                                <h3 class="depTit3">해외매출 취소 시</h3>
+                                <p>해외매출 취소 시에는 취소전표 또는 증빙이 될 수 있는 서류를 받으셔야 합니다. 필요 시 가맹점 담당자 인적 사항 등을 기록해 놓으시면 유용한 증빙으로 사용할 수 있습니다.</p>
+                                <h3 class="depTit3">해외 귀국 후 면세점 승인</h3>
+                                <p>기내면세점에서 결제시, 비행 중에 실시간 승인이 불가능하기 때문에 통상 비행기가 도착한 후 2~3일 후 결제 당시 기록했던 카드 정보를 이용하여 승인을 받게 됩니다. 따라서 이용금액이 일치한다면 정상건으로 간주하셔도 됩니다.</p>
+                                <h3 class="depTit3">해외 전자상거래 반복 승인</h3>
+                                <p>해외사이트 이용시 카드번호와 유효기간을 입력한 후 이용하지 않으실 경우에는 반드시 해당사이트에 해지신청을 하여야 합니다. 그렇지 않을 경우 주기적으로 이용대금을 청구 할 수 있습니다.</p>
+                                <h3 class="depTit3">해외호텔/렌터카 업종관련</h3>
+                                <p>호텔이나 렌터카를 이용할 시, 일정 금액의 보증금(deposit)에 대한 승인이 발생하는 경우가 있습니다. (실제 고객님께 청구되는 금액은 서비스이용내역 및 가맹점규정에 따라 승인금액보다 작거나 클 수 있음을 안내 드립니다.)<br>
+                                숙박시설의 경우, 체크아웃 시 호텔에서 체류하신 기간 동안 이용하신 금액이 합산되어 청구되기에 체크인 시점의 금액과 상이할 수 있으며 체크아웃 시에 확인되지 않았던 내역은 사후청구 될 수 있으니 유의해주시기 바랍니다(예: 미니바, 세탁, 물품파손 등). 특히, 예약 무료취소기한 내로 취소하지 않으셨거나 환불불가 조건으로 예약 혹은 노쇼우 ‘No Show’(예약 후 미투숙) 처리될 경우 해당가맹점 취소규정에 따라 고객님께서 제공하신 카드번호로 수수료 및 위약금이 사후청구 될 수 있음을 안내 드립니다.<br>
+                                렌터카를 이용하신 후 렌터카 규정에 따라 범칙금(톨게이트 비용, 주차비, 과속단속비, 차량파손비용 등)이 사후청구 될 수 있으니 차량 이용 전 계약서 내용을 정확하게 확인해주시고 차량 반납 시 추후 발생할 수 있는 문제에 대비하기 위해 반납시간 및 차량상태 등이 확인 가능한 서류 및 영수증을 보관해주시길 권장 드립니다.</p>
+                                <h3 class="depTit3">원화 해외결제</h3>
+                                <p>해외에서 원화로 결제 시 외화환전이 한번 더 발생하여 청구금액이 상승하게 됩니다.<br>가급적 원화가 아닌 미달러 또는 현지통화로 거래하시길 당부 드립니다.</p>
+                                <h3 class="depTit3">해외이용요금 추가 청구</h3>
+                                <p>호텔 또는 렌터카에서 대금결제 완납 후에라도 미니바 사용료, 교통법규 범칙금 등 회원님이 사용한 금액을 추가로 발견 시 회원님의 동의 없이 추가로 청구할 수 있습니다.<br>사전에 가맹점 직원과 해당 요금을 부과하지 않기로 구두상으로 협의하신 경우에도 증빙서류를 요청, 보관하시어 차후 발생 할 수 있는 불이익을 방지하시기 바랍니다.</p>
+                                <h3 class="depTit3">TIP 추가 청구</h3>
+                                <p>해외 특정 국가 및 레스토랑 등에서는 TIP문화로 인해 고객님 앞으로 청구되는 금액이 현지에서 확인하신 결제금액과 상이할 수 있음을 안내 드립니다. 현지에서 TIP결제를 하지 않으셨을 경우 당시 이용하셨던 카드로 TIP이 추가 청구 될 예정인지 가맹점 직원을 통해 확인해주시길 바랍니다. 현지에서 현금으로 TIP을 결제하셨을 경우 현금으로 결제하셨음이 확인 가능한 영수증을 소지해주시기 바라며, TIP이 카드로 이중 결제될 시 해외이의제기 진행에 증빙자료로 활용 될 수 있으니 향후 발생할 수 있는 문제에 대비하기 위해 보관해주시길 부탁 드립니다.</p>
+                                <h3 class="depTit3">해외 ATM 미인출</h3>
+                                <p>해외 ATM 거래시 미인출건이 발생되면 해외 매입사(은행)에 이의제기를 통해 환급절차 진행이 가능합니다. 현지은행 담당자의 미인출 확인서나 미인출 내용이 기재된 출금전표를 확보하시면 이의제기시 회수 가능성이 높아집니다.</p>
+                                <h3 class="depTit3">해외 ATM 비밀번호 입력 오류 시</h3>
+                                <p>해외 ATM 거래 시, 비밀번호 입력 오류 횟수 3회 이상이면 카드 사용이 일시 정지됩니다.<br>단, 일수에 상관없이 오류 입력 누적 5회 초과 시 거래가 불가하며 이 경우에는 주민 등록증과 해당 카드를 지참하시고 가까운 KB국민은행 영업점에 직접 방문하실 때에만 해제가 가능합니다.</p>
+                                <p>비밀번호 입력 오류 누적 횟수는 정당 비밀번호 입력 시 까지 일수에 상관없이 누적됩니다.</p>
+                                <p>문의사항은 KB국민카드 고객센터 1588-1688(해외 82-2-6300-7300)로 연락주시기 바랍니다.</p>
+                                <h3 class="depTit3">해외 승인 제한 업종관련</h3>
+                                <p>외국환거래법 및 여신전문금융업법에 의해 허가되지 않거나 금융 당국으로부터 제한 권고 및 지시를 받은 업종(도박, 마약, 복권, 송금, 유사현금업종 등)에 대한 카드사용 및 이용한도를 제한할 수 있사오니 해외 이용시 유의 부탁 드립니다.</p>
+                                <h3 class="depTit3">미국지역 ZIP Code 입력 요청시 유의사항</h3>
+                                <p>미국 무인(셀프)주유소, 주차장, 택시 등 일부 가맹점에서 결제하실 때 가맹점(또는 매입사)의 자체적인 정상카드 검증 수단으로 ZIP Code 5자리 입력을 요구하는 경우가 있습니다.</p>
+                                <ul class="listType1 mt10">
+                                    <li>주요가맹점 : 무인(셀프)주유소, 무인주차장, 택시 등</li>
+                                    <li>입력 방법 : 고객님의 한국 주소지 우편번호 5자리를 입력</li>
+                                </ul>
+                                <p class="refer">무인기기 등에서 상기의 방식으로 카드 승인이 되지 않을 경우 직원이 있는 카운터에서 직접 결제를 하셔야 합니다.</p>
+                            </div>
+                        </li>    
+                        <!-- <li>
+                            <a href="#"><span>해외 이용 관련 법 규정</span></a>
+                            <div class="toggleView">
+                                <p>해외에서 연간 일정금액 초과 사용 시 외국환거래규정(제10-6조 3항)에 의거 대외기관에 해외카드이용실적 및 외국통화인출실적이 보고됩니다.</p>
+                                <ul class="listType1 mt10">
+                                    <li>신용/직불카드 등의 대외지급실적(외국통화 인출실적 포함) 연간 1만불 초과시 : 국세청장 및 관세청장</li>
+                                    <li>거주자의 분기별 신용카드 등의 대외지급(물품구매 내역만 해당함) 및 외국통화 인출 실적 분기별 합계액 5천불 초과시 : 관세청장</li>
+                                </ul>
+                            </div>
+                        </li> -->
+                        <li>
+                            <a href="#"><span>IC칩 비밀번호 확인</span></a>
+                            <div class="toggleView">
+                                <h3 class="depTit3">IC칩 비밀번호(PIN)란?</h3>
+                                <p>부정사용 방지하기 하기 위해 IC카드 내부에 저장된 비밀번호 4자리</p>
+                                <h3 class="depTit3">IC칩 비밀번호 확인</h3>
+                                <p>IC카드 해외이용의 경우 서명 또는 IC칩 비밀번호 인증을 통해 사용이 가능(국가마다 상이)<br>해외 일부 기기에서 비밀번호 6자리 요구 시, 비밀번호 4자리 입력부터 시도해주세요. 오류시 비밀번호 앞 또는 뒤에 00을 붙여 재시도 해주세요.<br>아래의 경우 KB국민카드 및 KB국민은행 영업점을 방문하시어 IC칩 비밀번호를 등록하세요.</p>
+                                <ul class="listType1 mt10">
+                                    <li>IC카드 비밀번호를 분실한 경우</li>
+                                    <li>IC카드 비밀번호를 미등록한 경우</li>
+                                    <li>IC카드 신규 교부 받은 경우</li>
+                                    <li>카드 신청시 비밀번호 사후등록으로 신청하신고객님 중 인터넷, ARS 등을 통하여 비밀번호 4자리를 등록하였지만, KB국민카드 및 KB국민은행 영업점에서 카드정보 재기록을 한번도 받지 않은 경우</li>
+                                    <li>신용카드 비밀번호를 변경한 후, KB국민카드 및 KB국민은행 영업점에서 카드정보 재기록을 한번도 받지 않은 경우</li>
+                                </ul>
+                                <p class="refer">IC칩 비밀번호 입력 오류 5회가 초과되면 카드 잠김상태가 되어 카드를 이용할 수 없으며, 이 경우 반드시 KB국민카드 및 KB국민은행 영업점에 방문하여 Chip 재기록 후 카드 사용이 가능</p>
+                            </div>
+                        </li>
+                       <li style="display:none">  
+                            <a href="#"><span>국내전용카드 해외이용</span></a>  
+                            <div class="toggleView">  
+                                <h3 class="depTit3">서비스 소개</h3>  
+                                <p>국내전용 카드로 일본 내 주요 가맹점에서 이용 가능한 서비스</p>  
+ 
+                                <h3 class="depTit3">서비스 특징</h3>  
+                                <ul class="listType1">  
+                                    <li>  
+                                        해외 이용 시, 국제 브랜드사가 부과하는 국제브랜드 수수료(해외이용금액의 0.5%~1.4%)가 없음  
+                                        <a href="#toggleView1_3" id="focusA" class="btnL btnWhite" style="margin: 16px 0 16px -9px; width: auto;">해외 겸용카드 해외이용 대금 청구방법</a>  
+                                        <script>  
+                                            $('#focusA').on('click', function() {  
+                                                var id = $(this).attr('href');  
+                                                if(!$(id).hasClass('on')) {  
+                                                    $(id).children('a').trigger('click');  
+                                                }  
+                                                setTimeout(function() {$(window).scrollTop($(id).position().top - 57);}, 200)  
+                                            });  
+                                        </script>  
+                                    </li>  
+                                    <li>  
+                                        일본 내 가맹점 이용 시 1회의 통화전환 발생하여 유리  
+                                        <p class="refer">해외겸용카드 (엔화 → 미화 → 원화)<br>국내전용카드 (엔화 → 원화)</p>  
+                                    </li>  
+                                </ul>  
+ 
+                                <h3 class="depTit3">이용안내</h3>  
+                                <img src="https://img1.kbcard.com/LT/cxh/kbcard_img/common/img/img_localcard.png" alt="" style="display:block;max-width:280px;height:auto;margin:0 auto 16px;">  
+                                <ul class="listType1">  
+                                    <li>카드번호가 “9”로 시작하는 KB국민 신용카드만 이용 가능. (KB국민 체크카드, 비씨카드 제외)</li>  
+                                    <li>일본 내 주요 가맹점에 비치된 KB국민카드 스티커 확인 또는 점원에게 사용 가능 여부 문의 후 이용</li>  
+                                </ul>  
+ 
+                                <h3 class="depTit3">이용한도</h3>  
+                                <ul class="listType1">  
+                                    <li>국내전용 카드만 보유한 경우 : 총 국내원화 한도 금액을 미화로 환산한 잔여한도 내에서 이용가능</li>  
+                                    <li>기존 국제브랜드카드 및 국내전용카드 보유한 경우 : 기존 설정되어 있는 해외 이용한도내에서 이용가능 </li>  
+                                </ul>  
+ 								
+                                	<a href="tel:+82-2-6300-7300" class="btnL btnWhite mt16">고객센터 연결</a>  
+ 								
+                                <h3 class="depTit3">이용대금 청구</h3>  
+                                <ul class="listType1">  
+                                    <li>거래통화 : 일본 가맹점 이용 시 엔화(JPY) 거래</li>  
+                                </ul>  
+ 
+                                <h3 class="depTit3">이용대금 산출방법</h3>  
+                                <ul class="listType1">  
+                                    <li>  
+                                        일본 가맹점 이용  
+                                        <ul class="otherList">  
+                                            <li role="text"><span>①</span>① = 이용금액 X 전표매입일 국민은행 1회차 엔화 전신환매도율</li>  
+                                            <li role="text"><span>②</span>② = ① X 해외서비스 수수료 0.25%</li>  
+                                            <li role="text"><span>③</span>① + ② = 최종 원화 청구금액</li>  
+                                        </ul> 
+                                         <p class="refer">해외서비스 수수료: KB국민카드에서 부과하는 해외 이용 관련 수수료</p>
+                                    </li>
+                                    <!--  
+                                    <li>  
+                                        해외 온라인 가맹점 Agoda.com에서 미화(USD) 이용  
+                                        <ul class="otherList">  
+                                            <li role="text"><span>①</span>이용금액 X 전표매입일 국민은행 1회차 미화 전신환매도율</li>  
+                                            <li role="text"><span>②</span>① X 해외 이용 수수료 0.25%</li>  
+                                            <li role="text"><span>③</span>①+②=최종 원화 청구 금액</li>  
+                                        </ul>  
+                                    </li>
+                                    -->  
+                                </ul>  
+ 
+                                <ul class="toggleList mt32">  
+                                    <li class="on" style="margin: 0"><a href="#"><span class="ico_note">이용 전 확인해주세요</span></a>  
+                                        <div class="toggleView">  
+                                            <ul class="listType1">
+                                                <!--  
+                                                <li>  
+                                                    해외 온라인 가맹점 Agoda.com은 호텔예약에 한해 이용 가능하며, 사이트 내 KB국민카드 전용 결제창에서 결제가 가능합니다.  
+                                                    <p class="refer">해외거래는 원화결제보다 미화결제가 유리합니다.</p>  
+                                                </li>
+                                                -->  
+                                                <li>해외이용 환율선택 서비스는 이용이 불가합니다.</li>  
+                                            </ul>  
+                                        </div>  
+                                    </li>  
+                                </ul>  
+                            </div>  
+                        </li>                          
+                    </ul>
+                </div>
+            </div>
+            <!-- //해외 출국 전 -->
+            
+            <!-- 해외 체류 중 -->
+            <div id="foreignuseTab2" class="tabCont">
+                <h2 class="hidden">해외 체류 중</h2>
+                <div class="foreignuseTabcont">
+                    <ul class="toggleList">
+                        <li>
+                            <a href="#"><span>해외카드 단기카드대출(현금서비스)/<br>현금인출 안내</span></a>
+                            <!-- p20161110 추가 -->
+                            <div class="toggleView">
+                                <p>아래의 국제브랜드의 로고 표시가 있는 ATM(입출금기)에서 단기카드대출 (현금서비스) 및 현금인출을 받을 수 있음</p>
+                                <div class="brandIcon">
+                                    <ul>
+                                        <li><img src="https://img1.kbcard.com/cxh/ia_img/SV/img_brand_icon1.png" alt="VISA"></li>
+                                        <li><img src="https://img1.kbcard.com/cxh/ia_img/SV/img_brand_icon2.png" alt="PLUS"></li>
+                                        <li><img src="https://img1.kbcard.com/cxh/ia_img/SV/img_brand_icon3.png" alt="Master Card"></li>
+                                        <li><img src="https://img1.kbcard.com/cxh/ia_img/SV/img_brand_icon4.png" alt="Cirrus"></li>
+                                        <li><img src="https://img1.kbcard.com/cxh/ia_img/SV/img_brand_icon5.png" alt="JCB"></li>
+                                        <li><img src="https://img1.kbcard.com/cxh/ia_img/SV/img_brand_icon6.png" alt="AMERICAN EXPRESS"></li>
+                                        <li><img src="https://img1.kbcard.com/cxh/ia_img/SV/img_brand_icon7.png" alt="Union Pay"></li>                                                
+                                    </ul>
+                                </div>
+                                <!-- //p20161110 추가 -->
+                                <p class="refer">신용카드에 의한 해외현금인출은 불가능</p>
+                            </div>
+                        </li>
+                        <li>
+                            <a href="#"><span>해외 ATM 이용방법</span></a>
+                            <div class="toggleView">
+                                <ol class="numList">
+                                    <li>카드삽입<br>Insert your Card</li>
+                                    <li>비밀번호입력<br>Enter your PIN</li>
+                                    <li>해외단기카드대출(현금서비스)/현금인출선택<br>Select transaction/Cash Advance or Withdrawal</li>
+                                    <li>금액선택<br>Select the amount of your cash withdrawal</li>
+                                    <li>결제카드 선택 해외단기카드 대출(현금서비스/현금인출 선택)<br>Select account Credit Card/Checking account or Saving account</li>
+                                    <li>카드 및 현금 수령<br>Take your card and cash</li>
+                                </ol>
+                                <ul class="listType1 mt10">
+                                    <li>일부기기에서 비밀번호 6자리 요구 시, 비밀번호 4자리 입력부터 시도해주시기바랍니다.</li>
+                                    <li>오류 시 비밀번호 앞 또는 뒤에 00을 붙여 재시도 해주시기 바랍니다.</li>
+                                    <li>체크카드의 경우 은행 전산 가동 중간시간인 매일 00:00~00:05/ 매월 셋째주 일요일 00:00~06:00에 해외 가맹점 및 ATM기에서 사용이 제한될 수 있습니다.</li>
+                                    <li>ATM기는 국가에 따라 영문표현, 이용방법이 다를 수 있습니다.</li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <a href="#"><span>해외카드 부가가치세 환급(Tax Refund)</span></a>
+                            <div class="toggleView">
+                                <h3 class="depTit3">해외카드 부가가치세 환급(Tax Refund) 안내</h3>
+                                <p>유럽을 중심으로 자국에서 소비되지 않은 물건에 포함된 부가가치세를 환급해주는 제도입니다. 일정한 절차를 거치면 구입한 물건에 부과되는 부가가치세를 돌려받을 수 있습니다.</p>
+                                <h3 class="depTit3">환급방법</h3>
+                                <ol class="numList">
+                                    <li>부가가치세 환급가능 상점에서 물품을 구입한 후, 세금환급서류를 작성하고 영수증과 함께 부가가치세 전표 제공받기</li>
+                                    <li>출국시 공항의 세금 환급 사무소에서 물건을 보여주고 확인 도장을 받은 뒤 환불창구에서 현금 수령</li>
+                                    <li>신용카드를 통해서 환급받는 것도 가능하며, 2~3개월 이상의 기간 소요</li>
+                                </ol>
+                                <p class="refer">도장받은 세금환급서류를 우체통 및 담당자에게 제출</p>
+                                <h3 class="depTit3">유의사항</h3>
+                                <ul class="listType1">
+                                    <li>고객보관용은 반드시 보관하여야 하며, 환급신청 누락으로 인한 미 환급건은 카드사를 통한 이의제기도 불가능합니다.</li>
+                                    <li>물품 구입시 미리 부과세를 감면해 주더라도 부가세 면제요청 신고절차는 필요하며, 서류 미비시 재청구가 될 수 있습니다.</li>
+                                    <li>가맹점/공항별 환급 절차가 상이할 수 있으므로 출국 전 확인하시기 바랍니다.</li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <a href="#"><span>주요 승인거절 사유 안내</span></a>
+                            <div class="toggleView">
+                                <h3 class="depTit3">신용카드 한도초과</h3>
+                                <ul class="listType1">
+                                    <li>신용카드 승인은 1회 또는 1일 제한 기준이 없으며, 신용카드 잔여 한도는 국내 잔여한도에 실시간 환율로 환산된 미달러화로 결정됩니다. 해당 금액 이상을 결제할 시 승인이 거절될 수 있습니다.</li>
+                                </ul>
+                                <p class="refer">미달러화로 표기되는 해외 잔여한도는 실시간 회차에 의해 변동되므로 유의해 주시기 바랍니다.</p>
+                                <h3 class="depTit3">체크카드 한도초과</h3>
+                                <ul class="listType1">
+                                    <li>체크카드 출금계좌 잔고가 부족한 경우 승인이 거절될 수 있습니다. 계좌에 잔고가 충분한데 해당 승인거절이 발생한 경우 잔여한도를 확인해 주시기 바랍니다.</li>
+                                </ul>
+                                <p class="refer">체크카드 이용건은 수수료가 포함되어 즉시 출금되기 때문에 환율로 계산한 금액 이상이 출금될 수 있습니다.</p>
+
+                                <h3 class="depTit3">거래정지/도난분실 카드</h3>
+                                <ul class="listType1">
+                                    <li>이용하고자 하는 카드가 혹은 회원이 거래 불가 상태인 경우 승인이 거절될 수 있습니다. 해당 문제 발생 시 거래정지내역 확인 후 KB국민카드 고객센터 (1588-1688)에서 해제 가능여부를 문의 주시기 바랍니다.</li>
+                                </ul>
+                                <h3 class="depTit3">CVC2값 검증오류/유효기간오류</h3>
+                                <ul class="listType1">
+                                    <li>카드 실물 상 기록되어 있는 정보와 해당 웹사이트에 입력된 정보가 불일치할 때 승인이 거절될 수 있습니다. 정보가 모두 맞게 입력되었는지 확인해 주시기 바랍니다. ( 영문 성명을 입력할 때 성과 이름이 바뀐 경우, 유효기간 및 CVC2값이 잘못 입력된 경우)</li>
+                                </ul>
+                                <p class="refer">동일 오류가 반복될 시 해당 가맹점의 관리팀으로 문의해주시기 바랍니다.</p>
+                                <h3 class="depTit3">Savings account/Checking account 거절</h3>
+                                <ul class="listType1">
+                                    <li>신용카드로 해외 ATM기 이용 시 Savings Account 시도시 승인이 거절됩니다. 신용카드로 해외 ATM기에서는 현금서비스만 가능하기 때문에 예금인출을 의미하는 Savings account 옵션으로는 거래가 불가하며 Checking account 또는 Cash advance로 시도해 주시기 바랍니다.</li>
+                                </ul>
+                                <p>기타 승인거절과 관련된 문의는 KB국민카드 고객센터(1588-1688)로 문의해주시기 바랍니다.</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>                                                                                                                          
+            </div>
+            <!-- //해외 체류 중 -->
+            <!-- 귀국 후 -->
+            <div id="foreignuseTab3" class="tabCont">
+                <h2 class="hidden">귀국 후</h2>
+                <div class="foreignuseTabcont">
+                    <ul class="toggleList">
+                        <li>
+                            <a href="#"><span>해외 이용내역 확인</span></a>
+                            <div class="toggleView">
+                                <p>해외에서 이용 후, 청구 금액을 바로 확인 가능</p>
+                                <div class="btn mt10"><a href="/MKB/DVIEW/MMBMCXHIAMKS0001?mainCC=d" class="btnS btnWhite">해외이용상세내역 조회</a></div>
+                            </div>
+                        </li>
+                        <li>
+                            <a href="#"><span>해외 이용 사후 서비스</span></a>
+                            <div class="toggleView">
+                                <h3 class="depTit3">해외 할부전환서비스</h3>
+                                <h3 class="depTit3">카드이용  후 할부전환</h3>
+                                <ul class="listType1">
+                                    <li>해외에서 5만원 이상 결제 시 가맹점별 할부전환 가능기간까지 해외 분할 납부 신청 가능
+                                    </li>
+                                </ul>
+                                <div class="btn mt10"><a href="/MKB/DVIEW/MMCMCXHIAMKC0054?mainCC=f&isFromMyKB=Y" class="btnS btnWhite">카드이용 후 할부전환 예약</a></div>
+
+                                <h3 class="depTit3">해외 거래정지 등/해제 신청</h3>
+                                <ul class="listType1">
+                                    <li>해외에서 카드 위변조 등에 의한 부정 거래를 방지 할 수 있도록 해외거래정지 등록 서비스
+                                    <p class="refer">해외거래정지가 등록되더라도 국내사용은 정상적으로 가능합니다.</p>
+                                    </li>
+                                </ul>
+                                <div class="btn mt10"><a href="/SVC/DVIEW/MSDMCXHIASVC0015" class="btnS btnWhite">해외거래정지 등록</a></div>
+                                <div class="btn mt10"><a href="/SVC/DVIEW/MSDMCXHIASVC0015?mainCC=b" class="btnS btnWhite">해외거래정지 해제</a></div>
+                            </div>
+                        </li>
+                        <li>
+                            <a href="#"><span>해외 이용 이의제기</span></a>
+                            <div class="toggleView">
+                                <!-- 차세대 해외이용종합안내 수정 -->
+                                <h3 class="depTit3">해외이용 이의제기</h3>
+                                <ul class="listType1">
+                                    <li>
+                                        해외에서 부정거래가 발생했거나 물품/서비스 미제공 또는 취소 미처리 등 문제 발생 시 해외이용 이의신청을 이용하시면,
+                                        KB국민카드 고객님을 대신하여 해외카드사에서 이의제기를 진행해드리는 서비스입니다.
+                                        단, 해외이용 이의신청은 국제브랜드사(VISA/MASTER/JCB/AMEX/UPI)의 규정 및 거래 유형에 따라 45일~120일 이내로 신청해야 하며,
+                                        기일이 초과된 경우 접수가 거절될 수 있으니 확인 즉시 신청해주시기 바랍니다.
+                                        해외이용 이의신청은 국제브랜드사(VISA/MASTER/JCB/AMEX/UPI)를 통해 진행되며 국제브랜드사의 규정을 따릅니다.
+                                    </li>
+                                </ul>
+                                <!-- //차세대 해외이용종합안내 수정 -->
+                                <div class="btn mt10">
+                                    <a href="/SVC/DVIEW/MSDMCXHIASVC0049" class="btnS btnWhite">해외 이용 이의제기</a>
+                                </div>
+                                <!-- 차세대 해외이용종합안내 추가 -->
+                                <div class="btn mt10">
+                                    <a href="/SVC/DVIEW/MSDMCXHIASVC0049?mainCC=c" class="btnS btnWhite">이의제기 신청 내역 조회</a> 
+                                </div>
+                                <!-- //차세대 해외이용종합안내 추가 -->
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <!-- //귀국 후 -->
+            
+            <!-- 해외 온라인거래 -->
+            <div id="foreignuseTab4" class="tabCont">
+                <h2 class="hidden">해외 온라인거래</h2>
+                <div class="foreignuseTabcont">
+                    <ul class="toggleList">
+                        <li>
+                            <a href="#"><span>해외 쇼핑몰 거래 시 유의사항</span></a>
+                            <div class="toggleView">
+                                <ul class="listType1">
+                                    <li>인터넷 사이트의 건전성 여부 확인</li>
+                                    <li>유료사이트 가입 시 주기적 회비 청구여부 확인</li>
+                                    <li>불량사이트 거래 시 카드번호 및 유효기간 등 정보 유의('TRUSTe', 'BETTER WEB' 등 가급적 인터넷 신뢰마크 쇼핑몰 이용)</li>
+                                    <li>온라인 결제 시 주문번호, 영수증, 상품거래 명세 등 관련 정보 확보</li>                                            
+                                </ul>
+                            </div>
+                        </li>
+                        <li>
+                            <a href="#"><span>해외 온라인 안전 결제 등록</span></a>
+                            <div class="toggleView">
+                                <h3 class="depTit3">해외 온라인 안전 결제(가상카드)</h3>
+                                <p>해외 온라인 가맹점 이용 시 실 카드번호 대신 가상카드번호를 사용함으로써 안전하게 결제 할 수 있는 서비스<br/>(단, 국내 온라인 가맹점 제외)</p>
+                                <div class="btn mt10">       
+                                    
+                                              
+                                        
+                                            <a href="/CMN/DVIEW/MOBMCXHIAMBC0001" class="btnS btnWhite">해외온라인쇼핑 안전결제 신청</a>
+                                              
+                                           
+                                                         
+                                </div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>                                                                
+            <!-- //해외 온라인거래 -->
+        </div>
+    </section>
+</div>
+
+<!--layer-->
+<div id="layerpopA" class="layerWrap">
+    <div class="popTop">
+        <strong class="fs2">사용불가</strong>
+    </div>
+    <div class="popCont">
+        <p class="center"><strong class="fs2">해당 카드는 본 서비스를<br>이용 할 수 없습니다.</strong><br>(마스터카드만 이용가능. 기업, 가족, 마에스트로 체크카드 제외)</p>
+        
+	        <div class="reference type1">
+	            <dl>
+	                <dt>문의처</dt>
+	                <dd class="fs_2">KB국민카드 지점 /<br> 고객센터</dd>
+	            </dl>
+	            <a href="tel:1588-1688" class="btnTel fs5">1588-1688</a>
+	        </div>
+		
+    </div>
+    <span class="popClose"><a href="#" class="btnYellow" role="button">닫기</a></span>
+</div>
+<!--//layer-->
+<!-- component : PCXHIAJ0216 -->
+	<!-- [content] 본문내용 끝 -->
+	
+	<!-- [footer] 영역 시작 -->
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- M1C 끝 -->
+
+
+
+<script type="lodash_template" id="tplMessageBox">
+	<div id="messageBoxLayerPopup" class="layerWrap alertWrap pop-wrap">
+		<div class="pop-container">
+	  		[% if(title.length > 0) { %]
+			<div class="popTop pop-header">
+		  		<strong class="fs2 tit-dep1">[%= title %]</strong>
+			</div>
+			[% } %]
+
+			<div class="pop-inner">
+				<div class="popCont cont-area">
+					<div class="cenTxt fs2">[%= message %]</div>
+				</div>
+				[% if(isAlert) { %]
+				<div class="btnBox fixed-area btn-wrap">
+					<a id="btnOK_messageBoxLayerPopup" href="#" class="fs2 btn btn--yellow" role="button">[%= okButtonName %]</a>
+				</div>
+				[% } else { %]
+				<div class="btnBox col2 fixed-area btn-wrap">
+					<a id="btnCancel_messageBoxLayerPopup" href="#" class="fs2 close btn js-btn-pop-close" role="button">[%= cancelButtonName %]</a>
+					<a id="btnOK_messageBoxLayerPopup" href="#" class="fs2 btn btn--yellow" role="button">[%= okButtonName %]</a>
+				</div>
+				[% } %]
+			</div>
+		<div>
+	</div>
+</script>
+
+<script>
+	
+	var tplMessageBox = _.template($('#tplMessageBox').html());
+	
+	function messageBoxMsgChng(trgtMsg) {
+		var oriMsg = trgtMsg || "";
+		var rstMsg = oriMsg;
+		
+		if ( oriMsg != "" ) {
+			var regStr = "^\\[[A-Z]{4}\\d{4}\\]";
+			var tgRegExp = RegExp(regStr, "");
+			var testVl = tgRegExp.test(oriMsg);
+
+			if ( testVl ) {
+				var cutStr = oriMsg.substring(0, 10);
+				var rstStr = oriMsg.substring(10) + " " + cutStr;
+				rstMsg = rstStr.trim();
+			}
+		}
+		
+		return rstMsg;
+	}
+	
+	$.cxhia.alert = function(obj, callback) {
+		if(typeof KBCARD_GLOBAL == 'undefined' && !commonJs.layerPopup.config) commonJs.layerPopup.init();
+		if(obj.title == 'Alert') obj.title = "";
+		
+		var strHtml = tplMessageBox({
+			title: obj.title || "",
+			message: messageBoxMsgChng(obj.message),
+			isAlert: true,
+			okButtonName: obj.okButtonName || '확인'
+		});
+
+		
+		
+		$('.alertWrap').remove();
+		$('body').append(strHtml);
+
+		if(typeof KBCARD_GLOBAL == 'undefined') {
+			commonJs.layerPopup.openPopup('#messageBoxLayerPopup');
+		} else {
+			openPopup('#messageBoxLayerPopup');
+		}
+		
+		$('#btnOK_messageBoxLayerPopup').off().on('click', function(e) {
+			setTimeout(function() {
+				if(callback) {
+					callback("ok");
+				}
+			}, 1);
+			if(typeof KBCARD_GLOBAL == 'undefined') {
+				commonJs.layerPopup.closePopup('#messageBoxLayerPopup');
+			} else {
+				closePopup('#messageBoxLayerPopup');
+			}
+			return false;
+		});
+	};
+	
+	$.cxhia.confirm = function(obj, callback) {
+		if(typeof KBCARD_GLOBAL == 'undefined' && !commonJs.layerPopup.config) commonJs.layerPopup.init();
+		if(obj.title == 'Confirm') obj.title = "알림";
+
+		var strHtml = tplMessageBox({
+			title: obj.title || "",
+			message: obj.message,
+			isAlert: false,
+			okButtonName: obj.okButtonName || '확인',
+			cancelButtonName: obj.cancelButtonName || '취소'
+		});
+		
+		
+		
+		$('.alertWrap').remove();
+		$('body').append(strHtml);
+
+		if(typeof KBCARD_GLOBAL == 'undefined') {
+			commonJs.layerPopup.openPopup('#messageBoxLayerPopup');
+		} else {
+			openPopup('#messageBoxLayerPopup');
+		}
+		
+		$('#btnCancel_messageBoxLayerPopup').off().on('click', function(e) {
+			setTimeout(function() {
+				callback("cancel");
+			}, 1);
+			if(typeof KBCARD_GLOBAL == 'undefined') {
+				commonJs.layerPopup.closePopup('#messageBoxLayerPopup');
+			} else {
+				closePopup('#messageBoxLayerPopup');
+			}
+			return false;
+		});
+		
+		$('#btnOK_messageBoxLayerPopup').off().on('click', function(e) {
+			setTimeout(function() {
+				callback("ok");
+			}, 1);
+			if(typeof KBCARD_GLOBAL == 'undefined') {
+				commonJs.layerPopup.closePopup('#messageBoxLayerPopup');
+			} else {
+				closePopup('#messageBoxLayerPopup');
+			}
+			return false;
+		});
+	};
+</script>
+
+
+
+
+<script type="lodash_template" id="tplMessageBox2">
+    <div id="messageBoxLayerPopup2" class="layerWrap newType pop-wrap">
+        <div class="pop-container">
+            [% if(title != '') { %]
+            <div class="popTop pop-header">
+                <strong class="tit-dep1">[%= title %] <span class="fc14">[%= title2 %]</span></strong>
+            </div>
+            [% } %]
+            
+            <div class="pop-inner">
+                    <div class="popCont cont-area">
+                        <p>[%= message %]</p>
+                    </div>
+
+                [% if(isAlert) { %]
+                    <span class="popClose btnBox pop-close fixed-area btn-wrap">
+                        <a id="btnOK_messageBoxLayerPopup2" href="#" class="btn btn--yellow">[%= okButtonName %]</a>
+                    </span>
+                [% } else { %]
+                    <span class="popClose btnBox fixed-area btn-wrap">
+                        <a id="btnCancel_messageBoxLayerPopup2" href="#" class="w50 close btn js-btn-pop-close">[%= cancelButtonName %]</a>
+                        <a id="btnOK_messageBoxLayerPopup2" href="#" class="w50 btn btn--yellow">[%= okButtonName %]</a>
+                    </span>
+                [% } %]
+            </div>
+        </div>
+    </div>
+</script>
+
+<script>
+    
+    var tplMessageBox2 = _.template($('#tplMessageBox2').html());
+    
+    $.cxhia.alert2 = function(obj, callback, contAlign) {
+        if(typeof KBCARD_GLOBAL == 'undefined' && !commonJs.layerPopup.config) commonJs.layerPopup.init();
+        
+        var strHtml = tplMessageBox2({
+            title: obj.title || "",
+            title2: obj.title2 || "",
+            message: obj.message,
+            isAlert: true,
+            okButtonName: obj.okButtonName || '확인'
+        });
+        
+        $('.newType').remove();
+        $('body').append(strHtml);
+        
+        //console.log("[ Suezo ] contAlign : " + contAlign);
+        
+        // 차세대변경사항
+        if (contAlign != undefined && contAlign != "") {
+            if (contAlign == "left" || contAlign  == "right" || contAlign == "center") {
+                $(".layerWrap.newType .popCont").attr("style", "text-align: " + contAlign + " !important");
+            }
+        }
+        
+        if(typeof KBCARD_GLOBAL == 'undefined') {
+			commonJs.layerPopup.openPopup('#messageBoxLayerPopup2');
+		} else {
+			openPopup('#messageBoxLayerPopup2');
+		}
+
+        $('#btnOK_messageBoxLayerPopup2').off().on('click', function(e) {
+            setTimeout(function() {
+                if(callback) {
+                    callback("ok");
+                }
+            }, 1);
+
+            if(typeof KBCARD_GLOBAL == 'undefined') {
+				commonJs.layerPopup.closePopup('#messageBoxLayerPopup2');
+			} else {
+				closePopup('#messageBoxLayerPopup2');
+			}
+            return false;
+        });
+    };
+    
+    $.cxhia.confirm2 = function(obj, callback) {
+       if(typeof KBCARD_GLOBAL == 'undefined' && !commonJs.layerPopup.config) commonJs.layerPopup.init();
+        
+        var strHtml = tplMessageBox2({
+            title: obj.title || "",
+            title2: obj.title2 || "",
+            message: obj.message,
+            isAlert: false,
+            okButtonName: obj.okButtonName || '확인',
+            cancelButtonName: obj.cancelButtonName || '취소'
+        });
+        
+        $('.newType').remove();
+        $('body').append(strHtml);
+
+        if(typeof KBCARD_GLOBAL == 'undefined') {
+			commonJs.layerPopup.openPopup('#messageBoxLayerPopup2');
+		} else {
+			openPopup('#messageBoxLayerPopup2');
+		}
+        
+        $('#btnCancel_messageBoxLayerPopup2').off().on('click', function(e) {
+            setTimeout(function() {
+                callback("cancel");
+            }, 1);
+            if(typeof KBCARD_GLOBAL == 'undefined') {
+				commonJs.layerPopup.closePopup('#messageBoxLayerPopup2');
+			} else {
+				closePopup('#messageBoxLayerPopup2');
+			}
+            return false;
+        });
+        
+        $('#btnOK_messageBoxLayerPopup2').off().on('click', function(e) {
+            setTimeout(function() {
+                callback("ok");
+            }, 1);
+            if(typeof KBCARD_GLOBAL == 'undefined') {
+				commonJs.layerPopup.closePopup('#messageBoxLayerPopup2');
+			} else {
+				closePopup('#messageBoxLayerPopup2');
+			}
+            return false;
+        });
+    };
+</script>
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style>
+    .blind {
+	  overflow: hidden;
+	  position: absolute;
+	  width: 1px;
+	  height: 1px;
+	  font-size: 1px;
+	  line-height: 0;
+	  margin: -1px;
+	  clip: rect(0 0 0 0);
+	}
+	
+	.chatbot {
+	  position: fixed;
+	  z-index: 101;
+	  right: 24px!important;
+	  top: calc(100vh - 128px);
+	  bottom: auto!important;
+	}
+	
+	.chatbot__inner {
+	  position: relative;
+	}
+	
+	.chatbot__item {
+	  overflow: hidden;
+	  position: relative;
+	  z-index: 1;
+	  width: 48px;
+	  height: 48px;
+	  box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.24);
+	  border-radius: 100%;
+	}
+	
+	.chatbot__ico {
+	  display: block;
+	  width: 100%;
+	  height: 100%;
+	  background: #fc0 url(https://img1.kbcard.com/home_re/mo/img/main/img-chatbot.svg) no-repeat center;
+	  background-size: 48px;
+	}
+	
+	.chatbot__close {
+	  position: absolute;
+	  z-index: 2;
+	  top: -12px;
+	  right: -12px;
+	  width: 24px;
+	  height: 24px;
+	  border-radius: 100%;
+	  background: rgb(105, 110, 118) url(https://img1.kbcard.com/home_re/mo/ico/14/ico-1-close-white.svg) no-repeat center;
+	  background-size: 14px;
+	}
+	
+	.chatbot__txt {
+	  position: absolute;
+	  top: 6px;
+	  right: 38px;
+	  opacity: 0;
+	  animation: chatbotTxt 4s .5s forwards;
+	}
+	
+	.chatbot__txt > em {
+	  overflow: hidden;
+	  display: inline-block;
+	  max-width: calc(100vw - 76px);
+	  height: 36px;
+	  background-color: #222;
+	  padding: 6px 28px 6px 16px;
+	  border-top-right-radius: 0; 
+	  border-bottom-right-radius: 0;
+	  border-top-left-radius: 18px; 
+	  border-bottom-left-radius: 18px;
+	  color: #fff;
+	  line-height: 24px;
+	  white-space: nowrap;
+	  text-overflow: ellipsis;
+	  box-sizing: border-box;
+	}
+    
+    .chatbot__txt * {
+       font-weight: 600!important;
+       line-height: 24px;
+       vertical-align: top;
+    }
+    
+    .chatbot__txt > em sup {
+      position: relative;
+      top: -0.5em;
+    }
+    
+	.chatbot__txt--event {
+	  animation: chatbotTxt2 6s 1s infinite;
+	}
+	
+	.chatbot__txt--event > em {
+	  background-color: #5f5be8;
+	}
+	
+	@keyframes chatbotTxt {
+	  from {
+	    transform: translateX(24px);
+	    opacity: 0;
+	  }
+	  50% {
+	    transform: translateX(0);
+	    opacity: 1;
+	  }
+	  to {
+	    transform: translateX(24px);
+	    opacity: 0;
+	  }
+	}
+	
+	@keyframes chatbotTxt2 {
+	  from {
+	    transform: translateX(24px);
+	    opacity: 0;
+	  }
+	  30% {
+	    transform: translateX(0);
+	    opacity: 1;
+	  }
+	  60% {
+        transform: translateX(0);
+        opacity: 1;
+	  }
+	  to {
+	    transform: translateX(24px);
+	    opacity: 0;
+	  }
+	}
+</style>
+<script>
+	var chatId = localStorage.getItem('chatId');
+	var rvtsServiceConnect = true;
+    var chatbotServiceConnect = 'true';
+	var realYn = 'R';
+	var rvtsUrl = '';
+	var domainId = 'NODE0000000048';
+	var btnMoveToChatbotParam = null;
+	var menuURI = 'MSDMCXHIASVC0028';
+    var showIconMenuIds = ['MMOM0101', 'MOEM0201', 'MMOM0301', 'MOAM0202', 'MMOM0401'];
+	var rejectIconMenuIds = ['CCBM0002'];
+    var chatbotIconIds = '#chatbotFloatBanner, #eNomixBannerWrapper';
+    var isChatbotIconMove = false;
+    var isChatbotIconClick = false;
+    
+    // 챗봇 슬라이딩 팝업에서 호출한 경우 배너와 챗봇을 노출하지 않는다.
+    var hasSlideIframe = false;
+    if($('#slideIframe', parent.document).length > 0)
+    {
+        hasSlideIframe = true;
+    }
+    
+    var isRvtsConnect = window['isMTalkBanner'];
+    if(isRvtsConnect == undefined)
+    {
+        isRvtsConnect = false;
+    }
+    
+    var currUrl = location.href;
+    
+    if(realYn == 'R')
+    {
+        rvtsUrl = 'https://mtalk.kbcard.com:18080/master';
+        domainId = 'NODE0000000016';
+    }
+    else
+    {
+        rvtsUrl = 'https://dmtalk.kbcard.com:18080/master';
+    }
+    
+    function rvtsStart() {
+        (function() {
+            try {
+                var e, i, n = window, o = document, s = "script", a = arguments,
+                r = ["config", "identify", "debug", "start"] ,
+                b = ["ebs.json"],
+                z = rvtsUrl + '/js/',
+                c = function()
+                    {
+                        var t, i = this;
+                        for (i._e = [], t = 0; r.length > t; t++)
+                            (function(t) {
+                                i[t] = function() {
+                                    return i._e.push([t].concat(Array.prototype.slice.call(arguments,0))),i
+                                };
+                            })(r[t])
+                    };
+                for (n._w = n._w || {}, t = 0; a.length > t; t++)
+                {
+                    n._w[a[t]] = n[a[t]] = n[a[t]] || new c;
+                }
+                for (var j in b) 
+                {
+                    i = o.createElement(s);
+                    i.defer = true;
+                    i.src = z + b[j];
+                    e = o.getElementsByTagName(s)[0];
+                    e.parentNode.insertBefore(i, e);
+                }
+            } catch(e) { console.log(e); }
+        })("ecc");
+        ecc.config({domainId: domainId, staticUrl: currUrl, channelType: 'MW'});
+        ecc.identify({customerId: ''}); 
+        ecc.start(true);
+    }
+    
+    function checkIconClick() {
+    	if (isChatbotIconClick) {
+    		return isChatbotIconClick;
+    	} else {
+    		isChatbotIconClick = true;
+    		return false;
+    	}
+    }
+    
+	function moveToChatbot(rvtsActionValue) {
+		if (checkIconClick()) {
+			return;
+		}
+		console.log("event.currentTarget.className:"+event.currentTarget.className);
+		console.log("event.target.className:"+event.target.className);
+		
+		
+        var paramServicePoint = {
+            'MMOM0101' : 'MN_MYKB',
+            'MOEM0201' : 'MN_BNFT',
+            'MMOM0301' : 'MN_FNC',
+            'MMOM0401' : 'FNC_FLO',
+            'MOAM0202' : 'MN_VEMR'
+        };
+        
+        var urlParam = {};
+        if (paramServicePoint.hasOwnProperty(menuURI)) {
+        	urlParam.servicePoint = paramServicePoint[menuURI];
+        }
+	    var uri = rvtsActionValue ? rvtsActionValue : '/CMN/DVIEW/CCBM0001';
+	    if(Object.keys(urlParam).length > 0) {
+	    	uri += (rvtsActionValue ? '&' : '?') + $.param(urlParam);
+    	}
+	    
+	    if(event.target.className == "chatbot__ico"){
+	    	uri = '/CMN/DVIEW/CCBM0001';
+		    if(Object.keys(urlParam).length > 0) {
+		    	uri = uri + '?servicePoint=' + paramServicePoint[menuURI];
+	    	}
+	    }
+	    console.log("[common rvts.jsp] uri:"+uri);
+	    window.location.href = uri;
+	    setTimeout(function() {
+	    	isChatbotIconClick = false;
+	    }, 500);
+	}
+	
+    function chatbotFloatView() { 
+    	localStorage.setItem('hideChatbotIcon', 'N');
+		if ($('#eNomixBannerWrapper').length > 0 && $('#eNomixBannerWrapper').is(':visible')) {
+			return;
+		}
+		
+		//금융 탭 외 플로팅 제외. -- kbpay 화면연결일때 플로팅 미노출 
+		if(!location.href.includes('MMOM0401')){
+			return;
+		}
+		
+		if (localStorage.getItem('chatbotIconTop'))
+		{
+		    $('#chatbotFloatBanner').css('top', localStorage.getItem('chatbotIconTop'));
+		}
+        $('#chatbotFloatBanner').show();
+        $('.btnShare').hide();
+    }
+    
+    function chatbotFloatHide() {
+		var param = {
+		   'showChatbotFloatYn' : 'N'
+		};
+		$.ajax({ 
+			type : 'POST',
+			url:'/CMN/API/CCBA0006',
+			dataType : 'json',
+			async : false,
+			data : param,
+			contentType : 'application/x-www-form-urlencoded;charset=UTF-8',
+			success : function(data) {
+			    // Do nothing
+			}
+		});
+
+	    $(chatbotIconIds).hide();
+        localStorage.setItem('hideChatbotIcon', 'Y');
+    }
+       
+	function getRvtsStatus(url, callback) {
+	    var dummy = new Date().getTime();
+	    var s = document.createElement("script");
+	    s.onerror = callback.error;
+	    s.type = 'text/javascript';
+	    s.src = url + '?callback=statecb&dmy='+dummy;
+	    (document.getElementsByTagName('head')[0]||document.getElementsByTagName('body')[0]).appendChild(s);
+	    window['statecb'] = callback.success;
+	}
+
+	function appChatbotShow() {		
+	    if (isRvtsConnect) { // 항상 배너를 노출할 메뉴 구분
+	        if (rvtsServiceConnect) { // RVTS로 배너를 노출할 지 구분
+	            getRvtsStatus(rvtsUrl + "/services/rest/ActiveLog/state", {
+	                success: rvtsStart, 
+	                error: function() {
+	                    if (showIconMenuIds.includes(menuURI)) {
+	                        chatbotFloatView();
+	                    }
+	                }
+	            });
+	        } else { // RVTS 사용안할 시 기본 배너 노출
+	            chatbotFloatView();
+	        }
+	    }		
+	}
+       
+	function refreshChatbotIcon() {
+        if (chatbotServiceConnect == 'false') {   
+            return;
+        }
+	    if ($.cxhia.isApp() && showIconMenuIds.includes(menuURI)) {
+		 	kbmobile.preferences.getStringValue("showChatbot", function(chatbotBanner) {
+		 		if (chatbotBanner != 'N') {
+		 			if (localStorage.getItem('hideChatbotIcon') == null || localStorage.getItem('hideChatbotIcon') == undefined || localStorage.getItem('hideChatbotIcon') == '') {
+		 				appChatbotShow();
+		 			} else if (localStorage.getItem('hideChatbotIcon') == 'Y' && $(chatbotIconIds).is(':visible')) {
+		                 $(chatbotIconIds).hide();
+		             } else if (localStorage.getItem('hideChatbotIcon') == 'N') {
+		                 if (localStorage.getItem('chatbotIconTop')) {
+		                     $(chatbotIconIds).css('top', localStorage.getItem('chatbotIconTop'))
+		                 }
+		                 if ($(chatbotIconIds).is(':visible')) {
+		                 	return;
+		                 } else {
+		                 	if ($('#eNomixBannerWrapper').length > 0 && !$('#eNomixBannerWrapper').is(':visible')) {
+		                 	    $('#eNomixBannerWrapper').show();
+		                 	} else {
+		                 		if ($('script[src*="'+rvtsUrl+'"]').length > 0) {
+		                 			chatbotFloatView();
+		                 		} else {
+		                 		    appChatbotShow();
+		                 		}
+		                 	} 
+		                 }
+		             }
+		 		} else {
+		 			$(chatbotIconIds).hide();
+		 		}
+		 	});
+	    }
+	}
+
+    var chatbotStartY = 0;
+    var chatbotMoveY = 0;
+    var chatbotEndY = 0;
+    var chatMove = 0;
+    var chatBtm = 0;
+    var chatMaxBottom = 0;
+    var bodyCls = '';
+    var chatbotTop = navigator.userAgent && navigator.userAgent.indexOf("kbpayia") > -1 ? 22 : 80;
+    
+    function setCbTouchEvent_IOS() {
+		$(document).off('touchstart', '.js-drag-chatbot');
+		$(document).on('touchstart', '.js-drag-chatbot', function(e){
+			if(e.type == 'touchstart') {
+				var winTop = $(window).scrollTop();
+				chatbotStartY = e.originalEvent.changedTouches[0].screenY - winTop;
+				
+				$('body').addClass('locked').css({
+					position: 'fixed',
+					top: winTop * -1,
+					left: 0,
+					width: '100%'
+				});
+				
+				var winHei = $(window).height();
+				var headHei = $('#header').outerHeight();
+				var chatHei = $(this).outerHeight();
+				chatBtm = parseInt($(this).css('top'));
+				chatMaxBottom = winHei - chatHei - chatbotTop;
+			}
+		});
+	
+		$(document).off('touchmove', '.js-drag-chatbot');
+		$(document).on('touchmove', '.js-drag-chatbot', function(e){
+			chatbotMoveY = e.originalEvent.changedTouches[0].screenY;
+			chatMove = chatbotStartY - chatbotMoveY;
+	
+			if (chatMove != 0) {
+				$(this).css({'top':chatBtm - chatMove});
+				isChatbotIconMove = true;
+			}
+		});
+	
+		$(document).off('touchend', '.js-drag-chatbot');
+		$(document).on('touchend', '.js-drag-chatbot', function(e){
+			if(chatBtm + (chatMove * -1) > chatMaxBottom){
+				$(this).css({'top': chatMaxBottom});
+			}else if(chatBtm - chatMove < 60){
+				$(this).css({'top': 60});
+			}
+
+			localStorage.setItem('chatbotIconTop', $(this).css('top'));
+			// 좌표 변수 초기화
+			chatbotStartY = 0;
+			chatbotMoveY = 0;
+			chatbotEndY = 0;
+			chatMove = 0;
+			chatBtm = 0;
+			chatMaxBottom = 0;
+			
+			//body 스크롤 초기화
+			var $scroll = Math.abs($('body').offset().top);
+			$('body').removeClass('locked').attr('style','');
+			$(window).scrollTop($scroll);
+			
+			if (isChatbotIconMove) {
+				isChatbotIconMove = false;
+			} else {
+				$(e.target)[0].click();
+			}
+		});
+	}
+    
+    function setCbTouchEvent_AOS() {
+		$(document).off('touchstart', '.js-drag-chatbot');
+		$(document).on('touchstart', '.js-drag-chatbot', function(e){
+			if(e.type == 'touchstart') {
+				var winTop = $(window).scrollTop();
+				chatbotStartY = e.originalEvent.changedTouches[0].screenY;
+				
+				$('body').addClass('locked').css({
+					position: 'fixed',
+					top: winTop * -1,
+					left: 0,
+					width: '100%'
+				});
+				
+				var winHei = $(window).height();
+				var headHei = $('#header').outerHeight();
+				var chatHei = $(this).outerHeight();
+				chatBtm = parseInt($(this).css('top'));
+				// chatMaxBottom = winHei - chatHei - chatbotTop;
+			}
+		});
+
+		$(document).off('touchmove', '.js-drag-chatbot');
+		$(document).on('touchmove', '.js-drag-chatbot', function(e){
+			chatbotMoveY = e.originalEvent.changedTouches[0].screenY;
+			chatMove = chatbotStartY - chatbotMoveY;
+			$(this).css({'top':chatBtm - chatMove});
+		});
+
+		$(document).off('touchend', '.js-drag-chatbot');
+		$(document).on('touchend', '.js-drag-chatbot', function(e){
+			if(chatBtm + (chatMove * -1) > chatMaxBottom){
+				$(this).css({'top': chatMaxBottom});
+			}else if(chatBtm - chatMove < 60){
+				$(this).css({'top': 60});
+			}
+
+			localStorage.setItem('chatbotIconTop', $(this).css('top'));
+			// 좌표 변수 초기화
+			chatbotStartY = 0;
+			chatbotMoveY = 0;
+			chatbotEndY = 0;
+			chatMove = 0;
+			chatBtm = 0;
+			// chatMaxBottom = 0;
+			
+			//body 스크롤 초기화
+			var $scroll = Math.abs($('body').offset().top);
+			$('body').removeClass('locked').attr('style','');
+			$(window).scrollTop($scroll);
+		});
+	}
+	
+	//챗봇 z-index 값 조절
+	var eNomixBannerWrapperZindex = "101"
+	var flagENomixBannerWrapperChk = true;
+	function chkChatbotZindex(){
+		$(document).on("DOMNodeInserted", function(e){
+			if ( !flagENomixBannerWrapperChk ) {
+				return;
+			}
+			if ( $(e.target).prop("id") == "eNomixBannerWrapper" ) {
+				console.log("%c[common rvts.jsp] Node Insert: "+$(e.target).prop("id"), "color:red");
+				$(e.target).css("z-index", eNomixBannerWrapperZindex);
+				flagENomixBannerWrapperChk = false;
+				console.log("%c[common rvts.jsp] "+$(e.target).prop("id")+" z-index is changed: "+eNomixBannerWrapperZindex, "color:red");
+			}
+		});
+	}
+	
+	//$(document).ready(function() {
+    window.addEventListener('load', function() {
+    	
+    	/* 기존 document deviceready 이벤트 시 로직 시점 변경 start */
+    	if ($.cxhia.isApp()) {
+	    	if(hasSlideIframe || rejectIconMenuIds.includes(menuURI)) {
+			    return;
+			}
+			
+			var chatbotId = 'null';
+			if(chatbotId != 'null' && chatbotId != '') {// 챗봇화면->화면연결 : rvts 호출이나 앱 설정을 따르지 않음
+					chatbotFloatView();
+			    return;
+			}
+	           
+	        if(chatbotServiceConnect == "false") {   
+	            return;
+	        }
+	        
+	        var showChatbotFloatFlag = 'Y';
+	        
+	        /**
+	        * chatbotBanner
+	        * Y : 옵션에서 버튼 활성화
+	        * N : 옵션에서 버튼 비활성화
+	        */
+	        kbmobile.preferences.getStringValue("showChatbot", function(chatbotBanner) {
+	        	if (chatbotBanner != 'N' && showChatbotFloatFlag == 'Y') {
+	        		chkChatbotZindex();//chatbot z-index 조절을 위한 함수 호출
+	        		appChatbotShow();
+	       		}
+	        });
+    	}
+        /* 기존 document deviceready 이벤트 시 로직 시점 변경 end */
+        
+        
+    	//챗봇 최초 위치 세팅
+    	$('.chatbot').css({top: $(window).outerHeight() - ($('.chatbot:visible').outerHeight() + chatbotTop)});
+    	
+		if (showIconMenuIds.includes(menuURI)) {
+			$(document).on('visibilitychange', refreshChatbotIcon);
+		}
+		
+		if ($.cxhia.isApp()) {
+	        if (_isIOS) {
+	            setCbTouchEvent_IOS();
+	        } else {
+	        	
+	        	var fixedToastH = $('#fixedToast').length ? $('#fixedToast').outerHeight() + parseInt($('#fixedToast').css('bottom')) : 0;
+	        	
+	        	if (navigator.userAgent.indexOf('kbpayia') > -1) {
+	        		chatMaxBottom = $(window).outerHeight() - 70 - fixedToastH;
+                } else {
+                	chatMaxBottom = $(window).outerHeight() - 128;
+                };
+                
+                //홈앱에서 가려지는 현상 있어 chatbotIonTop값을 초기화
+                if(localStorage.getItem('chatbotIconTop') == null) {
+                	localStorage.setItem('chatbotIconTop', chatMaxBottom +'px');                	
+                }
+	            setCbTouchEvent_AOS();
+	        }
+	    }
+    });
+    
+    /* // 채팅 배너 앱에서만 동작
+    $(document).on('deviceready', function(e) {
+		
+    }); */
+    console.log("[common rvts.jsp] (rvtsServiceConnect:"+rvtsServiceConnect+") (isRvtsConnect:"+isRvtsConnect+") (chatbotServiceConnect:"+chatbotServiceConnect+") (hasSlideIframe:"+hasSlideIframe+")");
+</script>
+<div id="chatbotFloatBanner" class="chatbot js-drag-chatbot" style="display:none;">
+    <div class="chatbot__inner">
+        <div class="chatbot__item">
+            <a href="#" id="btnMoveToChatbot" class="chatbot__ico" onclick="moveToChatbot(); return false;" style="cursor:pointer;"><span class="blind">챗봇</span></a>
+        </div>
+        <a href="#" id="chatbotFloatClose" class="chatbot__close" onclick="chatbotFloatHide(); return false;" style="cursor:pointer;"><span class="blind">챗봇 닫기</span></a>
+        <span class="chatbot__txt chatbot__txt--basic"><em onclick="moveToChatbot(); return false;" style="cursor:pointer;">챗봇상담</em></span>
+    </div>
+</div>
+
+<script>
+	
+    // Header 양쪽 버튼 처리 + footer처리
+    $(function() {     
+    
+    
+          $('.topHead .btnClose, .topHead .cancleBtn').on('click', function(e) {
+        back();
+        return false;
+      });
+               
+          
+	
+		
+      $('.topHead .backBtn').on('click', function(e) {
+    	  
+        if(getHeaderType() != 3) {
+          back();
+        }
+        else {
+          backToPrevStepPage();
+        }
+        return false;
+      });
+      
+      $('.closeBtn').on('click', function(e) {
+        if(!hasStepURI) {
+          pageHistory.remove();
+        }       
+        backToPrevBackMark();
+        return false;
+      });
+    
+      
+      
+    
+	    $('.homeBtn, .btnHome, a[href="/"]').on('click', function(e) {
+	      backToMain();
+	      return false;
+	    });	    
+     
+	}); //$(function()	
+</script>
+<style>
+.fMenu li a {padding:8px 10px !important}
+
+@media screen and (max-width: 320px){
+	.fMenu li a {padding:8px 6px !important}
+}
+</style>
+
+<!-- Footer -->  
+ <!--//모바일통합 앱이 아니면-->
+  <footer style="display:none">
+    <!-- 특정 타입 -->
+    <div id="moveSns" style="display:none"> 
+      <a href="#Wrap" class="topMove">맨위로</a>
+      <ul class="sns">
+        <li><a href="https://blog.naver.com/kbcheckcard" class="blog" title="KB국민카드 블로그 이동"></a></li>
+        <li><a href="https://www.facebook.com/kbkookmincard" class="facebook" title="KB국민카드 페이스북 이동"></a></li>
+        <li><a href="https://instagram.com/kb_kookmincard" class="instar" title="KB국민카드 인스타그램 이동"></a></li>
+      </ul>
+    </div>
+    <!-- //특정 타입 -->
+	 
+    	<a href="tel:1588-1688" title="고객센터 전화연결" class="cs">고객센터 1588-1688</a>
+    
+    <ul class="fMenu">
+      
+      <li><a href="/CMN/DVIEW/MOAMCXHIAAMC0002" class="fs_1">HOME</a></li>
+      
+      <li><a href="/SVC/DVIEW/MSGMCXHIACSC0013" class="fs_1">이용약관</a></li>
+      <li><a href="/SVC/DVIEW/MSGMCXHIACSC0017" class="fs_1"><strong class="fB">개인정보 처리방침</strong></a></li>
+      <li><a href="/SVC/DVIEW/MKAM0840" class="fs_1">상품공시실</a></li>
+    </ul>
+    <div class="addrCopy">
+      <address>서울특별시 종로구 새문안로 3길 30</address> 
+      <p class="copyright">(C) KB KOOKMINCARD</p>
+    </div>
+  </footer>
+
+
+</div><!--/ wrap -->
+<!--sub main B1C-->
+<script src="/CMN/common/mobile/js/common.js?20231219" charset="UTF-8"></script>
+	
+
+ 
+
+<!--인증문자 미 수신 안내-->
+<div id="popAlertCertSMS" class="layerWrap alertWrap2 pop-wrap" style="display:none">
+	<div class="pop-container">
+		<div class="popTop pop-header">
+			<strong class="fs2 tit-dep1">인증문자 미 수신 안내</strong>
+		</div>
+
+		<div class="pop-inner">
+			<div class="popCont cont-area left ta-l" >
+				<p>KB국민카드 대표번호(1588-1688)가 차단되어 있거나, 명의도용 차단서비스를 이용중이라면 인증번호 안내 문자메시지를 받지 못할 수 있습니다.</p>
+
+				<p class="fB fw-bold mt16">휴대폰에서 차단 확인 및 변경 방법</p>
+				<ol class="list-num list-num--s fs_2">
+					<li>1. 설정 → 애플리케이션 → 메시지 → 메시지설정 → 스팸 및 차단 번호 관리 <br>(아이폰 : 설정 → 앱 → 메시지 → 차단된 연락처)</li>
+					<li>2. 목록에서 KB국민카드 대표번호(1588-1688) 삭제</li>
+				</ol>
+				<p class="refer txt-refer mt12">명의도용 차단서비스 이용여부는 나이스평가정보 고객센터(1600-1522) 또는 가입된 통신사를 통해 확인해 주세요</p>
+				<p class="mt16 mb24">KB국민카드 고객센터: <a href="tel:1588-1688">1588-1688</a></p>
+			</div>
+		</div>
+		<div class="btnBox fixed-area btn-wrap">
+			<a href="javascript:void(0);" onclick="if(typeof(closePopup) !== 'undefined') {closePopup('#popAlertCertSMS')} else {commonJs.layerPopup.closePopup('#popAlertCertSMS')};" class="fs2 btn btn--yellow">확인</a>
+		</div>
+	</div>
+</div>
+<!--//인증문자 미 수신 안내-->
+	<!-- [footer] 영역 끝 -->
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script>
+function getLoadEventEnd(cb){
+	window.addEventListener("load", (e) => {
+		requestAnimationFrame(() => {
+			var rstVl = -1;
+			
+			try {
+				const navi = performance.getEntriesByType("navigation")[0];
+				if ( typeof(navi) != "undefined" && typeof( navi.loadEventEnd ) == "number" ) {
+					rstVl = Math.round(navi.loadEventEnd);
+				} else {
+					throw new Error("Navigation Timing Level 2 not supported");
+				}
+			} catch(e) {
+				//console.warn("getLoadEventEnd failed: ", e.message);
+				return Metric_Loadtime(cb);
+			}
+			
+			//console.log("getLoadEventEnd result: ", rstVl);
+			return cb(String(rstVl));
+		});
+	});
+}
+/**
+* 해당 함수는 반드시 getLoadEventEnd 실패시에만 호출하도록 한다.
+* 페이지 속도 = navigationStart 부터 loadEventEnd 까지의 경과 시간(ms)
+* navigationSTart : 사용자가 현재 문서를 로드하기 위해 액션을 취한 시점( 예: 링크 클릭, 주소 입력 )
+* loadEventEnd : window.onload 이벤트가 끝난 시점
+*/
+function Metric_Loadtime(cb){
+	var loadtime = -1;
+	try{
+		if(window.performance.timing){ // Timing API
+			const loadEventEnd = window.performance.timing.loadEventEnd;
+			const navigationStart = window.performance.timing.navigationStart;
+			
+			if(typeof loadEventEnd !== "number" || typeof navigationStart !== "number"){
+				throw new Error("Invalid timing data from Timing API.");
+			} else {
+				loadtime = loadEventEnd - navigationStart;
+			}
+			if(loadtime < 0 || !Number.isFinite(loadtime)){
+				throw new Error("Calculated load is invalid: " + loadtime);
+			}
+		} else {
+			throw new Error("No performance timing API available.");
+		}
+	}catch (error){
+		loadtime = -1;
+		//console.warn("Metric_Loadtime failed: ", error.message);
+	}
+	//console.log("Metric_Loadtime result: ", loadtime);
+	return cb(String(loadtime));
+}
+</script>
+
+		<!-- Google Tag Manager -->
+		
+		
+		<script>
+		window.addEventListener("load", function() {
+		(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+			new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+			j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+			'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+			})(window,document,'script','dataLayer',"GTM-NQ7S8FJ");
+		});
+		</script>
+		<!-- End Google Tag Manager -->
+		
+		<!-- Google Tag Manager (noscript) -->
+		<noscript>
+			<iframe src="https://www.googletagmanager.com/ns.html?id=GTM-NQ7S8FJ" height="0" width="0" style="display:none;visibility:hidden"></iframe>
+		</noscript>
+		<!-- End Google Tag Manager (noscript) -->
+		<script type='text/javascript'>
+		//<![CDATA[
+			
+			try {
+				window.dataLayer = window.dataLayer || [];
+				window.dataLayer.push({
+					'dimension1': '',
+					'dimension2': 'N',
+					'dimension3': 'U',
+					'dimension4': 'MOBILE WEB',
+					'dimension5': '모바일',
+					'dimension6': '서비스',
+					'dimension7': 'MSDMCXHIASVC0028?mainCC=a',
+					'dimension10': '해외이용종합안내>해외이용·송금>편의서비스',
+					'dimension11': '',
+					'dimension12': '',
+					'dimension13': '',
+					'dimension20': '',
+					'dimension21': ''
+	
+				});
+			} catch (e) {}
+		
+			try { 
+			
+			
+			 
+			
+			} catch (e) {}
+			
+			getLoadEventEnd(function(loadEventEnd){
+				window.dataLayer.push({'dimension40': loadEventEnd});
+			});
+		//]]>
+		</script>
+
+	
+		
+
+			<!-- anti-flicker snippet (recommended)  -->
+			<!-- 
+			<style>.async-hide { opacity: 0 !important} </style>
+			<script>(function(a,s,y,n,c,h,i,d,e){s.className+=' '+y;h.start=1*new Date;
+			h.end=i=function(){s.className=s.className.replace(RegExp(' ?'+y),'')};
+			(a[n]=a[n]||[]).hide=h;setTimeout(function(){i();h.end=null},c);h.timeout=c;
+			})(window,document.documentElement,'async-hide','dataLayer',2000,
+			{'OPT-TW8PRM3':true});</script>
+			 -->
+			
+			<!-- Optimize 수동 설치 코드 -->
+			<!-- <script src="https://www.googleoptimize.com/optimize.js?id=OPT-TW8PRM3"></script> -->
+			
+			
+				<script type="text/javascript">
+				var AndroidWebview = 'GA_Android';			// Android userAgent
+				var iOS_Webview_WK = 'GA_iOS_WK';			// WKWebView userAgent
+				var CommonData = new Object;
+				var isMoveFlag = false;
+				var browserInfo = navigator.userAgent;
+				
+				/*const offset = new Date().getTimezoneOffset()*60000;
+				const timeNow = new Date(Date.now() - offset);
+				const timestamp =  timeNow.toISOString();
+				const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+				*/
+				const timeNow = new Date();
+				const timestamp =  timeNow.toISOString();
+				const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+				
+				
+				/* 오브젝트 선언 */
+				var KB_GA4DATA = ({
+					'location': 'MSDMCXHIASVC0028?mainCC=a',
+					'title': '해외이용종합안내>해외이용·송금>편의서비스',
+					'semiMbrIdf':''
+				});
+				
+				//통합로그 적재를 위한 오브젝트 선언
+				var KB_TOTDATA = ({
+					'stype': 'kbmobileweb',
+					'userId': 'WAPUSER',
+					'timestamp':timestamp,
+					'timezone':timezone,
+					'clientip':'180.68.29.173',
+					'user-agent':'KB-AI-Challenge-Research/0.1 (student contest submission; respects robots.txt)'
+				});
+				
+				getLoadEventEnd(function(loadEventEnd){
+					
+					
+					//모바일 웹 전용 값 설정
+					
+					
+						KB_GA4DATA["dimension9"] = "MOBILE WEB";
+						KB_TOTDATA["dimension9"] = "MOBILE WEB";
+					
+					
+					//dimension13 전송 값 길이 조절
+					var urlStr = location.href;
+					var urlCheckDelim = "MSDMCXHIASVC0028";//DVIEW 및 VIEW 모두 포함
+					var urlCheckLimit = 100;
+					
+					if ( urlStr.length > urlCheckLimit ) {
+						var startIndex = urlStr.indexOf(urlCheckDelim);
+						var endIndex = startIndex + urlCheckLimit;
+						urlStr  = urlStr.substring(startIndex, endIndex);
+					}
+
+					var refererURL = ""
+
+					//모바일 웹 및 통합앱 값 설정
+					KB_GA4DATA["dimension10"] = "카드";
+					KB_GA4DATA["dimension11"] = "서비스";
+					KB_GA4DATA["dimension12"] = "MSDMCXHIASVC0028";
+					KB_GA4DATA["dimension13"] = urlStr;
+					KB_GA4DATA["dimension27"] = refererURL;
+					KB_GA4DATA["dimension40"] = loadEventEnd;
+
+					KB_TOTDATA["dimension10"] = "카드";
+					KB_TOTDATA["dimension11"] = "서비스";
+					KB_TOTDATA["dimension12"] = "MSDMCXHIASVC0028";
+					KB_TOTDATA["dimension13"] = urlStr;
+					KB_TOTDATA["dimension27"] = refererURL;
+					KB_TOTDATA["dimension40"] = loadEventEnd;
+					
+					GA_Screen(KB_GA4DATA);
+				});
+				
+				function Convert_Element(RemoveValue){
+				  var return_Value = new Object();
+				  for(key in RemoveValue){
+				      if(RemoveValue[key] === "" || RemoveValue[key] === undefined || RemoveValue[key] === null){
+				    delete RemoveValue[key]
+				      }
+				  }
+				  return_Value = RemoveValue;
+				  return return_Value
+				}
+				
+								
+				//하이브리드 코드
+				function Hybrid(GADATA){
+				  var emptyObject = JSON.parse(JSON.stringify(Convert_Element(CommonData)));
+				  emptyObject = jQuery.extend(emptyObject, Convert_Element(GADATA));
+				 
+				  var sendGa4Data = kbmobile.device.sendGa4Data; 
+				  if(typeof sendGa4Data != 'undefined')
+				  {
+					  if(_isMobileAppKIA || _isMobileAppKAP)
+					  	{
+					  		sendGa4Data(emptyObject);
+					  	} else { console.log("Hybrid 함수 에러") }
+				  }				  
+				}
+				
+				//초기 화면 코드
+				//브라우저 버전에 따른 분기 처리 코드 추가 필요 
+				function GA_Screen(Object){
+				  try{
+				  	CommonData = Object;
+				    CommonData.type = "P"
+				    
+					        var keyword = Object.dimension35;
+				            if(keyword!='undefined'){
+				    	       KB_TOTDATA['dimension35'] = keyword;
+				            }					    
+				            GA_totallogSend(KB_TOTDATA);
+				    
+				    
+				    Hybrid(CommonData); 
+				    
+				  }catch(e){
+				    if(e.message.indexOf("dataLayer")){ console.log("GA_Screen 함수호출 필요");}
+				    else{ console.log("APP 코드 시 ERROR") }
+				  }
+				}
+				  
+				// 이벤트 코드 
+				function GA_Event(Object){
+					try{
+						
+							  var eventName = Object.dimension28;
+						      if(eventName!='undefined'){
+						    	  KB_TOTDATA['dimension28'] = eventName;
+						      }
+							  var eventDetailName = Object.dimension29;
+						      if(eventDetailName!='undefined'){
+						    	 KB_TOTDATA['dimension29'] = eventDetailName;
+						     }
+						     GA_totallogSend(KB_TOTDATA);
+					 
+						
+						if(_isMobileAppKIA || _isMobileAppKAP) {
+							GAData = Object;
+							GAData.type = "E";
+							Hybrid(GAData);
+						}
+					}catch(e){
+						if ( e.message.indexOf("dataLayer") ) {
+							console.log("GA_Event 함수 에러");
+						} else {
+							console.log("APP 코드 시 ERROR");
+						}
+					}
+				}
+				
+				//카드 발급 프로세스 popup Layer 수집
+				function GA_CardIssuedLayer(Object){
+					GAData = Object
+					var urlStr = GAData.strUrl;
+					
+					KB_GA4DATA["dimension13"] = urlStr;
+					KB_TOTDATA["dimension13"] = urlStr;
+					GA_Screen(KB_GA4DATA);
+				}
+				
+				
+				function GA_totallogSend(Object){
+					$.ajax({
+						url : "/CMN/API/KBDATAM?responseContentType=json",
+						data : Object,
+						dataType : "json",
+						type : "post",
+						headers : {"cache-control": "no_cache"},
+						contentType : "application/x-www-form-urlencoded;charset=UTF-8",
+						success : function(data){
+							console.log(data);
+						},
+						error : function(e) {
+							console.error(e);
+						},
+						complete : function (xhr, status) {
+							if (window.redirectUrlAfterGa) location.href = window.redirectUrlAfterGa;
+						}
+					});
+				};
+				
+				</script>
+					
+		
+
+		<script type='text/javascript'>
+		//<![CDATA[
+		
+		
+		
+		
+		
+			
+				try {
+					localStorage.removeItem("mwAutoLogoutTime");
+				} catch (e) {}
+			
+		
+		//]]>
+		
+		</script>
+
+
+
+
+</body>
+</html>

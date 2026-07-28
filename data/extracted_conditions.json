@@ -1,0 +1,107 @@
+[
+  {
+    "chunk": {
+      "chunk_id": "card_overseas_after#0006",
+      "source_id": "card_overseas_after",
+      "goal": "overseas_payment_online",
+      "url": "https://m.kbcard.com/SVC/DVIEW/MSDMCXHIASVCD0029?selectedTap=1",
+      "fetched_at": "2026-07-27T17:44:55+09:00",
+      "kind": "list_item",
+      "section": "해외거래정지 등록 · 해제",
+      "text": "해외에서 카드 사용이 필요한 경우 홈페이지/KB Pay, KB국민카드 고객센터(1588-1688), 영업점 방문을 통해 해외거래정지 해제가 필요합니다."
+    },
+    "condition": {
+      "id": "c_overseas_block",
+      "label": "해외거래정지가 해제되어 있어야 합니다",
+      "category": "setting",
+      "predicate": {
+        "subject": "card.overseas_block_online",
+        "op": "eq",
+        "value_json": "false"
+      },
+      "severity": "blocking",
+      "remedy": {
+        "actionable_in_app": true,
+        "channels": [
+          "app:KB Pay",
+          "web:홈페이지",
+          "callcenter:1588-1688",
+          "branch:영업점"
+        ],
+        "primary_path": "KB Pay 에서 해외거래정지 해제",
+        "note": null
+      },
+      "evidence_quote": "해외에서 카드 사용이 필요한 경우 홈페이지/KB Pay, KB국민카드 고객센터(1588-1688), 영업점 방문을 통해 해외거래정지 해제가 필요합니다.",
+      "confidence": "high",
+      "note": null
+    }
+  },
+  {
+    "chunk": {
+      "chunk_id": "card_overseas_before#0001",
+      "source_id": "card_overseas_before",
+      "goal": "overseas_payment_online",
+      "url": "https://m.kbcard.com/SVC/DVIEW/MSDMCXHIASVCD0025?selectedTap=5",
+      "fetched_at": "2026-07-27T17:44:48+09:00",
+      "kind": "list_item",
+      "section": "해외 출국/결제 전 확인해주세요!",
+      "text": "카드 뒷면 본인 서명을 기재해주세요. 서명이 없는 카드에 노출·복제 사고가 발생하는 경우 보상이 어려울 수 있습니다."
+    },
+    "condition": {
+      "id": "c_card_signature",
+      "label": "카드 뒷면에 본인 서명이 되어 있어야 합니다",
+      "category": "document",
+      "predicate": {
+        "subject": "card.signature",
+        "op": "eq",
+        "value_json": "true"
+      },
+      "severity": "warning",
+      "remedy": {
+        "actionable_in_app": false,
+        "channels": [
+          "self:실물 카드"
+        ],
+        "primary_path": "카드 뒷면에 직접 서명",
+        "note": null
+      },
+      "evidence_quote": "카드 뒷면 본인 서명을 기재해주세요. 서명이 없는 카드에 노출·복제 사고가 발생하는 경우 보상이 어려울 수 있습니다.",
+      "confidence": "high",
+      "note": null
+    }
+  },
+  {
+    "chunk": {
+      "chunk_id": "card_overseas_before#0002",
+      "source_id": "card_overseas_before",
+      "goal": "overseas_payment_online",
+      "url": "https://m.kbcard.com/SVC/DVIEW/MSDMCXHIASVCD0025?selectedTap=5",
+      "fetched_at": "2026-07-27T17:44:48+09:00",
+      "kind": "list_item",
+      "section": "해외 출국/결제 전 확인해주세요!",
+      "text": "카드와 여권 영문명이 일치하는지 확인해주세요. 다른 경우 해외 결제 시 제한이 있을 수 있습니다."
+    },
+    "condition": {
+      "id": "c_name_matches_passport",
+      "label": "카드 영문명과 여권 영문명이 일치해야 합니다",
+      "category": "document",
+      "predicate": {
+        "subject": "card.name_matches_passport",
+        "op": "eq",
+        "value_json": "true"
+      },
+      "severity": "blocking",
+      "remedy": {
+        "actionable_in_app": false,
+        "channels": [
+          "self:본인 조치"
+        ],
+        "primary_path": "카드와 여권 영문명 일치 확인",
+        "note": null
+      },
+      "evidence_quote": "카드와 여권 영문명이 일치하는지 확인해주세요. 다른 경우 해외 결제 시 제한이 있을 수 있습니다.",
+      "confidence": "high",
+      "note": null
+    }
+  }
+]

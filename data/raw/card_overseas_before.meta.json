@@ -1,0 +1,13 @@
+{
+  "id": "card_overseas_before",
+  "goal": "overseas_payment_online",
+  "title": "해외 체류/결제 전 안내",
+  "url": "https://m.kbcard.com/SVC/DVIEW/MSDMCXHIASVCD0025?selectedTap=5",
+  "host": "m.kbcard.com",
+  "fetched_at": "2026-07-27T17:44:48+09:00",
+  "http_status": 200,
+  "content_type": "text/html; charset=UTF-8",
+  "bytes": 147662,
+  "sha256": "917317e67884b16b6ba118f2c72dbbd55fe273420579fb9191bd10eeb8745263",
+  "collection_method": "auto"
+}
