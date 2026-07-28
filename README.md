@@ -156,3 +156,13 @@ cp .env.example .env          # API 키 입력
 - [재현 절차](docs/REPRODUCE.md) — 클린 설치부터 실행까지
 - [AI 사용 기록](docs/AI_USAGE.md)
 - [AGENTS.md](AGENTS.md) — 개발 규약
+
+## clone 후 최초 1회 (필수)
+
+```bash
+git config core.hooksPath .githooks   # 키 유출 차단 훅 활성화
+cp .env.example .env                  # 키는 각자 발급받아 입력
+pip install -r requirements.txt
+```
+
+> 훅은 저장소에 포함돼 있지만 **자동 활성화되지 않습니다.** 위 명령을 실행해야 `.env`·API 키 커밋이 차단됩니다.

@@ -159,28 +159,16 @@ def extract_one(chunk: dict, *, model: str, client) -> ExtractionOut:
     return msg.parsed
 
 
-def run(goal: str | None, limit: int | None, dry_run: bool, grep: str | None = None) -> None:
+def _pick_chunks(goal: str | None, limit: int | None, grep: str | None) -> list[dict]:
     chunks = select(goal)
     if grep:
         # 프롬프트 튜닝용: 특정 키워드가 든 청크만 골라 소량으로 시험한다
         pat = re.compile(grep)
         chunks = [c for c in chunks if pat.search(c["text"])]
-    if limit:
-        chunks = chunks[:limit]
+    return chunks[:limit] if limit else chunks
 
-    print(f"대상 청크 {len(chunks)}개" + (f" (goal={goal})" if goal else ""))
-    if dry_run:
-        for c in chunks[:20]:
-            print(f"  [{c['kind']:10s}] {c['text'][:100]}")
-        print("\n--dry-run: LLM 호출 없음")
-        return
 
-    if not MODEL:
-        raise SystemExit("EXTRACT_MODEL 환경변수를 설정하세요 (.env 참고)")
-
-    from openai import OpenAI          # 여기서만 import — judge/ 는 openai 를 모른다
-    client = OpenAI()
-
+def _extract_all(chunks: list[dict], client) -> tuple[list[dict], list[str]]:
     kept_all: list[dict] = []
     rejected_all: list[str] = []
 
@@ -196,21 +184,42 @@ def run(goal: str | None, limit: int | None, dry_run: bool, grep: str | None = N
 
         kept, rejected = validate(out, c["text"])
         rejected_all.extend(f"{c['chunk_id']} / {r}" for r in rejected)
-        for k in kept:
-            kept_all.append({"chunk": c, "condition": k.model_dump()})
+        kept_all.extend({"chunk": c, "condition": k.model_dump()} for k in kept)
 
         print(f"  [{i}/{len(chunks)}] {c['chunk_id']}  조건 {len(kept)}개"
               + (f" (폐기 {len(rejected)})" if rejected else ""))
 
-    print(f"\n추출 {len(kept_all)}건 / 폐기 {len(rejected_all)}건")
-    if rejected_all:
+    return kept_all, rejected_all
+
+
+def _report(kept: list[dict], rejected: list[str]) -> None:
+    print(f"\n추출 {len(kept)}건 / 폐기 {len(rejected)}건")
+    if rejected:
         print("\n── 폐기 사유 (프롬프트 개선 힌트) ──")
-        for r in rejected_all[:20]:
+        for r in rejected[:20]:
             print(f"  {r}")
 
     out_path = LLM_CACHE_DIR.parent / "extracted_conditions.json"
-    out_path.write_text(json.dumps(kept_all, ensure_ascii=False, indent=2), encoding="utf-8")
+    out_path.write_text(json.dumps(kept, ensure_ascii=False, indent=2), encoding="utf-8")
     print(f"\n→ {out_path}")
+
+
+def run(goal: str | None, limit: int | None, dry_run: bool, grep: str | None = None) -> None:
+    chunks = _pick_chunks(goal, limit, grep)
+    print(f"대상 청크 {len(chunks)}개" + (f" (goal={goal})" if goal else ""))
+
+    if dry_run:
+        for c in chunks[:20]:
+            print(f"  [{c['kind']:10s}] {c['text'][:100]}")
+        print("\n--dry-run: LLM 호출 없음")
+        return
+
+    if not MODEL:
+        raise SystemExit("EXTRACT_MODEL 환경변수를 설정하세요 (.env 참고)")
+
+    from openai import OpenAI          # 여기서만 import — judge/ 는 openai 를 모른다
+
+    _report(*_extract_all(chunks, OpenAI()))
 
 
 if __name__ == "__main__":
