@@ -10,7 +10,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from fastapi import FastAPI, HTTPException
-from fastapi.responses import FileResponse
+from fastapi.responses import FileResponse, Response
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel
 
@@ -104,6 +104,12 @@ def judge_endpoint(req: JudgeRequest) -> Verdict:
 @app.get("/")
 def index() -> FileResponse:
     return FileResponse(WEB_DIR / "index.html")
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon() -> Response:
+    """브라우저 기본 요청. 파비콘이 없어 404 가 콘솔에 남는 것을 막는다."""
+    return Response(status_code=204)
 
 
 if WEB_DIR.exists():

@@ -5,98 +5,196 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>왜 안 되지? — 실행 실패 원인 판정</title>
 <style>
-  :root{
-    --bg:#f4f4f6; --card:#fff; --ink:#1c1c1e; --sub:#6b6b70; --line:#e4e4e7;
-    --bad:#c8372d; --bad-bg:#fdf2f1; --ok:#1f7a4d; --ok-bg:#f1f8f4;
-    --unk:#7a6a1f; --unk-bg:#fdfaec; --accent:#f5c518;
-  }
-  *{box-sizing:border-box}
-  body{margin:0;background:var(--bg);color:var(--ink);
-    font-family:"Pretendard","Malgun Gothic","맑은 고딕",-apple-system,sans-serif;
-    font-size:15px;line-height:1.6;word-break:keep-all}
-  .wrap{max-width:460px;margin:0 auto;padding:16px 14px 60px}
+:root{
+  /* 종이 위의 판정문 — 서류의 질감을 배경으로, 상태는 잉크로 */
+  --paper:#f6f5f2; --surface:#fff; --surface-2:#fbfaf8;
+  --ink:#191c1f; --ink-2:#5c636b; --ink-3:#8b9199;
+  --rule:#e4e1db; --rule-2:#eeece7;
+  --stop:#a83226;        /* 막힘 */
+  --pass:#2c6349;        /* 통과 */
+  --hold:#9aa0a6;        /* 확인 불가 — 채도를 주지 않는다 */
+  --mark:#c19a2e;        /* 강조. CTA·활성에만 */
+  --s1:4px; --s2:8px; --s3:12px; --s4:16px; --s5:24px; --s6:32px; --s7:48px;
+  --r-sm:4px; --r-md:10px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-text-size-adjust:100%}
+body{
+  background:var(--paper); color:var(--ink);
+  font-family:system-ui,-apple-system,"Segoe UI","Malgun Gothic","맑은 고딕",sans-serif;
+  font-size:16px; line-height:1.65; word-break:keep-all;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:520px;margin:0 auto;padding:var(--s5) var(--s4) var(--s7)}
 
-  header{padding:10px 2px 16px}
-  header h1{font-size:19px;margin:0 0 4px;letter-spacing:-.02em}
-  header p{margin:0;color:var(--sub);font-size:13px}
+/* ── 머리 ── */
+.eyebrow{
+  font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+  color:var(--ink-3); font-weight:700; margin-bottom:var(--s2);
+}
+h1{font-size:26px; line-height:1.25; letter-spacing:-.02em; font-weight:800}
+.sub{color:var(--ink-2); font-size:14.5px; margin-top:var(--s2)}
+.sub b{color:var(--ink); font-weight:700}
 
-  /* 실제/가상 경계 — 의심받을 것을 먼저 밝힌다 */
-  .provenance{display:flex;gap:6px;flex-wrap:wrap;margin:10px 0 16px}
-  .badge{font-size:11px;padding:3px 8px;border-radius:99px;border:1px solid var(--line);background:#fff}
-  .badge.real{border-color:#bfe3cd;background:var(--ok-bg);color:var(--ok)}
-  .badge.mock{border-color:#e9dcb0;background:var(--unk-bg);color:var(--unk)}
+/* 출처 고지 — 의심받을 것을 먼저 밝힌다 */
+.origin{
+  display:flex; gap:var(--s2); flex-wrap:wrap;
+  margin-top:var(--s4); padding-top:var(--s3); border-top:1px solid var(--rule);
+}
+.tag{
+  font-size:11.5px; padding:3px var(--s2); border-radius:var(--r-sm);
+  border:1px solid var(--rule); background:var(--surface); color:var(--ink-2);
+}
+.tag b{color:var(--ink)}
+.tag.real{border-color:#cfe0d6; background:#f2f8f4}
+.tag.mock{border-color:#e8e2cc; background:#fbf8ee}
 
-  .panel{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;margin-bottom:12px}
-  label{display:block;font-size:12px;color:var(--sub);margin:0 0 5px}
-  select,input,button{font:inherit;width:100%;padding:10px;border:1px solid var(--line);
-    border-radius:8px;background:#fff;color:var(--ink)}
-  .row{margin-bottom:10px}
-  button{background:var(--ink);color:#fff;border:0;font-weight:700;cursor:pointer}
-  button:disabled{opacity:.5;cursor:default}
+/* ── 조작부 ── */
+.panel{
+  background:var(--surface); border:1px solid var(--rule); border-radius:var(--r-md);
+  padding:var(--s4); margin:var(--s5) 0 var(--s4);
+}
+.field + .field{margin-top:var(--s3)}
+label{display:block; font-size:12px; color:var(--ink-2); margin-bottom:6px; font-weight:600}
+select{
+  width:100%; padding:11px var(--s3); font:inherit; font-size:15px;
+  border:1px solid var(--rule); border-radius:var(--r-sm);
+  background:var(--surface-2); color:var(--ink); min-height:44px;
+}
+select:focus-visible{outline:2px solid var(--mark); outline-offset:1px}
+button{
+  width:100%; margin-top:var(--s4); padding:13px; min-height:48px;
+  font:inherit; font-size:15px; font-weight:700; cursor:pointer;
+  border:0; border-radius:var(--r-sm); background:var(--ink); color:#fff;
+}
+button:hover{background:#000}
+button:focus-visible{outline:2px solid var(--mark); outline-offset:2px}
+button[disabled]{opacity:.45; cursor:default}
 
-  /* 판정 배너 */
-  .verdict{border-radius:12px;padding:14px;margin-bottom:12px;border:1px solid}
-  .verdict h2{margin:0 0 3px;font-size:17px}
-  .verdict p{margin:0;font-size:13px}
-  .v-blocked{background:var(--bad-bg);border-color:#f0cfcb;color:var(--bad)}
-  .v-ok{background:var(--ok-bg);border-color:#c6e5d4;color:var(--ok)}
-  .v-indeterminate{background:var(--unk-bg);border-color:#e9dcb0;color:var(--unk)}
+/* ── 판정 요약 ── */
+.verdict{margin:var(--s6) 0 var(--s5)}
+.verdict .line{
+  display:flex; align-items:baseline; gap:var(--s2);
+  font-size:11px; letter-spacing:.14em; font-weight:700; color:var(--ink-3);
+  text-transform:uppercase; margin-bottom:6px;
+}
+.verdict h2{font-size:24px; line-height:1.3; letter-spacing:-.02em}
+.verdict p{color:var(--ink-2); font-size:14.5px; margin-top:var(--s1)}
+.v-blocked h2{color:var(--stop)}
+.v-ok h2{color:var(--pass)}
+.v-indeterminate h2{color:var(--ink-2)}
 
-  .group{margin-bottom:14px}
-  .group>h3{font-size:12px;color:var(--sub);margin:0 0 6px;font-weight:700;letter-spacing:.02em}
+.tally{
+  display:flex; gap:var(--s4); margin-top:var(--s4);
+  padding:var(--s3) 0; border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);
+}
+.tally div{font-size:12px; color:var(--ink-3)}
+.tally b{display:block; font-size:19px; color:var(--ink); font-weight:800; line-height:1.2}
+.tally .n-stop b{color:var(--stop)}
 
-  .item{background:var(--card);border:1px solid var(--line);border-radius:10px;
-    padding:11px 12px;margin-bottom:7px}
-  .item.bad{border-left:3px solid var(--bad)}
-  .item.unk{border-left:3px solid var(--unk)}
-  .item.low{border-left:3px solid #b0a0d0}
-  .item .lab{display:flex;gap:7px;align-items:flex-start;font-size:14px}
-  .mark{flex:0 0 auto;font-weight:700;width:14px;text-align:center}
-  .mark.bad{color:var(--bad)} .mark.ok{color:var(--ok)} .mark.unk{color:var(--unk)}
+/* ── 판정 레일 : 이 화면의 서명 ──
+   조건이 세로선으로 이어지다가 막힌 지점에서 끊긴다.
+   확인 불가 항목은 색을 주지 않고 점선으로 — 판단을 유보했음을 시각적 공백으로 표현. */
+.rail{margin-top:var(--s5)}
+.rail h3{
+  font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-3); font-weight:700; margin-bottom:var(--s3);
+}
+.node{position:relative; padding:0 0 var(--s4) 28px}
+.node::before{                      /* 세로 레일 */
+  content:""; position:absolute; left:7px; top:18px; bottom:0;
+  width:1px; background:var(--rule);
+}
+.node:last-child::before{display:none}
+.node::after{                       /* 상태 마커 */
+  content:""; position:absolute; left:2px; top:6px;
+  width:11px; height:11px; border-radius:50%;
+  background:var(--surface); border:2px solid var(--rule);
+}
+.node.stop::after{border-color:var(--stop); background:var(--stop)}
+.node.stop::before{background:var(--stop); opacity:.28}
+.node.pass::after{border-color:var(--pass); background:var(--pass)}
+.node.hold::after{border-color:var(--hold); border-style:dotted; background:var(--surface)}
+.node.hold .label{color:var(--ink-2)}
 
-  .why{margin:7px 0 0 21px;font-size:12.5px;color:var(--sub)}
-  .why b{color:var(--ink)}
+.label{font-size:15px; line-height:1.5; font-weight:600}
+.node.stop .label{color:var(--stop)}
+.meta{font-size:13px; color:var(--ink-2); margin-top:5px}
+.meta b{color:var(--ink); font-weight:600}
 
-  /* 앱에서 못 고치는 조건 — 우리 핵심 인사이트 */
-  .offapp{display:inline-block;margin-top:5px;font-size:11px;font-weight:700;
-    color:#8a3b12;background:#fdf0e6;border:1px solid #f0d3bb;border-radius:5px;padding:2px 6px}
+/* 앱에서 못 고치는 조건 — 우리 핵심 인사이트를 화면에 렌더 */
+.offapp{
+  display:inline-block; margin-top:var(--s2);
+  font-size:12px; font-weight:700; color:#8a3b12;
+  background:#fbf0e7; border:1px solid #eed6bf;
+  border-radius:var(--r-sm); padding:3px var(--s2);
+}
 
-  details{margin:7px 0 0 21px}
-  summary{font-size:12px;color:var(--sub);cursor:pointer;user-select:none}
-  blockquote{margin:6px 0 0;padding:8px 10px;background:#fafafb;border-left:2px solid var(--accent);
-    font-size:12.5px;color:#3a3a3c}
-  blockquote cite{display:block;margin-top:5px;font-style:normal;font-size:11px;color:var(--sub)}
+/* 근거 — 문서에서 잘라온 조각처럼 */
+details{margin-top:var(--s2)}
+summary{
+  font-size:12.5px; color:var(--ink-2); cursor:pointer; list-style:none;
+  display:inline-flex; align-items:center; gap:5px; padding:2px 0;
+}
+summary::-webkit-details-marker{display:none}
+summary::before{content:"▸"; font-size:10px; color:var(--ink-3)}
+details[open] summary::before{content:"▾"}
+summary:focus-visible{outline:2px solid var(--mark); outline-offset:2px}
+blockquote{
+  margin-top:var(--s2); padding:var(--s3);
+  background:var(--surface-2); border-left:2px solid var(--mark);
+  border-radius:0 var(--r-sm) var(--r-sm) 0;
+  font-size:13.5px; line-height:1.7; color:#3a4046;
+}
+blockquote cite{
+  display:block; margin-top:var(--s2); font-style:normal;
+  font-size:11.5px; color:var(--ink-3); letter-spacing:.01em;
+}
 
-  .met-list{font-size:13px;color:var(--sub);background:var(--card);border:1px solid var(--line);
-    border-radius:10px;padding:10px 12px}
-  .met-list span{display:block;margin:2px 0}
-  .met-list .low-note{color:#5b4a86}
-  .met-list .low-note em{display:block;margin:2px 0 4px 14px;font-style:normal;
-    font-size:11.5px;color:var(--sub)}
+/* 충족 목록 — 접어서 조용히 */
+.met{margin-top:var(--s5); border-top:1px solid var(--rule); padding-top:var(--s4)}
+.met ul{list-style:none}
+.met li{
+  font-size:13.5px; color:var(--ink-2); padding:3px 0 3px 20px; position:relative;
+}
+.met li::before{content:"✓"; position:absolute; left:2px; color:var(--pass); font-size:12px}
+.met li.interp::before{content:"~"; color:#7a6a9e}
+.met li em{display:block; font-style:normal; font-size:12px; color:var(--ink-3); margin-top:2px}
 
-  .foot{margin-top:18px;font-size:11px;color:var(--sub);text-align:center;line-height:1.7}
-  .err{background:var(--bad-bg);border:1px solid #f0cfcb;color:var(--bad);
-    padding:10px;border-radius:8px;font-size:13px}
+.foot{
+  margin-top:var(--s6); padding-top:var(--s4); border-top:1px solid var(--rule);
+  font-size:12px; color:var(--ink-3); line-height:1.75;
+}
+.foot b{color:var(--ink-2)}
+.err{
+  background:#fdf3f2; border:1px solid #f0d5d1; color:var(--stop);
+  padding:var(--s3); border-radius:var(--r-sm); font-size:14px;
+}
+@media (prefers-reduced-motion:no-preference){
+  .node{animation:in .34s ease-out both}
+  @keyframes in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
+    <div class="eyebrow">실행 실패 원인 판정</div>
     <h1>왜 안 되지?</h1>
-    <p>은행 앱이 말해주지 않는 <b>실패의 진짜 원인</b>을 근거와 함께 지목합니다.</p>
-    <div class="provenance">
-      <span class="badge real">조건·근거 = 실제 KB 공개문서</span>
-      <span class="badge mock">사용자 상태 = 데모용 가상값</span>
+    <p class="sub">은행 앱은 <b>무엇이 막고 있는지</b> 말해주지 않습니다.<br>흩어진 약관·이용조건을 대조해 <b>근거와 함께</b> 지목합니다.</p>
+    <div class="origin">
+      <span class="tag real"><b>조건·근거</b> KB 공개문서에서 추출</span>
+      <span class="tag mock"><b>사용자 상태</b> 데모용 가상값</span>
     </div>
   </header>
 
   <div class="panel">
-    <div class="row">
+    <div class="field">
       <label for="goal">무엇을 하려고 하시나요</label>
       <select id="goal"></select>
     </div>
-    <div class="row">
-      <label for="profile">사용자 상태 (데모)</label>
+    <div class="field">
+      <label for="profile">사용자 상태</label>
       <select id="profile"></select>
     </div>
     <button id="run">판정하기</button>
@@ -104,17 +202,99 @@
 
   <div id="out"></div>
 
-  <div class="foot">
-    조건은 KB 공개 안내·약관·FAQ에서 추출했으며 각 항목에 출처와 수집일이 있습니다.<br>
+  <p class="foot">
+    조건은 KB 공개 안내·약관·FAQ에서 추출했으며 항목마다 <b>출처와 수집일</b>이 있습니다.<br>
     판정은 규칙 엔진이 수행하며 <b>LLM이 개입하지 않습니다</b> — 같은 입력엔 같은 결과가 나옵니다.
-  </div>
+  </p>
 </div>
 
 <script>
-const $ = (s) => document.querySelector(s);
-const esc = (s) => String(s ?? "").replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $ = s => document.querySelector(s);
+const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
-async function init(){
+const VERDICT = {
+  blocked:       {cls:"v-blocked",       kicker:"판정",      title:"지금은 되지 않습니다",   desc:"아래 조건이 충족되지 않았습니다."},
+  ok:            {cls:"v-ok",            kicker:"판정",      title:"가능합니다",             desc:"확인한 조건을 모두 충족합니다."},
+  indeterminate: {cls:"v-indeterminate", kicker:"판정 보류", title:"확인할 수 없습니다",     desc:"판정에 필요한 정보를 알 수 없어 된다고 말씀드릴 수 없습니다."},
+};
+
+function evidence(ev){
+  if(!ev) return "";
+  const conf = ev.confidence !== "high" ? ` · 신뢰도 ${esc(ev.confidence)}` : "";
+  return `<details><summary>근거 원문</summary>
+    <blockquote>${esc(ev.quote)}
+      <cite>${esc(ev.source_title)} · ${esc(ev.collected_at)} 수집${conf}</cite>
+    </blockquote></details>`;
+}
+
+function node(r, kind){
+  const rem = r.remedy || {};
+  let body = "";
+  if(kind === "stop"){
+    if(rem.primary_path) body += `<div class="meta">해결 <b>${esc(rem.primary_path)}</b></div>`;
+    if(rem.actionable_in_app === false) body += `<div><span class="offapp">앱에서 해결 불가</span></div>`;
+    body += evidence(r.evidence);
+  }else if(kind === "hold" && r.reason){
+    body += `<div class="meta">${esc(r.reason)}</div>`;
+  }
+  return `<div class="node ${kind}"><div class="label">${esc(r.label)}</div>${body}</div>`;
+}
+
+function render(v){
+  const t = VERDICT[v.verdict] || VERDICT.indeterminate;
+  const total = v.unmet.length + v.met.length + v.unknown.length;
+  const lowById = new Map(v.low_confidence.map(r => [r.id, r]));
+
+  let h = `<section class="verdict ${t.cls}">
+      <div class="line">${t.kicker}</div>
+      <h2>${t.title}</h2><p>${t.desc}</p>
+      <div class="tally">
+        <div class="n-stop"><b>${v.unmet.length}</b>미충족</div>
+        <div><b>${v.met.length}</b>충족</div>
+        ${v.unknown.length ? `<div><b>${v.unknown.length}</b>확인 불가</div>` : ""}
+        <div><b>${total}</b>전체 조건</div>
+      </div>
+    </section>`;
+
+  if(v.unmet.length || v.unknown.length){
+    h += `<section class="rail"><h3>어디서 막혔나</h3>
+      ${v.unmet.map(r => node(r, "stop")).join("")}
+      ${v.unknown.map(r => node(r, "hold")).join("")}</section>`;
+  }
+
+  if(v.met.length){
+    // 해석이 개입한 조건은 별도 섹션으로 빼지 않고 충족 목록 안에서 `~` 로 표시한다.
+    const rows = v.met.map(r => {
+      const low = lowById.get(r.id);
+      return low
+        ? `<li class="interp">${esc(r.label)}<em>${esc(low.reason || "근거 해석이 개입함")}</em></li>`
+        : `<li>${esc(r.label)}</li>`;
+    }).join("");
+    h += `<section class="met"><h3 class="eyebrow">충족한 조건</h3><ul>${rows}</ul></section>`;
+  }
+
+  h += `<p class="foot">판정 엔진 v${esc(v.engine_version)} · 조건 수집일 ${esc(v.tree_collected_at)}</p>`;
+  $("#out").innerHTML = h;
+}
+
+async function judge(){
+  const btn = $("#run");
+  btn.disabled = true; btn.textContent = "판정 중…";
+  try{
+    const res = await fetch("/api/judge", {
+      method:"POST", headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({goal_id:$("#goal").value, profile_id:$("#profile").value}),
+    });
+    if(!res.ok) throw new Error((await res.json()).detail || "판정에 실패했습니다");
+    render(await res.json());
+  }catch(e){
+    $("#out").innerHTML = `<div class="err">${esc(e.message)}</div>`;
+  }finally{
+    btn.disabled = false; btn.textContent = "판정하기";
+  }
+}
+
+(async function init(){
   try{
     const [goals, profiles] = await Promise.all([
       fetch("/api/goals").then(r => r.json()),
@@ -124,104 +304,16 @@ async function init(){
       `<option value="${esc(g.goal_id)}">${esc(g.goal_label)} — 조건 ${g.condition_count}개</option>`).join("");
     $("#profile").innerHTML = profiles.map(p =>
       `<option value="${esc(p.profile_id)}">${esc(p.description || p.profile_id)}</option>`).join("");
-  }catch(e){
-    $("#out").innerHTML = `<div class="err">서버에 연결하지 못했습니다. <code>uvicorn src.api.main:app</code> 실행 중인지 확인해 주세요.</div>`;
+    // 데모는 빈 화면으로 두지 않는다. 첫 화면에 판정 결과가 이미 보이게 한다.
+    const blocked = profiles.find(p => /blocked|safeblock/.test(p.profile_id));
+    if(blocked) $("#profile").value = blocked.profile_id;
+    await judge();
+  }catch{
+    $("#out").innerHTML = `<div class="err">서버에 연결하지 못했습니다. <code>uvicorn src.api.main:app</code> 가 실행 중인지 확인해 주세요.</div>`;
   }
-}
+})();
 
-const VERDICT_TEXT = {
-  blocked:       { cls:"v-blocked",       title:"지금은 되지 않습니다",       desc:"아래 조건이 충족되지 않았습니다." },
-  ok:            { cls:"v-ok",            title:"가능합니다",                 desc:"확인한 조건을 모두 충족합니다." },
-  indeterminate: { cls:"v-indeterminate", title:"확인할 수 없습니다",         desc:"판정에 필요한 정보를 알 수 없어 된다고 말씀드릴 수 없습니다." },
-};
-
-function evidenceBlock(ev){
-  if(!ev) return "";
-  return `<details>
-    <summary>근거 보기</summary>
-    <blockquote>“${esc(ev.quote)}”
-      <cite>${esc(ev.source_title)} · ${esc(ev.collected_at)} 수집${ev.confidence !== "high" ? ` · 신뢰도 ${esc(ev.confidence)}` : ""}</cite>
-    </blockquote>
-  </details>`;
-}
-
-function unmetItem(r){
-  const rem = r.remedy || {};
-  const offApp = rem.actionable_in_app === false;
-  return `<div class="item bad">
-    <div class="lab"><span class="mark bad">✕</span><span>${esc(r.label)}</span></div>
-    ${rem.primary_path ? `<div class="why">해결: <b>${esc(rem.primary_path)}</b></div>` : ""}
-    ${offApp ? `<div class="why"><span class="offapp">앱에서 해결 불가</span></div>` : ""}
-    ${evidenceBlock(r.evidence)}
-  </div>`;
-}
-
-function simpleItem(r, cls, mark){
-  return `<div class="item ${cls}">
-    <div class="lab"><span class="mark ${mark}">${mark === "unk" ? "?" : "~"}</span><span>${esc(r.label)}</span></div>
-    ${r.reason ? `<div class="why">${esc(r.reason)}</div>` : ""}
-  </div>`;
-}
-
-function render(v){
-  const t = VERDICT_TEXT[v.verdict] || VERDICT_TEXT.indeterminate;
-  const counts = `조건 ${v.unmet.length + v.met.length + v.unknown.length}개 중 `
-    + `미충족 ${v.unmet.length} · 충족 ${v.met.length}`
-    + (v.unknown.length ? ` · 확인불가 ${v.unknown.length}` : "");
-
-  let html = `<div class="verdict ${t.cls}"><h2>${t.title}</h2><p>${t.desc}</p></div>
-    <div class="group"><h3>${esc(counts)}</h3></div>`;
-
-  if(v.unmet.length)
-    html += `<div class="group">${v.unmet.map(unmetItem).join("")}</div>`;
-
-  if(v.unknown.length)
-    html += `<div class="group"><h3>확인할 수 없는 항목</h3>
-      ${v.unknown.map(r => simpleItem(r, "unk", "unk")).join("")}</div>`;
-
-  // 해석이 개입한 조건은 별도 섹션으로 빼지 않고 충족 목록 안에서 `~` 로 표시한다.
-  // (같은 조건이 두 곳에 중복 노출되는 것을 막고, 판정과 신뢰도를 한자리에서 본다)
-  const lowById = new Map(v.low_confidence.map(r => [r.id, r]));
-  if(v.met.length){
-    const rows = v.met.map(r => {
-      const low = lowById.get(r.id);
-      if(!low) return `<span>✓ ${esc(r.label)}</span>`;
-      return `<span class="low-note">~ ${esc(r.label)}<em>${esc(low.reason || "근거 해석이 개입함")}</em></span>`;
-    }).join("");
-    html += `<div class="group"><h3>충족한 항목</h3><div class="met-list">${rows}</div></div>`;
-  }
-
-  // 미충족 쪽에 해석 개입이 걸린 경우도 짚어준다
-  const lowUnmet = v.unmet.filter(r => lowById.has(r.id));
-  if(lowUnmet.length)
-    html += `<div class="group"><h3>위 미충족 항목 중 근거 해석이 개입한 것</h3>
-      ${lowUnmet.map(r => simpleItem(lowById.get(r.id), "low", "low")).join("")}</div>`;
-
-  html += `<div class="foot">판정 엔진 v${esc(v.engine_version)} · 조건 수집일 ${esc(v.tree_collected_at)}</div>`;
-  $("#out").innerHTML = html;
-}
-
-$("#run").addEventListener("click", async () => {
-  const btn = $("#run");
-  btn.disabled = true;
-  btn.textContent = "판정 중…";
-  try{
-    const res = await fetch("/api/judge", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({ goal_id: $("#goal").value, profile_id: $("#profile").value }),
-    });
-    if(!res.ok) throw new Error(await res.text());
-    render(await res.json());
-  }catch(e){
-    $("#out").innerHTML = `<div class="err">${esc(e.message)}</div>`;
-  }finally{
-    btn.disabled = false;
-    btn.textContent = "판정하기";
-  }
-});
-
-init();
+$("#run").addEventListener("click", judge);
 </script>
 </body>
 </html>
