@@ -18,7 +18,7 @@ from src.config import PROFILES_DIR, ROOT, TREES_DIR
 from src.judge.engine import judge, load_profile, load_tree
 from src.judge.schema import ConditionTree, Verdict
 
-app = FastAPI(title="왜 안 되지? — 실행 실패 원인 판정 엔진", version="0.1.0")
+app = FastAPI(title="다 됐나요? — 실행 실패 원인 판정 엔진", version="0.1.0")
 
 WEB_DIR = ROOT / "web"
 
