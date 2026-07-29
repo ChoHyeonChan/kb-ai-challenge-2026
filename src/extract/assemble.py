@@ -105,7 +105,7 @@ def run(dry_run: bool) -> None:
     pending_blocks: list[str] = []
 
     for goal_id in sorted(by_goal):
-        conditions, notes = merge(by_goal[goal_id], titles)
+        conditions, notes = merge(by_goal[goal_id], titles, review.evidence_picks(goal_id))
         approved, rejected, pending = review.split(goal_id, conditions)
         _print_goal(goal_id, len(by_goal[goal_id]), approved, rejected, pending, notes)
 

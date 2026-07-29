@@ -1,6 +1,6 @@
 {
   "profile_id": "overseas_blocked",
-  "description": "해외거래정지가 켜져 있고 IC칩 비밀번호도 등록되지 않은 사용자. 하나는 앱에서 풀 수 있고 하나는 영업점에 가야 하는 경우. 여권 정보는 모름",
+  "description": "해외거래정지와 해외원화결제(DCC) 차단이 둘 다 켜져 있고, IC칩 비밀번호도 등록되지 않은 사용자. 두 개는 앱에서 각각 풀어야 하고 하나는 영업점에 가야 하는 경우. 여권 정보는 모름",
   "card": {
     "overseas_block_online": true,
     "dcc_block": true,

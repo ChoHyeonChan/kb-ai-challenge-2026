@@ -130,8 +130,26 @@ def _unique_id(base: str, used: set[str]) -> str:
     return f"{base}_{n}"
 
 
-def merge(items: list[dict], titles: dict[str, str]) -> tuple[list[Condition], list[str]]:
-    """추출 결과(청크별) → 조건 목록. 반환: (조건, 검토 필요 메모)"""
+def _apply_pick(main: list[dict], strays: list[dict], chunk_id: str | None) -> list[dict]:
+    """검수가 대표를 지정했으면 그 항목을 맨 앞으로 올린다.
+
+    대표를 바꾸면 label·remedy·evidence 가 **함께** 그 항목에서 나온다.
+    근거만 바꾸면 화면의 해결 경로와 인용이 서로 다른 문서를 가리키게 된다.
+    """
+    if not chunk_id:
+        return main
+    chosen = [i for i in main + strays if i["chunk"]["chunk_id"] == chunk_id]
+    if not chosen:
+        raise SystemExit(f"검수에서 지정한 evidence_from 을 찾을 수 없다: {chunk_id}")
+    return chosen + [i for i in main if i is not chosen[0]]
+
+
+def merge(items: list[dict], titles: dict[str, str],
+          picks: dict[tuple[str, str, str], str] | None = None) -> tuple[list[Condition], list[str]]:
+    """추출 결과(청크별) → 조건 목록. 반환: (조건, 검토 필요 메모)
+
+    picks: 검수에서 대표를 직접 지정한 조건 (dedup_key → chunk_id)
+    """
     groups: dict[tuple, list[dict]] = {}
     for item in items:
         groups.setdefault(dedup_key(item["condition"]), []).append(item)
@@ -143,6 +161,7 @@ def merge(items: list[dict], titles: dict[str, str]) -> tuple[list[Condition], l
     for key in sorted(groups):
         main, strays = cluster_by_label(groups[key])       # 문서 합의가 가장 큰 무리
         main = sorted(main, key=_rep_sorter(main))          # 그 안에서 보여줄 근거 선택
+        main = _apply_pick(main, strays, (picks or {}).get(key))
         cid = _unique_id(main[0]["condition"]["id"], used)
         used.add(cid)
         conditions.append(_to_condition(main, titles, cid))

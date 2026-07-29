@@ -8,10 +8,16 @@
 
 무엇을 사람이 하는가 — 여기서 경계가 중요하다
   ○ 승인 / 반려 판단
-  ○ severity 교정 **하나만** 허용 (blocking ↔ warning). 사유를 반드시 적는다.
+  ○ severity 교정 (blocking ↔ warning). 사유를 반드시 적는다.
      원문이 "제한이 있을 수 있습니다" 처럼 흐릿할 때 LLM 이 blocking 으로 올리는 일이 잦고,
      그대로 두면 판정이 "차단됨"으로 확정돼 사용자에게 없는 벽을 만든다.
-  ✕ label·predicate·evidence·remedy 는 **고칠 수 없다.** 전부 LLM 출력 그대로다.
+  ○ evidence_from — **어느 청크의 추출 결과를 대표로 쓸지 고르기.**
+     같은 조건이 문서 여러 곳에서 나오면 규칙이 대표를 자동으로 고르는데, 가끔 빗나간다.
+     실제로 DCC 차단 조건에서 '원화 승인을 사전 차단할 수 있습니다'(핵심) 대신
+     '원화로 결제하면 청구금액이 증가합니다'(수수료 안내)가 대표로 뽑혔다.
+     **문장을 쓰는 것이 아니라 모델이 이미 뽑아 검증까지 통과한 것 중에서 고르는 것**이므로,
+     사람이 저자가 되지 않는다는 경계는 그대로다.
+  ✕ label·predicate·evidence·remedy 를 **직접 쓰거나 고칠 수는 없다.** 전부 LLM 출력 그대로다.
   즉 사람은 게이트지 저자가 아니다. 그래서 "문서 → 조건 자동 변환"이라는 주장이 유지된다.
   교정한 조건은 트리에 `review_override` 로 표시돼, 무엇을 사람이 손댔는지 감춰지지 않는다.
 
@@ -49,7 +55,11 @@ def load_decisions() -> dict[str, dict]:
     return {d["key"]: d for d in (cfg.get("decisions") or [])}
 
 
-ALLOWED_OVERRIDES = {"severity"}
+ALLOWED_OVERRIDES = {"severity", "evidence_from"}
+
+# evidence_from 은 조건이 만들어지기 **전에** 병합 단계가 쓴다 (대표를 바꾼다).
+# 여기서는 조건 필드가 아니므로 교정 대상에서 뺀다.
+_MERGE_TIME_OVERRIDES = {"evidence_from"}
 
 
 def _apply_override(cond: Condition, d: dict) -> Condition:
@@ -59,14 +69,37 @@ def _apply_override(cond: Condition, d: dict) -> Condition:
     if bad:
         raise SystemExit(f"검수 교정 불가 필드: {sorted(bad)} (허용: {sorted(ALLOWED_OVERRIDES)}) "
                          f"— key={d['key']}")
+    field_override = {k: v for k, v in override.items() if k not in _MERGE_TIME_OVERRIDES}
     if not override:
         return cond
+    if not field_override:
+        return cond.model_copy(update={"review_override": _override_note(cond, override, d)})
 
     return cond.model_copy(update={
-        **override,
-        "review_override": f"{'/'.join(f'{k}: {getattr(cond, k)} → {v}' for k, v in override.items())}"
-                           f" · {d.get('reason', '')}",
+        **field_override,
+        "review_override": _override_note(cond, override, d),
     })
+
+
+def _override_note(cond: Condition, override: dict, d: dict) -> str:
+    parts = []
+    for k, v in override.items():
+        parts.append(f"근거를 {v} 의 추출 결과로 지정" if k == "evidence_from"
+                     else f"{k}: {getattr(cond, k)} → {v}")
+    return " / ".join(parts) + f" · {d.get('reason', '')}"
+
+
+def evidence_picks(goal_id: str) -> dict[tuple[str, str, str], str]:
+    """검수에서 대표로 지정한 청크. key 는 merge 의 dedup_key 와 같은 모양이다."""
+    picks: dict[tuple[str, str, str], str] = {}
+    for key, d in load_decisions().items():
+        chunk_id = (d.get("override") or {}).get("evidence_from")
+        if not chunk_id:
+            continue
+        goal, subject, op, value = key.split("|", 3)
+        if goal == goal_id:
+            picks[(subject, op, value)] = chunk_id
+    return picks
 
 
 def split(goal_id: str, conditions: list[Condition]) -> tuple[list[Condition], list[tuple[Condition, str]], list[Condition]]:
