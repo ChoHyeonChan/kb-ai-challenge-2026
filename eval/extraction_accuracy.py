@@ -105,14 +105,16 @@ def _review_summary() -> list[str]:
     decisions = load_decisions().values()
     approved = [d for d in decisions if d.get("decision") == "approve"]
     rejected = [d for d in decisions if d.get("decision") != "approve"]
-    overridden = [d for d in approved if d.get("override")]
+    sev = [d for d in approved if "severity" in (d.get("override") or {})]
+    ev = [d for d in approved if "evidence_from" in (d.get("override") or {})]
 
     lines = ["## 검수 결과 (data/review/decisions.yaml)", "",
              "| 항목 | 수 |", "|---|---|",
              f"| 병합된 조건 | {len(decisions)} |",
              f"| **승인** (트리에 들어감) | **{len(approved)}** |",
              f"| 반려 | {len(rejected)} |",
-             f"| severity 교정 후 승인 | {len(overridden)} |",
+             f"| severity 교정 후 승인 | {len(sev)} |",
+             f"| 대표 인용을 사람이 지정 | {len(ev)} |",
              f"| **검수 통과율** | **{len(approved) / len(decisions):.2f}** |", "",
              "### 반려 사유", ""]
     for d in rejected:

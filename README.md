@@ -135,7 +135,7 @@ cp .env.example .env          # API 키 입력
 > | 사람이 한 일 | 건수 |
 > |---|---|
 > | 승인 / 반려 판단 | 16건 판단 → 12 승인 · 4 반려 |
-> | severity 교정 (blocking ↔ warning) | 3건 |
+> | severity 교정 (blocking ↔ warning) | 2건 |
 > | 여러 인용 중 대표 선택 (모델이 뽑은 것 중에서만) | 1건 |
 >
 > 교정·선택한 조건은 트리에 `review_override` 로 남아, 무엇을 사람이 손댔는지 감춰지지 않습니다.
