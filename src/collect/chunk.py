@@ -75,6 +75,11 @@ class _Extractor(HTMLParser):
         cells = [c for c in cells if c]
         if len(cells) >= 2:
             # "항목 | 값 | 값" 형태로 직렬화 — 조건이 표에 있는 경우가 많다
+            #
+            # ★ 이 `|` 는 우리가 넣은 기호다. 원문 HTML 에는 없다.
+            #   표에서 뽑힌 조건은 근거 인용에도 이 형태로 남으므로,
+            #   HTML 을 그대로 검색하면 그 인용 문자열은 나오지 않는다 (각 셀은 실재한다).
+            #   README '데이터 출처와 한계' 에 이 사실을 명시해 두었다.
             self.blocks.append(("table_row", " | ".join(cells)))
         elif len(cells) == 1:
             self.blocks.append(("paragraph", cells[0]))
