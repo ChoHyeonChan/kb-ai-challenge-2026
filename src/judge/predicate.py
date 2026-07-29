@@ -126,7 +126,7 @@ def evaluate(pred: Predicate, profile: UserProfile, *, today: date | None = None
     if op == "not_exists":
         return not known
     if not known:
-        raise Unknown(f"값을 알 수 없음: {pred.subject}")
+        raise Unknown(f"사용자 상태에 이 값이 없습니다 ({pred.subject})")
 
     value = _resolve_value(pred.value, profile, today)
 

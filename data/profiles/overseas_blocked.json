@@ -17,5 +17,6 @@
     "amount_krw": 32000,
     "tne_accumulated_krw": 0,
     "daily_used_krw": 32000
-  }
+  },
+  "demo_goal": "overseas_payment_online"
 }

@@ -108,7 +108,8 @@ app/
 │  ├─ judge/              ── 판정 엔진 (LLM 금지)  [Claude → 팀원 검증]
 │  │   ├─ schema.py          C1/C2/C3 정의
 │  │   ├─ predicate.py       op 평가기
-│  │   └─ engine.py          judge()
+│  │   ├─ engine.py          judge()
+│  │   └─ simulate.py        C4 해결 계획 — "하나만 풀면 어떻게 되나"
 │  ├─ resolve/            ── 목표 식별·설명 (LLM)  [현찬]
 │  │   ├─ retriever.py       질의 → goal_id
 │  │   └─ explain.py         미충족 사유 설명
@@ -116,7 +117,9 @@ app/
 │      └─ main.py
 │
 ├─ web/                   ── 데모 화면             [Claude]
-│  └─ index.html
+│  ├─ index.html            구조만
+│  ├─ style.css             외부 폰트·이미지 금지 (실격 조항)
+│  └─ app.js                서버가 준 값만 그린다
 │
 ├─ tests/                 ── 검증                  [팀원]
 │  ├─ test_determinism.py    동일 입력 N회 일치율

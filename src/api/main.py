@@ -16,7 +16,8 @@ from pydantic import BaseModel
 
 from src.config import PROFILES_DIR, ROOT, TREES_DIR
 from src.judge.engine import judge, load_profile, load_tree
-from src.judge.schema import ConditionTree, Verdict
+from src.judge.schema import ConditionTree, UserProfile, Verdict
+from src.judge.simulate import Plan, simulate
 
 app = FastAPI(title="다 됐나요? — 실행 실패 원인 판정 엔진", version="0.1.0")
 
@@ -67,7 +68,12 @@ def list_profiles() -> list[dict]:
     out = []
     for p in sorted(PROFILES_DIR.glob("*.json")):
         prof = load_profile(p)
-        out.append({"profile_id": prof.profile_id, "description": prof.description})
+        out.append({
+            "profile_id": prof.profile_id,
+            "description": prof.description,
+            # 데모를 열었을 때 처음 보여줄 조합. 화면이 id 를 추측하지 않도록 데이터로 지정한다.
+            "demo_goal": getattr(prof, "demo_goal", None),
+        })
     return out
 
 
@@ -88,15 +94,26 @@ def _resolve_goal(req: JudgeRequest) -> ConditionTree:
     raise HTTPException(400, "goal_id 또는 query 중 하나가 필요합니다")
 
 
+def _resolve_profile(profile_id: str) -> UserProfile:
+    path = PROFILES_DIR / f"{profile_id}.json"
+    if not path.exists():
+        raise HTTPException(404, f"알 수 없는 profile_id: {profile_id}")
+    return load_profile(path)
+
+
 @app.post("/api/judge", response_model=Verdict)
 def judge_endpoint(req: JudgeRequest) -> Verdict:
-    tree = _resolve_goal(req)
+    return judge(_resolve_goal(req), _resolve_profile(req.profile_id), req.context)
 
-    profile_path = PROFILES_DIR / f"{req.profile_id}.json"
-    if not profile_path.exists():
-        raise HTTPException(404, f"알 수 없는 profile_id: {req.profile_id}")
 
-    return judge(tree, load_profile(profile_path), req.context)
+@app.post("/api/simulate", response_model=Plan)
+def simulate_endpoint(req: JudgeRequest) -> Plan:
+    """'하나만 풀면 어떻게 되나' — 판정과 같은 입력으로 해결 계획을 계산한다.
+
+    판정(C3)과 계약을 분리해 둔다. 화면이 계획을 안 쓰더라도 판정은 그대로 동작해야 하고,
+    팀원이 작성하는 /api/judge 테스트도 영향을 받지 않아야 한다.
+    """
+    return simulate(judge(_resolve_goal(req), _resolve_profile(req.profile_id), req.context))
 
 
 # ── 데모 화면 ─────────────────────────────────────────────────────
