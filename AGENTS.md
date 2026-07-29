@@ -86,16 +86,25 @@ app/
 │  ├─ raw/                   수집 원문 + 수집일 메타
 │  ├─ chunks/                분할된 스니펫
 │  ├─ trees/              ★ 조건 트리 = 핵심 산출물
+│  ├─ review/                검수 기록 (승인·반려 사유)
 │  └─ profiles/              가상 사용자 프로필
 │
 ├─ src/
+│  ├─ goals.py            ── 목표 정의 로더 (extract·resolve 공용)
 │  ├─ collect/            ── 문서 수집·분할        [Claude]
 │  │   ├─ fetch.py
 │  │   └─ chunk.py
-│  ├─ extract/            ── 조건 추출 (LLM)       [현찬]
-│  │   ├─ prompt.py          프롬프트만
-│  │   ├─ extractor.py       LLM 호출·스키마 강제
-│  │   └─ merge.py           문서 간 조건 병합
+│  ├─ extract/            ── 조건 추출              [현찬]
+│  │   ├─ vocabulary.py      허용 subject·op·category (추출·검증 공용)
+│  │   ├─ examples.py        few-shot 예시
+│  │   ├─ prompt.py          규칙 + 프롬프트 조립
+│  │   ├─ candidates.py      조건 후보 청크 1차 선별
+│  │   ├─ extractor.py       LLM 호출·캐시          ← LLM 은 여기까지
+│  │   ├─ validate.py        검증 게이트 + 인용 자동 보정
+│  │   ├─ agreement.py       문서 간 합의 측정 (대표 선정)
+│  │   ├─ merge.py           조건 병합
+│  │   ├─ review.py          검수 관문 (사람 승인)
+│  │   └─ assemble.py        트리 파일 조립
 │  ├─ judge/              ── 판정 엔진 (LLM 금지)  [Claude → 팀원 검증]
 │  │   ├─ schema.py          C1/C2/C3 정의
 │  │   ├─ predicate.py       op 평가기
@@ -116,6 +125,7 @@ app/
 │
 ├─ eval/                  ── 지표 측정
 │  ├─ extraction_accuracy.py
+│  ├─ labels/                수동 라벨 (자동 추출 전에 사람이 만든 정답지)
 │  └─ results/               측정 결과 (제출물)
 │
 └─ docs/

@@ -1,0 +1,139 @@
+# 조건 검수 기록 — 자동 추출된 조건을 트리에 넣을지 사람이 판단한 결과
+#
+# 규칙 (src/extract/review.py 참고)
+#   · 여기 없는 조건은 pending 이며 **트리에 들어가지 않는다** (모르면 넣지 않는다)
+#   · decision: approve | reject
+#   · override 는 severity 하나만 허용한다. label·predicate·evidence 는 못 고친다
+#   · reason 은 반드시 적는다. 이 파일이 곧 감사 기록이다
+#
+# 검수 기준 — 아래 넷 중 하나라도 걸리면 반려한다
+#   ① 근거가 주장을 뒷받침하지 않는다 (인용은 원문이지만 다른 얘기를 한다)
+#   ② predicate 가 가리키는 상태가 label 과 다르다
+#   ③ 이 목표를 지금 달성하는 것과 무관하다
+#   ④ 값의 단위·기준이 원문과 다르다
+#
+# 검수자: 조현찬 (1차 판단 Claude 작성 → 현찬 확인)
+# 검수일: 2026-07-29
+# 대상  : 5차 추출(gpt-4o-mini, prompt v5) → 병합 16개 → 승인 11 / 반려 5
+
+decisions:
+
+  # ═══════════════ 비대면 계좌개설 ═══════════════
+
+  - key: "account_open_nonface|account.nonface_open_block|eq|false"
+    decision: approve
+    reason: >-
+      원문이 "새로운 계좌를 만들려면 서비스를 해제해야" 라고 목표와 조건의 관계를 직접 서술하고,
+      "해제는 반드시 지점을 방문해" 로 채널까지 명시한다. 앱X 판정이 근거와 일치한다.
+      이 시스템에서 가장 중요한 조건이다 — 앱은 이 사실을 알려주지 않는다.
+
+  - key: "account_open_nonface|account.nonface_open_block|eq|true"
+    decision: reject
+    reason: >-
+      ② 방향이 반대다. "안심차단이 등록되어 있어야 한다"는 계좌를 열려는 목표와 정반대다.
+      원문(가입하면 계좌가 개설되지 않는다)은 차단의 효과를 설명한 것이지 개설 조건이 아니다.
+
+  # ═══════════════ 해외 온라인 결제 ═══════════════
+
+  # ── 승인 ──
+
+  - key: "overseas_payment_online|card.overseas_block_online|eq|false"
+    decision: approve
+    reason: >-
+      핵심 조건. 문서 4곳에서 확인되고, 해제 채널(홈페이지/KB Pay·고객센터·영업점)이
+      인용 안에 그대로 들어 있다. 앱O 판정도 근거와 일치한다.
+
+  - key: "overseas_payment_online|card.locked|eq|false"
+    decision: approve
+    reason: >-
+      원문이 "누적 5회 초과 시 거래가 불가" 라고 결과를 카드 단위로 서술한다.
+      해제에 영업점 방문이 필요해 앱X 가 맞다.
+      다만 잠김을 유발하는 상황은 해외 ATM 거래로 적혀 있고, 온라인 결제에서 같은 잠김이
+      발생하는지는 원문이 말하지 않는다. 조건(잠긴 카드는 못 쓴다)은 유효하므로 승인한다.
+
+  - key: "overseas_payment_online|card.ic_pin_registered|eq|true"
+    decision: approve
+    reason: >-
+      문서 5곳에서 확인. 등록은 영업점 방문이 필요해 앱X 가 맞다.
+      앱 화면 어디에도 노출되지 않는 조건이라는 점에서 우리 주제와 정확히 맞는다.
+
+  - key: "overseas_payment_online|card.identity_theft_block|eq|false"
+    decision: approve
+    override:
+      severity: warning
+    reason: >-
+      문서 6곳에 같은 문장으로 실려 있다. 다만 원문이 "인증번호 안내 문자메시지를 받지
+      못할 수 있습니다" 로 **가능성**을 말하는데 LLM 이 blocking 으로 올렸다.
+      본인인증을 요구하지 않는 결제는 이 조건과 무관하므로 warning 으로 낮춘다.
+
+  - key: "overseas_payment_online|card.name_matches_passport|eq|true"
+    decision: approve
+    override:
+      severity: warning
+    reason: >-
+      조건 자체는 원문에 있다. 다만 원문이 "다른 경우 해외 결제 시 제한이 있을 수 있습니다"
+      로 확정 차단이 아니라 가능성을 말한다. blocking 으로 두면 여권 정보를 모르는 사용자에게
+      "차단됨"을 확정 통보하게 된다. 원문 강도에 맞춰 warning 으로 낮춘다.
+
+  - key: "overseas_payment_online|card.signature|eq|true"
+    decision: approve
+    reason: >-
+      원문 그대로. severity 도 warning 으로 맞게 나왔다(서명이 없다고 승인이 거절되지는 않는다).
+
+  - key: "overseas_payment_online|card.expiry_date|date_after|{\"now_plus_days\": 0}"
+    decision: approve
+    reason: >-
+      원문 "카드 유효기한을 확인해주세요 / 만료가 예상되는 경우 갱신 재발급이 필요" 근거.
+      대표 인용에는 재발급 채널이 적혀 있지 않아 앱X 로 나왔다. 다른 문서에는 앱 신청이
+      적혀 있으나(검수 메모 참고) 합치지 않는다 — 화면에 보이는 정보는 이 인용에서만 나온다.
+
+  - key: "overseas_payment_online|context.daily_used_krw|lte|6000000"
+    decision: approve
+    reason: >-
+      원문(표) "1일 한도 | 현금인출/가맹점이용 | 600만원 상당의 달러(USD) 환산액".
+      원화 기준 금액이라 환산 없이 그대로 쓸 수 있다. 문서 3곳에서 확인.
+
+  - key: "overseas_payment_online|context.amount_krw|lte|6000000"
+    decision: approve
+    reason: >-
+      원문 "1회 한도 : 개인별 체크카드 한도 내 최대 600만원 상당" 근거.
+      체크카드 기준이라는 단서가 인용 안에 남아 있어 사용자가 스스로 판단할 수 있다.
+
+  - key: "overseas_payment_online|context.tne_accumulated_krw|lte|6000000"
+    decision: approve
+    reason: >-
+      원문 "회원별 누적 600만원 상당의 달러(USD) 환산액 이내" 근거.
+
+  # ── 반려 ──
+
+  - key: "overseas_payment_online|card.dcc_block|eq|false"
+    decision: reject
+    reason: >-
+      ★ ① 근거가 주장을 뒷받침하지 않는다. 조건 문장(DCC 차단이 해제되어 있어야 한다)은
+      맞지만, 대표로 뽑힌 인용은 "원화로 결제하면 청구금액이 증가한다"는 **수수료 안내**다.
+      차단이 결제를 막는다는 말이 아니다.
+      더 근본적으로 — KB 공개 문서 어디에도 "DCC 차단을 켜두면 해외 결제가 거절된다"고
+      쓰여 있지 않다. 문서가 말하는 것은 "원화 승인을 사전 차단할 수 있다" 까지다.
+      현찬은 2026-07-27 KB Pay 실측에서 이 항목 때문에 실제로 막혔지만, **실측은 문서가 아니다.**
+      근거 없는 조건은 넣지 않는다는 원칙을 여기에도 적용한다.
+      → 이 반려 자체가 우리 주제의 증거다. 화면에 스위치가 있는데 문서가 결과를 말하지 않으니,
+        사용자는 그 스위치를 보고도 원인인 줄 모른다. `eval/results/extraction_accuracy.md` 에 기록.
+
+  - key: "overseas_payment_online|account.nonface_open_block|eq|false"
+    decision: reject
+    reason: >-
+      ② subject 오매핑. label 은 '해외안심결제'인데 subject 는 계좌의 비대면 개설 안심차단이다.
+      이름이 비슷해 잘못 붙었다. 허용 목록에 맞는 경로가 없으면 추출하지 않았어야 한다.
+
+  - key: "overseas_payment_online|card.type|in|[\"credit\"]"
+    decision: reject
+    reason: >-
+      ③ 목표가 다르다. 이 조건은 **해외온라인안전결제(가상카드) 서비스의 가입 대상**을 말하는
+      것이지 해외 온라인 결제 자체의 요건이 아니다. 인용도 "신청대상은 … 개인 신용카드에 한해"다.
+      트리에 넣으면 체크카드 사용자에게 존재하지 않는 벽을 만든다.
+
+  - key: "overseas_payment_online|context.amount_krw|lte|600000"
+    decision: reject
+    reason: >-
+      ④ 단위와 기준이 둘 다 틀렸다. 원문은 "건당 미화 600달러 초과 시"인데 값은 600,000원이다.
+      그리고 이 문장은 **외국환거래 통보 기준**이지 결제 한도가 아니다. 초과해도 결제는 된다.

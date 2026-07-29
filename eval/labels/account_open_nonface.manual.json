@@ -1,0 +1,66 @@
+{
+  "schema_version": "1.0",
+  "goal_id": "account_open_nonface",
+  "goal_label": "비대면 계좌개설",
+  "aliases": [
+    "계좌개설이 안돼요",
+    "통장 만들려는데 안 돼",
+    "신분증이 자꾸 인식이 안 돼요",
+    "비대면으로 계좌를 못 열어요"
+  ],
+  "domain": "account",
+  "logic": "ALL",
+  "conditions": [
+    {
+      "id": "c_nonface_open_block",
+      "label": "비대면 계좌개설 안심차단이 해제되어 있어야 합니다",
+      "category": "setting",
+      "predicate": { "subject": "account.nonface_open_block", "op": "eq", "value": false },
+      "severity": "blocking",
+      "remedy": {
+        "actionable_in_app": false,
+        "channels": ["branch:금융회사 지점"],
+        "primary_path": "금융회사 지점 방문 (신분증 지참)",
+        "note": "앱·인터넷뱅킹으로는 해제할 수 없습니다. 다만 신청과 달리, 거래하지 않는 금융회사 지점에서도 해제할 수 있습니다"
+      },
+      "evidence": {
+        "source_title": "KB의 생각 — 비대면 계좌개설 안심차단으로 보이스피싱 피해 예방하기",
+        "url": "https://kbthink.com/main/living-finance/talk-cardnews/2025/remote-account-opening-security-block.html",
+        "quote": "서비스 해제는 반드시 지점을 방문해 직접 신청해야 합니다. 보이스피싱이나 명의도용 범죄를 막기 위해서예요. 다만, 신청할 때와 달리, 내가 거래하지 않는 금융회사에서도 해제할 수 있어요.",
+        "collected_at": "2026-07-27",
+        "confidence": "high"
+      },
+      "scope_note": "한국신용정보원에 등록되어 은행·저축은행·증권사 등 전국 3,613개 금융회사에 동시 적용됩니다. 신청 상태는 반기 1회(6개월) 통지되며, 본인신용정보열람서비스(credit4u.or.kr)에서 조회할 수 있습니다"
+    },
+    {
+      "id": "c_account_type_in_scope",
+      "label": "개설하려는 계좌가 안심차단 적용 대상인지 확인이 필요합니다",
+      "category": "eligibility",
+      "predicate": {
+        "subject": "context.account_type",
+        "op": "in",
+        "value": ["수시입출금", "외화계좌", "증권사제휴연계", "골드투자통장", "개인사업자용"]
+      },
+      "severity": "warning",
+      "remedy": {
+        "actionable_in_app": true,
+        "channels": ["self:확인"],
+        "primary_path": "개설하려는 계좌 종류 확인",
+        "note": "적용 대상 계좌라면 안심차단 해제 없이는 개설되지 않습니다"
+      },
+      "evidence": {
+        "source_title": "KB의 생각 — 비대면 계좌개설 안심차단으로 보이스피싱 피해 예방하기",
+        "url": "https://kbthink.com/main/living-finance/talk-cardnews/2025/remote-account-opening-security-block.html",
+        "quote": "비대면 계좌개설 안심차단을 신청하면 입출금이 자유로운 계좌(외화계좌, 증권사 제휴 연계계좌, 골드투자통장 포함)와 개인사업자용 계좌에도 적용됩니다.",
+        "collected_at": "2026-07-27",
+        "confidence": "medium",
+        "note": "원문은 '적용 대상 계좌 범위'를 설명한다. 이를 '개설하려는 계좌가 그 범위에 드는가'라는 판정 조건으로 옮겼다 — 해석이 개입했다"
+      }
+    }
+  ],
+  "source_meta": {
+    "collected_at": "2026-07-27",
+    "extractor_version": "seed-manual-0.1",
+    "source_count": 2
+  }
+}

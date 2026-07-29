@@ -61,6 +61,17 @@ class Predicate(BaseModel):
     value: Any = Field(default=None, description='리터럴 | {"ref": "..."} | {"now_plus_days": N} | {"days": N, "n": M}')
 
 
+class Provenance(BaseModel):
+    """이 조건이 어느 청크에서 몇 번 확인됐는가. 병합 단계(extract/assemble)가 채운다.
+
+    판정에는 쓰이지 않는다. 같은 조건이 여러 문서에서 반복 확인됐다는 사실 자체가
+    추출 신뢰도의 근거이므로, 트리 파일만 열어도 보이도록 남긴다.
+    """
+    support_count: int = 1
+    chunk_ids: list[str] = Field(default_factory=list)
+    source_ids: list[str] = Field(default_factory=list)
+
+
 class Condition(BaseModel):
     id: str
     label: str = Field(description="사용자에게 그대로 보여줄 문장")
@@ -70,6 +81,11 @@ class Condition(BaseModel):
     remedy: Remedy
     evidence: Evidence
     scope_note: str | None = None
+    provenance: Provenance | None = None   # 수기 시드 트리에는 없다 → 선택 필드
+    review_override: str | None = Field(
+        default=None,
+        description="검수에서 사람이 교정한 내용과 사유. 손댄 곳을 감추지 않기 위해 트리에 남긴다",
+    )
 
 
 class SourceMeta(BaseModel):
@@ -152,5 +168,5 @@ class Verdict(BaseModel):
 
 __all__ = [
     "Condition", "ConditionResult", "ConditionTree", "Evidence",
-    "Predicate", "Remedy", "SourceMeta", "UserProfile", "Verdict",
+    "Predicate", "Provenance", "Remedy", "SourceMeta", "UserProfile", "Verdict",
 ]

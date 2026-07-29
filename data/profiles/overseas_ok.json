@@ -7,11 +7,15 @@
     "signature": true,
     "name_matches_passport": true,
     "expiry_date": "2030-12-31",
-    "type": "credit"
+    "type": "credit",
+    "locked": false,
+    "ic_pin_registered": true,
+    "identity_theft_block": false
   },
   "account": {},
   "context": {
     "amount_krw": 32000,
-    "tne_accumulated_krw": 0
+    "tne_accumulated_krw": 0,
+    "daily_used_krw": 32000
   }
 }

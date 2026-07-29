@@ -5,10 +5,8 @@
 
 핵심 안전장치
   1. 스키마 강제  — pydantic 모델로 구조를 고정한다 (지어낸 필드가 들어올 수 없다)
-  2. 인용 검증    — evidence_quote 가 원문 청크에 실제로 있는지 확인한다
-                    없으면 폐기한다. 이것이 "근거 100%" 주장의 실질적 보증이다
-  3. 경로 검증    — subject 가 허용 목록에 있는지 확인한다
-  4. 캐싱        — 같은 (청크, 프롬프트) 재호출 금지. 비용 + 재현성
+  2. 검증 게이트  — `validate.py` 에서 인용·경로·값·신뢰도를 확인한다
+  3. 캐싱        — 같은 (목표, 청크, 프롬프트) 재호출 금지. 비용 + 재현성
 
 실행:
   python -m src.extract.extractor --dry-run          # 호출 없이 대상만 확인
@@ -29,6 +27,8 @@ from pydantic import BaseModel, Field
 from src.config import LLM_CACHE_DIR
 from src.extract import prompt as P
 from src.extract.candidates import select
+from src.extract.validate import validate
+from src.goals import label_of
 
 MODEL = os.getenv("EXTRACT_MODEL", "")
 
@@ -93,50 +93,11 @@ def _cache_put(key: str, value: ExtractionOut) -> None:
     )
 
 
-# ── 검증 ──────────────────────────────────────────────────────────
-
-def _normalize(s: str) -> str:
-    return re.sub(r"\s+", "", s)
-
-
-def validate(out: ExtractionOut, chunk_text: str) -> tuple[list[ConditionOut], list[str]]:
-    """지어낸 인용·경로를 걸러낸다. 반환: (통과 조건, 폐기 사유 목록)"""
-    kept: list[ConditionOut] = []
-    rejected: list[str] = []
-    src = _normalize(chunk_text)
-
-    for c in out.conditions:
-        # 1. 인용이 원문에 실제로 있는가  ★ 근거 100% 의 실질적 보증
-        if _normalize(c.evidence_quote) not in src:
-            rejected.append(f"{c.id}: 인용이 원문에 없음 — {c.evidence_quote[:40]}…")
-            continue
-        # 2. subject 가 허용 경로인가
-        if c.predicate.subject not in P.ALLOWED_SUBJECTS:
-            rejected.append(f"{c.id}: 허용되지 않은 subject — {c.predicate.subject}")
-            continue
-        # 3. op 가 허용 연산자인가
-        if c.predicate.op not in P.ALLOWED_OPS:
-            rejected.append(f"{c.id}: 허용되지 않은 op — {c.predicate.op}")
-            continue
-        # 4. value_json 이 유효한 JSON 인가
-        try:
-            json.loads(c.predicate.value_json)
-        except (json.JSONDecodeError, TypeError):
-            rejected.append(f"{c.id}: value_json 파싱 실패 — {c.predicate.value_json!r}")
-            continue
-        # 5. medium/low 인데 note 가 없으면 규칙 위반
-        if c.confidence in ("medium", "low") and not (c.note or "").strip():
-            rejected.append(f"{c.id}: confidence={c.confidence} 인데 note 없음")
-            continue
-        kept.append(c)
-
-    return kept, rejected
-
-
 # ── 추출 ──────────────────────────────────────────────────────────
 
 def extract_one(chunk: dict, *, model: str, client) -> ExtractionOut:
-    key = _cache_key(chunk["text"], model)
+    # 목표가 다르면 같은 문장에서 뽑아야 할 조건도 달라진다 → 캐시 키에 목표를 포함한다
+    key = _cache_key(f"{chunk.get('goal', '')}\n{chunk['text']}", model)
     cached = _cache_get(key)
     if cached is not None:
         return cached
@@ -147,7 +108,7 @@ def extract_one(chunk: dict, *, model: str, client) -> ExtractionOut:
         messages=[
             {"role": "system", "content": P.SYSTEM_PROMPT},
             {"role": "user", "content": P.build_user_prompt(
-                chunk["text"], chunk.get("section", ""), chunk.get("goal", ""))},
+                chunk["text"], chunk.get("section", ""), label_of(chunk.get("goal", "")))},
         ],
         response_format=ExtractionOut,
     )
@@ -168,9 +129,10 @@ def _pick_chunks(goal: str | None, limit: int | None, grep: str | None) -> list[
     return chunks[:limit] if limit else chunks
 
 
-def _extract_all(chunks: list[dict], client) -> tuple[list[dict], list[str]]:
+def _extract_all(chunks: list[dict], client) -> tuple[list[dict], list[str], int]:
     kept_all: list[dict] = []
     rejected_all: list[str] = []
+    fitted = 0
 
     for i, c in enumerate(chunks, 1):
         try:
@@ -183,17 +145,19 @@ def _extract_all(chunks: list[dict], client) -> tuple[list[dict], list[str]]:
             continue
 
         kept, rejected = validate(out, c["text"])
+        fitted += sum(1 for k in kept if "인용 자동 보정" in (k.note or ""))
+
         rejected_all.extend(f"{c['chunk_id']} / {r}" for r in rejected)
         kept_all.extend({"chunk": c, "condition": k.model_dump()} for k in kept)
 
         print(f"  [{i}/{len(chunks)}] {c['chunk_id']}  조건 {len(kept)}개"
               + (f" (폐기 {len(rejected)})" if rejected else ""))
 
-    return kept_all, rejected_all
+    return kept_all, rejected_all, fitted
 
 
-def _report(kept: list[dict], rejected: list[str]) -> None:
-    print(f"\n추출 {len(kept)}건 / 폐기 {len(rejected)}건")
+def _report(kept: list[dict], rejected: list[str], fitted: int) -> None:
+    print(f"\n추출 {len(kept)}건 / 폐기 {len(rejected)}건 / 인용 자동 보정 {fitted}건")
     if rejected:
         print("\n── 폐기 사유 (프롬프트 개선 힌트) ──")
         for r in rejected[:20]:

@@ -7,63 +7,25 @@
   (Neuro-Symbolic Framework for Public-Sector AI, arXiv:2512.12109 / FAccT 2026)
   자유롭게 두면 LLM 이 존재하지 않는 경로를 지어내고, 그 조건은 프로필과 매칭되지 않아 전부 unknown 이 된다.
 
-[현찬 판단 자리]  아래 4곳에 판단이 필요하다. 주석 참고.
-  1. ALLOWED_SUBJECTS   — 어떤 상태값을 조건이 참조할 수 있는가
-  2. CONDITION_CRITERIA — 무엇을 '조건'으로 볼 것인가
+구성 (파일이 길어지지 않도록 셋으로 나눠 둔다)
+  vocabulary.py  허용 subject·op·category   ← 검증(validate)도 같은 목록을 본다
+  examples.py    few-shot 예시
+  prompt.py      규칙 + 조립 (이 파일)
+
+[현찬 판단 자리]  이 파일에서 판단이 필요한 곳
+  1. CONDITION_CRITERIA — 무엇을 '조건'으로 볼 것인가
+  2. PITFALLS           — 관측된 실패를 막는 규칙 (지울 때는 재현되는지 먼저 확인)
   3. CONFIDENCE_RULE    — 언제 신뢰도를 낮출 것인가
-  4. FEW_SHOTS          — 예시로 무엇을 보여줄 것인가
+  4. REMEDY_RULE        — 앱에서 해결 가능하다는 것의 정의
 """
 from __future__ import annotations
 
-# ─────────────────────────────────────────────────────────────
-# 1. 허용 subject 경로  [현찬 판단]
-#    프로필(C2)에 실제로 존재하는 경로만 넣는다.
-#    여기 없는 경로를 LLM 이 만들면 그 조건은 영원히 unknown 이 된다.
-#    새 경로가 필요하면 data/profiles/*.json 에도 함께 추가할 것.
-# ─────────────────────────────────────────────────────────────
-ALLOWED_SUBJECTS: dict[str, str] = {
-    # 카드 상태
-    "card.overseas_block_online": "해외거래정지(온라인) 설정 여부 (bool)",
-    "card.overseas_block_offline": "해외거래정지(오프라인) 설정 여부 (bool)",
-    "card.overseas_block_cash": "해외거래정지(현금서비스) 설정 여부 (bool)",
-    "card.dcc_block": "해외원화결제(DCC) 차단 설정 여부 (bool)",
-    "card.signature": "카드 뒷면 서명 여부 (bool)",
-    "card.name_matches_passport": "카드 영문명과 여권 영문명 일치 여부 (bool)",
-    "card.expiry_date": "카드 유효기한 (YYYY-MM 또는 YYYY-MM-DD)",
-    "card.type": "카드 종류 (credit | debit)",
-    # 계좌 상태
-    "account.nonface_open_block": "비대면 계좌개설 안심차단 설정 여부 (bool)",
-    "account.id_scan_quality": "신분증 촬영 품질 (pass | fail)",
-    "account.phone_auth": "본인명의 휴대폰 인증 (pass | fail)",
-    "account.recent_open_dates": "최근 계좌개설 이력 날짜 목록 (list[YYYY-MM-DD])",
-    # 상황값 (거래 시점 정보)
-    "context.amount_krw": "이번 결제 금액 (원)",
-    "context.tne_accumulated_krw": "T&E 업종 누적 이용액 (원)",
-    "context.daily_used_krw": "당일 누적 이용액 (원)",
-    "context.account_type": "개설하려는 계좌 종류 (문자열)",
-    "context.travel_end_date": "해외 체류 종료 예정일 (YYYY-MM-DD)",
-}
-
-ALLOWED_OPS: dict[str, str] = {
-    "eq": "같다", "neq": "다르다", "in": "목록에 포함", "not_in": "목록에 미포함",
-    "gte": "이상", "lte": "이하", "gt": "초과", "lt": "미만",
-    "exists": "값이 존재", "not_exists": "값이 없음",
-    "date_after": "기준일 이후", "date_before": "기준일 이전",
-    "within_days": "N일 이내", "not_within_days": "N일 이내가 아님",
-    "count_lte": "기간 내 횟수 이하", "count_gte": "기간 내 횟수 이상",
-}
-
-CATEGORIES = ["setting", "document", "limit", "temporal", "eligibility"]
-
-# category 는 이름만 주면 LLM 이 흔들린다. 뜻을 함께 준다.
-CATEGORY_MEANING = """
-  setting     : 앱·시스템에서 켜고 끄는 **설정 상태** (해외거래정지, 안심차단, DCC 차단)
-  document    : **실물 카드·서류**에 관한 것 (뒷면 서명, 여권 영문명 일치, 신분증)
-  limit       : **금액·횟수 한도** (1회/1일 한도, 누적 한도)
-  temporal    : **날짜·기간** 조건 (유효기한, N일 이내, 신청 후 경과일)
-  eligibility : **자격 요건** (연령, 적용 대상 여부, 계좌·카드 종류)
-"""
-
+from src.extract.examples import FEW_SHOTS
+from src.extract.vocabulary import (
+    ALLOWED_OPS,
+    ALLOWED_SUBJECTS,
+    CATEGORY_MEANING,
+)
 
 # remedy.actionable_in_app 은 우리 서비스의 핵심 인사이트를 담는 필드다.
 # 정의가 흔들리면 "앱에서 해결 불가" 배지가 엉뚱하게 붙는다.
@@ -108,6 +70,82 @@ CONDITION_CRITERIA = """
 
 
 # ─────────────────────────────────────────────────────────────
+# 2-1. 1차 추출에서 실제로 나온 오류 6종을 막는 규칙
+#      (252청크 1차 결과: 34건 추출 → 병합 15건 중 8건이 아래 유형으로 오류)
+#      추측이 아니라 관측된 실패다. 규칙을 지울 때는 재현되는지 먼저 확인할 것.
+# ─────────────────────────────────────────────────────────────
+PITFALLS = """
+## ★ 자주 나오는 오류 6가지 — 출력 전에 스스로 점검한다
+
+### ① 방향 뒤집힘 — 가장 흔하고 가장 치명적이다
+조건은 **목표를 달성하려면 사용자가 충족해야 하는 상태**다.
+문서는 보통 "무엇을 하면 막힌다"를 서술한다. 그대로 옮기면 방향이 반대가 된다.
+
+  원문 "비밀번호 오류 5회면 카드가 잠깁니다"
+    ✕ card.locked eq true    ← "잠겨 있어야 한다" = 반대
+    ○ card.locked eq false   ← "잠겨 있지 않아야 한다"
+
+  원문 "안심차단은 지점 방문으로 신청할 수 있어요"  (목표: 비대면 계좌개설)
+    ✕ account.nonface_open_block eq true
+    ○ account.nonface_open_block eq false
+
+  ★ 출력 전 자문: **"이 predicate 가 참이면 목표가 달성되는가?"**
+    아니라면 방향이 뒤집힌 것이다.
+
+  ★★ 문서가 어떤 기능을 '보호·예방·안전'으로 설명하더라도, **그 기능이 켜져 있으면 목표가 막힌다면**
+     조건은 언제나 "꺼져 있어야 한다"로 쓴다. 이름에 차단·정지·제한이 들어가면 특히 주의한다.
+     문서는 은행의 관점에서 쓰였고, 우리는 **지금 그 일을 하려는 사용자의 관점**에서 조건을 만든다.
+     예) "원화 승인을 사전 차단할 수 있습니다" (목표: 해외 결제)
+         → 차단이 켜져 있으면 그 결제는 승인되지 않는다 → dcc_block eq **false**
+     단, 그 기능이 목표의 **일부 경우에만** 영향을 준다면 confidence="medium" 으로 낮추고
+     note 에 어떤 경우에 막히는지 적는다 (위 예: 원화로 청구하는 가맹점에 한함).
+
+### ② subject 가 label 과 다른 것을 가리킴
+label 이 'IC칩 비밀번호'인데 subject 가 card.dcc_block 이면 잘못된 출력이다.
+허용 목록에 **뜻이 정확히 맞는 경로가 없으면 그 조건은 추출하지 않는다.**
+비슷해 보이는 다른 경로로 대체하지 않는다. 빠뜨리는 편이 틀리는 편보다 낫다.
+
+  ★ 특히 **서로 다른 조건을 하나의 subject 에 몰아넣지 말 것.**
+    실측에서 '카드 잠김'·'명의도용 차단서비스'·'IC칩 비밀번호 미등록'·'출금계좌 잔고 부족'이
+    전부 card.locked 하나로 뭉쳐 나왔다. 뜻이 다르면 다른 조건이다.
+    맞는 경로가 없으면 **그 조건은 버린다.** 억지로 담으면 판정이 엉뚱한 것을 지목한다.
+
+### ③ 목표와 무관한 조건
+사용자 목표는 입력의 '목표'에 적혀 있다. **지금 그 목표를 달성하는 데** 필요한 조건만 뽑는다.
+  ✕ 이의신청·분쟁 접수 기한, 수수료 면제 조건, 이벤트·캐시백 참여 조건
+  ✕ 사후 절차(귀국 후, 청구 후, 취소·환불), 환율·청구금액 계산 안내
+  이런 청크는 is_condition=false 다.
+
+### ④ 단위 혼동 — 금액은 반드시 원(KRW)
+  ✕ "5,500달러" → 5500000        ← 환산한 것도 아니고 틀린 숫자다
+  ✕ "600달러"   → 600000
+  ○ "600만원 상당의 달러(USD)" → 6000000   ← 원문이 원화를 기준으로 말한다
+  **원문이 달러로만 적힌 한도는 추출하지 않는다.** 환율에 따라 값이 달라져 판정이 흔들린다.
+
+### ⑤ 인용을 이어 붙임
+evidence_quote 는 입력 청크의 **연속된 한 구간**이다.
+떨어진 두 문장을 붙이거나 중간 문장을 생략하면 검증에서 폐기된다.
+확실하지 않으면 **문장 하나만** 그대로 옮긴다.
+
+### ⑥ value_json 을 비움
+빈 문자열은 오류다. 값이 필요 없는 op(exists/not_exists)에도 "null" 을 적는다.
+
+### ⑦ label 과 predicate 의 방향이 어긋남
+label 은 predicate 를 **한국어로 그대로 옮긴 문장**이어야 한다. 둘이 어긋나면 잘못된 출력이다.
+
+  predicate: card.dcc_block eq **false**
+    ✕ label "해외원화결제가 차단되어 있어야 합니다"      ← eq false 인데 '차단되어 있어야'
+    ○ label "해외원화결제(DCC) 차단이 해제되어 있어야 합니다"
+
+  predicate: card.ic_pin_registered eq **false**
+    ✕ label "IC칩 비밀번호가 등록되어 있어야 합니다"      ← eq false 인데 '등록되어 있어야'
+    ○ 애초에 등록이 필요한 조건이라면 predicate 가 eq **true** 여야 한다
+
+  ★ 출력 전 자문: **"label 을 소리 내어 읽고 predicate 로 다시 쓰면 같은 문장이 되는가?"**
+"""
+
+
+# ─────────────────────────────────────────────────────────────
 # 3. 신뢰도 규칙  [현찬 판단]
 #    "근거 100%"를 주장하려면 해석이 개입한 지점을 스스로 드러내야 한다.
 # ─────────────────────────────────────────────────────────────
@@ -122,99 +160,11 @@ medium/low 인데 note 가 비어 있으면 잘못된 출력이다.
 """
 
 
-# ─────────────────────────────────────────────────────────────
-# 4. 예시  [현찬 판단] — 표 행 / 문장 / 해석개입 세 유형을 보여준다
-# ─────────────────────────────────────────────────────────────
-FEW_SHOTS = """
-[예시 1 — 표 행에서 한도 조건]
-입력 청크: "1일 한도 | 현금인출/가맹점이용 | 600만원 상당의 달러(USD) 환산액"
-출력:
-{
-  "is_condition": true,
-  "conditions": [{
-    "id": "c_limit_daily",
-    "label": "1일 이용한도 이내여야 합니다 (600만원 상당 USD)",
-    "category": "limit",
-    "predicate": {"subject": "context.daily_used_krw", "op": "lte", "value_json": "6000000"},
-    "severity": "blocking",
-    "remedy": {"actionable_in_app": true, "channels": ["app:KB Pay"], "primary_path": "한도 조정"},
-    "evidence_quote": "1일 한도 | 현금인출/가맹점이용 | 600만원 상당의 달러(USD) 환산액",
-    "confidence": "high",
-    "note": null
-  }]
-}
-
-[예시 2 — 앱에서 해결 불가한 조건]
-입력 청크: "서비스 해제는 반드시 지점을 방문해 직접 신청해야 합니다. 다만, 신청할 때와 달리, 내가 거래하지 않는 금융회사에서도 해제할 수 있어요."
-출력:
-{
-  "is_condition": true,
-  "conditions": [{
-    "id": "c_nonface_open_block",
-    "label": "비대면 계좌개설 안심차단이 해제되어 있어야 합니다",
-    "category": "setting",
-    "predicate": {"subject": "account.nonface_open_block", "op": "eq", "value_json": "false"},
-    "severity": "blocking",
-    "remedy": {"actionable_in_app": false, "channels": ["branch:금융회사 지점"],
-               "primary_path": "금융회사 지점 방문 (신분증 지참)",
-               "note": "거래하지 않는 금융회사 지점에서도 해제 가능"},
-    "evidence_quote": "서비스 해제는 반드시 지점을 방문해 직접 신청해야 합니다. 다만, 신청할 때와 달리, 내가 거래하지 않는 금융회사에서도 해제할 수 있어요.",
-    "confidence": "high",
-    "note": null
-  }]
-}
-
-[예시 3 — 채널이 여러 개인 경우: 앱이 하나라도 있으면 actionable_in_app=true]
-입력 청크: "해외에서 카드 사용이 필요한 경우 홈페이지/KB Pay, KB국민카드 고객센터(1588-1688), 영업점 방문을 통해 해외거래정지 해제가 필요합니다."
-출력:
-{
-  "is_condition": true,
-  "conditions": [{
-    "id": "c_overseas_block",
-    "label": "해외거래정지가 해제되어 있어야 합니다",
-    "category": "setting",
-    "predicate": {"subject": "card.overseas_block_online", "op": "eq", "value_json": "false"},
-    "severity": "blocking",
-    "remedy": {"actionable_in_app": true,
-               "channels": ["app:KB Pay", "web:홈페이지", "callcenter:1588-1688", "branch:영업점"],
-               "primary_path": "KB Pay 에서 해외거래정지 해제",
-               "note": null},
-    "evidence_quote": "해외에서 카드 사용이 필요한 경우 홈페이지/KB Pay, KB국민카드 고객센터(1588-1688), 영업점 방문을 통해 해외거래정지 해제가 필요합니다.",
-    "confidence": "high",
-    "note": null
-  }]
-}
-→ '영업점 방문'이라는 표현이 있어도 KB Pay 가 함께 있으므로 actionable_in_app 은 true 다.
-
-[예시 4 — 실물 조치: 앱과 무관하므로 false, 단 영업점도 아님]
-입력 청크: "카드 뒷면 본인 서명을 기재해주세요. 서명이 없는 카드에 노출·복제 사고가 발생하는 경우 보상이 어려울 수 있습니다."
-출력:
-{
-  "is_condition": true,
-  "conditions": [{
-    "id": "c_card_signature",
-    "label": "카드 뒷면에 본인 서명이 되어 있어야 합니다",
-    "category": "document",
-    "predicate": {"subject": "card.signature", "op": "eq", "value_json": "true"},
-    "severity": "warning",
-    "remedy": {"actionable_in_app": false, "channels": ["self:실물 카드"],
-               "primary_path": "카드 뒷면에 직접 서명", "note": null},
-    "evidence_quote": "카드 뒷면 본인 서명을 기재해주세요. 서명이 없는 카드에 노출·복제 사고가 발생하는 경우 보상이 어려울 수 있습니다.",
-    "confidence": "high",
-    "note": null
-  }]
-}
-→ 실물 카드에 하는 조치이므로 category 는 document, channels 는 self 다.
-
-[예시 5 — 조건이 아님]
-입력 청크: "비대면 계좌개설 안심차단 서비스 특징과 이용방법을 알려드릴게요."
-출력: {"is_condition": false, "conditions": []}
-"""
-
-
 SYSTEM_PROMPT = f"""당신은 금융 약관·안내문에서 **기계가 판정할 수 있는 조건**을 추출한다.
 
 {CONDITION_CRITERIA}
+
+{PITFALLS}
 
 ## 반드시 지킬 것
 
