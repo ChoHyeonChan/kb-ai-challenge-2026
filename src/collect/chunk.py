@@ -17,7 +17,13 @@ from dataclasses import asdict, dataclass
 from html.parser import HTMLParser
 from pathlib import Path
 
-from src.config import CHUNKS_DIR, CHUNK_MAX_CHARS, CHUNK_MIN_CHARS, RAW_DIR
+from src.config import (
+    CHUNKS_DIR,
+    CHUNK_MAX_CHARS,
+    CHUNK_MIN_CHARS,
+    CHUNK_MIN_CHARS_MANUAL,
+    RAW_DIR,
+)
 
 SKIP_TAGS = {"script", "style", "noscript", "svg", "head", "iframe", "select", "option"}
 HEADING_TAGS = {"h1", "h2", "h3", "h4", "h5", "h6"}
@@ -147,8 +153,8 @@ def _clean(s: str) -> str:
     return s.strip(" ·-|")
 
 
-def _is_noise(text: str) -> bool:
-    if len(text) < CHUNK_MIN_CHARS:
+def _is_noise(text: str, min_chars: int = CHUNK_MIN_CHARS) -> bool:
+    if len(text) < min_chars:
         return True
     if NOISE_RE.search(text):
         return True
@@ -173,26 +179,58 @@ def _split_long(text: str) -> list[str]:
     return parts
 
 
-def chunk_file(html_path: Path) -> list[Chunk]:
-    meta_path = html_path.with_suffix("").with_suffix(".meta.json")
-    if not meta_path.exists():
-        meta_path = html_path.parent / f"{html_path.stem}.meta.json"
+def _blocks_from_text(path: Path) -> list[tuple[str, str]]:
+    """수동 확보한 평문(.txt) → 블록.
+
+    robots.txt 가 자동 수집을 금지한 페이지는 사람이 브라우저로 열어 본문만 저장한다.
+    HTML 태그가 없어 표·목록 구조를 알 수 없으므로 **줄 단위로만** 나눈다.
+    문장부호나 종결어미로 끝나지 않는 짧은 줄은 소제목으로 본다 (원문 소제목의 형태).
+    `#` 로 시작하는 줄은 우리가 붙인 확보 메타이므로 버린다.
+    """
+    blocks: list[tuple[str, str]] = []
+    for raw in path.read_text(encoding="utf-8").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        # 글머리표로 시작하는 줄은 내용이다 — 소제목이 아니다.
+        # (제거를 먼저 하면 이 신호가 사라져 "- 영업일/토요일 07:00~22:00" 이 소제목이 됐다)
+        bullet = line.startswith(("-", "·", "*", "※"))
+        line = line.lstrip("-·*").strip()
+
+        if not bullet and len(line) <= 40 and not line.endswith((".", "다", "요")):
+            # ★ 소제목으로 보이더라도 **버리지 않는다.**
+            #   HTML 과 달리 평문에는 소제목을 구별할 표시가 없어 판정이 자주 틀린다.
+            #   실제로 "영업점, KB스타뱅킹/인터넷뱅킹, KB스타기업뱅킹"(해제·신청 채널)이
+            #   소제목으로 오인돼 통째로 사라졌다.
+            #   그래서 문맥용 section 으로 쓰면서 **내용으로도 함께 남긴다.** 손실이 0이 된다.
+            blocks.append(("heading", line))
+        blocks.append(("paragraph", line))
+    return blocks
+
+
+def chunk_file(path: Path) -> list[Chunk]:
+    meta_path = path.parent / f"{path.stem}.meta.json"
     meta = json.loads(meta_path.read_text(encoding="utf-8"))
 
-    parser = _Extractor()
-    parser.feed(html_path.read_text(encoding="utf-8"))
-    parser.close()
+    if path.suffix == ".txt":
+        blocks = _blocks_from_text(path)
+    else:
+        parser = _Extractor()
+        parser.feed(path.read_text(encoding="utf-8"))
+        parser.close()
+        blocks = parser.blocks
 
     chunks: list[Chunk] = []
     section = ""
     seen: set[str] = set()
+    min_chars = CHUNK_MIN_CHARS_MANUAL if path.suffix == ".txt" else CHUNK_MIN_CHARS
 
-    for kind, text in parser.blocks:
+    for kind, text in blocks:
         if kind == "heading":
-            if not _is_noise(text) or len(text) >= 4:
+            if not _is_noise(text, min_chars) or len(text) >= 4:
                 section = text
             continue
-        if _is_noise(text):
+        if _is_noise(text, min_chars):
             continue
         for piece in _split_long(text):
             if piece in seen:      # 페이지 내 반복 문구 제거
@@ -219,11 +257,14 @@ def run() -> int:
 
     total = 0
     with out_path.open("w", encoding="utf-8") as f:
-        for html_path in sorted(RAW_DIR.glob("*.html")):
-            chunks = chunk_file(html_path)
+        # 자동 수집분(*.html) + 수동 확보분(manual/*.txt)
+        sources = sorted(RAW_DIR.glob("*.html")) + sorted((RAW_DIR / "manual").glob("*.txt"))
+        for path in sources:
+            chunks = chunk_file(path)
             for c in chunks:
                 f.write(json.dumps(asdict(c), ensure_ascii=False) + "\n")
-            print(f"[CHUNK] {html_path.stem:26s} {len(chunks):4d}개")
+            print(f"[CHUNK] {path.stem:26s} {len(chunks):4d}개"
+                  + (" (수동 확보)" if path.suffix == ".txt" else ""))
             total += len(chunks)
 
     print(f"\n총 {total}개 → {out_path}")

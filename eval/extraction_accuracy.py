@@ -23,10 +23,13 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import yaml
+
 from src.config import EVAL_DIR, TREES_DIR
 from src.extract.review import load_decisions
 
 LABELS_DIR = Path(__file__).resolve().parent / "labels"
+ERRATA_FILE = LABELS_DIR / "errata.yaml"
 
 
 def _key(cond: dict) -> tuple[str, str, str]:
@@ -72,6 +75,31 @@ def _block(conds: list[dict]) -> list[str]:
     return [_fmt(c) for c in conds] or ["  (없음)"]
 
 
+def load_errata() -> dict[str, dict]:
+    """수동 라벨의 알려진 결함. 라벨 파일은 고치지 않고 여기에만 기록한다."""
+    if not ERRATA_FILE.exists():
+        return {}
+    cfg = yaml.safe_load(ERRATA_FILE.read_text(encoding="utf-8")) or {}
+    return {f"{e['goal_id']}|{e['key']}": e for e in (cfg.get("errata") or [])}
+
+
+def _errata_block(goal_id: str, only_gold: list[dict], errata: dict) -> list[str]:
+    """자동이 놓친 것 중 '사실은 라벨이 틀린 것'을 구분해 보여준다."""
+    lines: list[str] = []
+    for c in only_gold:
+        e = errata.get(f"{goal_id}|{_key_str(c)}")
+        if not e:
+            continue
+        lines += [f"- **{c['label']}** → 판정: **{e['verdict']}**",
+                  f"  - {' '.join(e['finding'].split())}",
+                  f"  - 교훈: {' '.join(e['lesson'].split())}"]
+    return ["### ⚠ 위 '자동이 놓친 것' 중 라벨 자체가 틀린 항목", "", *lines, ""] if lines else []
+
+
+def _key_str(cond: dict) -> str:
+    return "|".join(_key(cond))
+
+
 def _review_summary() -> list[str]:
     """검수 결과 요약. 라벨 대비 정밀도만으로는 성능을 오해하기 쉬워 함께 싣는다."""
     decisions = load_decisions().values()
@@ -101,6 +129,7 @@ def report(goal_ids: list[str]) -> str:
              "> 트리에 실제로 들어간 것은 **검수를 통과한 조건뿐이다.**", "",
              *_review_summary()]
 
+    errata = load_errata()
     for gid in goal_ids:
         r = compare(gid)
         lines += [
@@ -117,6 +146,7 @@ def report(goal_ids: list[str]) -> str:
             *_block(r["only_auto"]), "```", "",
             f"### 수동 라벨에만 있는 조건 {len(r['only_gold'])}개 — 자동이 놓친 것", "```",
             *_block(r["only_gold"]), "```", "",
+            *_errata_block(gid, r["only_gold"], errata),
         ]
     return "\n".join(lines)
 

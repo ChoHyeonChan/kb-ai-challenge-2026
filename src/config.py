@@ -37,5 +37,10 @@ SOURCES_FILE = SOURCES_DIR / "sources.yaml"
 LLM_CACHE_DIR = Path(os.getenv("LLM_CACHE_DIR", DATA_DIR / ".llm_cache"))
 
 # 청킹 파라미터
-CHUNK_MIN_CHARS = 40      # 이보다 짧은 조각은 버린다
+CHUNK_MIN_CHARS = 40      # 이보다 짧은 조각은 버린다 (HTML: 메뉴·버튼 라벨 걸러내기용)
+
+# 수동 확보한 평문(manual/*.txt)은 사람이 본문만 골라 저장한 것이라 버릴 잡음이 없다.
+# 같은 40자 기준을 쓰면 "서비스 해제는 영업점에서만 가능합니다."(22자) 같은
+# **핵심 문장이 통째로 사라진다.** 실제로 그 사고가 있었다.
+CHUNK_MIN_CHARS_MANUAL = 12
 CHUNK_MAX_CHARS = 1200    # 이보다 길면 문장 경계로 다시 자른다

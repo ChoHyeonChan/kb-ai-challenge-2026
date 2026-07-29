@@ -1410,5 +1410,107 @@
       "confidence": "high",
       "note": null
     }
+  },
+  {
+    "chunk": {
+      "chunk_id": "obank_nonface_safeblock#0009",
+      "source_id": "obank_nonface_safeblock",
+      "goal": "account_open_nonface",
+      "url": "https://obank.kbstar.com/quics?page=C112454",
+      "fetched_at": "2026-07-29T18:00:00+09:00",
+      "kind": "paragraph",
+      "section": "비대면 계좌개설 안심차단 해제",
+      "text": "서비스 해제는 영업점에서만 가능합니다."
+    },
+    "condition": {
+      "id": "c_nonface_open_block",
+      "label": "비대면 계좌개설 안심차단이 해제되어 있어야 합니다",
+      "category": "setting",
+      "predicate": {
+        "subject": "account.nonface_open_block",
+        "op": "eq",
+        "value_json": "false"
+      },
+      "severity": "blocking",
+      "remedy": {
+        "actionable_in_app": false,
+        "channels": [
+          "branch:영업점"
+        ],
+        "primary_path": "영업점 방문 (신분증 지참)",
+        "note": null
+      },
+      "evidence_quote": "서비스 해제는 영업점에서만 가능합니다.",
+      "confidence": "high",
+      "note": null
+    }
+  },
+  {
+    "chunk": {
+      "chunk_id": "obank_nonface_safeblock#0011",
+      "source_id": "obank_nonface_safeblock",
+      "goal": "account_open_nonface",
+      "url": "https://obank.kbstar.com/quics?page=C112454",
+      "fetched_at": "2026-07-29T18:00:00+09:00",
+      "kind": "paragraph",
+      "section": "신청 가능 시간",
+      "text": "비대면 계좌개설 안심차단 서비스 신청 즉시 신청인 명의의 비대면 계좌 개설이 차단됩니다."
+    },
+    "condition": {
+      "id": "c_nonface_open_block",
+      "label": "비대면 계좌개설 안심차단이 해제되어 있어야 합니다",
+      "category": "setting",
+      "predicate": {
+        "subject": "account.nonface_open_block",
+        "op": "eq",
+        "value_json": "false"
+      },
+      "severity": "blocking",
+      "remedy": {
+        "actionable_in_app": false,
+        "channels": [
+          "branch:영업점"
+        ],
+        "primary_path": "영업점 방문 (신분증 지참)",
+        "note": null
+      },
+      "evidence_quote": "비대면 계좌개설 안심차단 서비스 신청 즉시 신청인 명의의 비대면 계좌 개설이 차단됩니다.",
+      "confidence": "high",
+      "note": null
+    }
+  },
+  {
+    "chunk": {
+      "chunk_id": "obank_nonface_safeblock#0017",
+      "source_id": "obank_nonface_safeblock",
+      "goal": "account_open_nonface",
+      "url": "https://obank.kbstar.com/quics?page=C112454",
+      "fetched_at": "2026-07-29T18:00:00+09:00",
+      "kind": "paragraph",
+      "section": "신청 가능 시간",
+      "text": "차단한 금융거래를 재개하려면 서비스 해제를 신청해주세요."
+    },
+    "condition": {
+      "id": "c_nonface_open_block",
+      "label": "비대면 계좌개설 안심차단이 해제되어 있어야 합니다",
+      "category": "setting",
+      "predicate": {
+        "subject": "account.nonface_open_block",
+        "op": "eq",
+        "value_json": "false"
+      },
+      "severity": "blocking",
+      "remedy": {
+        "actionable_in_app": false,
+        "channels": [
+          "branch:영업점"
+        ],
+        "primary_path": "서비스 해제 신청 (영업점 방문)",
+        "note": null
+      },
+      "evidence_quote": "차단한 금융거래를 재개하려면 서비스 해제를 신청해주세요.",
+      "confidence": "high",
+      "note": null
+    }
   }
 ]

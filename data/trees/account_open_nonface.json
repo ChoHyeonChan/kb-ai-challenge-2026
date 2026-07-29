@@ -37,13 +37,17 @@
         "confidence": "high"
       },
       "provenance": {
-        "support_count": 2,
+        "support_count": 5,
         "chunk_ids": [
           "kbthink_safeblock#0012",
-          "kbthink_safeblock#0011"
+          "kbthink_safeblock#0011",
+          "obank_nonface_safeblock#0011",
+          "obank_nonface_safeblock#0009",
+          "obank_nonface_safeblock#0017"
         ],
         "source_ids": [
-          "kbthink_safeblock"
+          "kbthink_safeblock",
+          "obank_nonface_safeblock"
         ]
       }
     }
@@ -51,6 +55,6 @@
   "source_meta": {
     "collected_at": "2026-07-27",
     "extractor_version": "llm:gpt-4o-mini+merge-1.0+review",
-    "source_count": 1
+    "source_count": 2
   }
 }

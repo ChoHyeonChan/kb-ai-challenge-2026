@@ -61,7 +61,14 @@ def fit_quote(quote: str, chunk_text: str) -> str | None:
         return None
 
     span = nq if nq in ns else _longest_common_span(nq, ns)
-    if len(span) < MIN_FITTED_CHARS or len(span) < len(nq) * MIN_FITTED_RATIO:
+
+    # 최소 길이는 **청크 길이를 넘을 수 없다.**
+    # 그러지 않으면 짧은 청크는 통째로 인용해도 영원히 통과하지 못한다 —
+    # 실제로 "서비스 해제는 영업점에서만 가능합니다."(18자) 라는 핵심 문장 하나짜리 청크가
+    # 25자 문턱에 걸려 폐기됐다. 문턱은 '잘라낸 조각이 너무 짧은가'를 보려는 것이지
+    # '원문이 짧은가'를 벌하려는 것이 아니다.
+    floor = min(MIN_FITTED_CHARS, len(ns))
+    if len(span) < floor or len(span) < len(nq) * MIN_FITTED_RATIO:
         return None
 
     start = ns.find(span)
