@@ -10,12 +10,16 @@ const VERDICT = {
   indeterminate: {cls:"v-indeterminate", kicker:"판정 보류", title:"확인할 수 없습니다",     desc:"판정에 필요한 정보를 알 수 없어 된다고 말씀드릴 수 없습니다."},
 };
 
-function evidence(ev){
+function evidence(ev, prov){
   if(!ev) return "";
   const conf = ev.confidence !== "high" ? ` · 신뢰도 ${esc(ev.confidence)}` : "";
-  return `<details><summary>근거 원문</summary>
+  // 같은 조건이 여러 문서에서 확인됐다는 사실 자체가 신뢰의 근거다. 요약줄에 드러낸다.
+  const n = prov && prov.support_count > 1 ? `<b>문서 ${prov.support_count}곳</b>에서 확인` : "";
+  const link = ev.url
+    ? `<a class="src" href="${esc(ev.url)}" target="_blank" rel="noopener">원문 열기 ↗</a>` : "";
+  return `<details><summary>근거 원문 ${n}</summary>
     <blockquote>${esc(ev.quote)}
-      <cite>${esc(ev.source_title)} · ${esc(ev.collected_at)} 수집${conf}</cite>
+      <cite>${esc(ev.source_title)} · ${esc(ev.collected_at)} 수집${conf} ${link}</cite>
     </blockquote></details>`;
 }
 
@@ -25,7 +29,7 @@ function node(r, kind){
   if(kind === "stop"){
     if(rem.primary_path) body += `<div class="meta">해결 <b>${esc(rem.primary_path)}</b></div>`;
     if(rem.actionable_in_app === false) body += `<div><span class="offapp">앱에서 해결 불가</span></div>`;
-    body += evidence(r.evidence);
+    body += evidence(r.evidence, r.provenance);
   }else if(kind === "hold" && r.reason){
     body += `<div class="meta">${esc(r.reason)}</div>`;
   }

@@ -41,6 +41,7 @@ def _to_result(c: Condition, *, reason: str | None = None, full: bool = True) ->
         remedy=c.remedy if full else None,
         evidence=c.evidence if full else None,
         reason=reason,
+        provenance=c.provenance if full else None,
     )
 
 

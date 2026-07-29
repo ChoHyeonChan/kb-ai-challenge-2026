@@ -141,6 +141,10 @@ class ConditionResult(BaseModel):
     remedy: Remedy | None = None
     evidence: Evidence | None = None
     reason: str | None = Field(default=None, description="unknown/low_confidence 사유")
+    provenance: Provenance | None = Field(
+        default=None,
+        description="근거가 몇 개 문서에서 확인됐는가. 화면이 '문서 N곳에서 확인'을 표시하는 데 쓴다",
+    )
 
 
 class Verdict(BaseModel):

@@ -214,3 +214,11 @@ blockquote cite{
 }
 .plan .order b{color:var(--ink)}
 
+
+/* 근거 요약줄 — 몇 개 문서에서 확인됐는가 */
+details summary b{ color:var(--ink); font-weight:700 }
+.src{
+  display:inline-block; margin-left:var(--s2); color:var(--ink-2);
+  text-decoration:none; border-bottom:1px solid var(--rule); font-weight:600;
+}
+.src:hover{ color:var(--ink); border-color:var(--ink-3) }
