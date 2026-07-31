@@ -67,6 +67,42 @@ function planSection(plan){
   </section>`;
 }
 
+// ── 대조한 사용자 상태 ─────────────────────────────────────────
+// 이 시스템에서 가짜는 사용자 상태 하나뿐이다. 그렇다면 감추지 말고 펼친다.
+// 조건 · 상태 · 판정이 모두 보여야 심사자가 손으로 검증할 수 있다.
+
+function stateRows(prof){
+  const rows = [];
+  ["card", "account", "context"].forEach(group => {
+    Object.entries(prof[group] || {}).forEach(([k, v]) => {
+      const unknown = v === null || v === undefined;
+      const val = unknown ? "모름"
+        : typeof v === "boolean" ? (v ? "예" : "아니오")
+        : typeof v === "number" ? v.toLocaleString("ko-KR") : String(v);
+      rows.push(`<tr class="${unknown ? "u" : ""}">
+        <td><code>${esc(group)}.${esc(k)}</code></td><td>${esc(val)}</td></tr>`);
+    });
+  });
+  return rows.join("");
+}
+
+function stateSection(prof){
+  if(!prof) return "";
+  const all = ["card", "account", "context"]
+    .flatMap(g => Object.values(prof[g] || {}));
+  const unknown = all.filter(v => v === null || v === undefined).length;
+  return `<section class="state">
+    <h3>대조한 사용자 상태</h3>
+    <p class="lede">${esc(prof.description)}</p>
+    <details><summary>상태값 ${all.length}개 보기${unknown ? ` · 모름 ${unknown}개` : ""}</summary>
+      <table class="st"><tbody>${stateRows(prof)}</tbody></table>
+      <p class="foot">이 시스템에서 <b>가짜는 이 상태 하나뿐</b>입니다.
+        조건과 근거는 전부 KB 공개문서에서 나옵니다.
+        실제 서비스에서는 이 값을 은행 내부 API로 조회합니다.</p>
+    </details>
+  </section>`;
+}
+
 // ── 조건 트리 원본 보기 ────────────────────────────────────────
 // 우리는 "핵심 산출물은 서비스가 아니라 조건 트리"라고 말한다.
 // 판정 결과만 보여주면 그 말을 확인할 방법이 없다. 트리를 그대로 펼쳐 둔다.
@@ -146,7 +182,7 @@ function treeSection(tree){
   </section>`;
 }
 
-function render(v, plan, tree){
+function render(v, plan, tree, prof){
   const t = VERDICT[v.verdict] || VERDICT.indeterminate;
   const total = v.unmet.length + v.met.length + v.unknown.length;
   const lowById = new Map(v.low_confidence.map(r => [r.id, r]));
@@ -181,6 +217,7 @@ function render(v, plan, tree){
     h += `<section class="met"><h3 class="eyebrow">충족한 조건</h3><ul>${rows}</ul></section>`;
   }
 
+  h += stateSection(prof);
   h += treeSection(tree);
 
   h += `<p class="foot">판정 엔진 v${esc(v.engine_version)} · 조건 수집일 ${esc(v.tree_collected_at)}</p>`;
@@ -193,16 +230,18 @@ async function judge(){
   try{
     const body = JSON.stringify({goal_id:$("#goal").value, profile_id:$("#profile").value});
     const opt = {method:"POST", headers:{"Content-Type":"application/json"}, body};
-    const [res, planRes, treeRes] = await Promise.all([
+    const [res, planRes, treeRes, profRes] = await Promise.all([
       fetch("/api/judge", opt),
       fetch("/api/simulate", opt),
       fetch(`/api/tree/${encodeURIComponent($("#goal").value)}`),
+      fetch(`/api/profile/${encodeURIComponent($("#profile").value)}`),
     ]);
     if(!res.ok) throw new Error((await res.json()).detail || "판정에 실패했습니다");
     // 계획·트리는 부가 정보다. 실패해도 판정은 보여준다.
     render(await res.json(),
            planRes.ok ? await planRes.json() : null,
-           treeRes.ok ? await treeRes.json() : null);
+           treeRes.ok ? await treeRes.json() : null,
+           profRes.ok ? await profRes.json() : null);
   }catch(e){
     $("#out").innerHTML = `<div class="err">${esc(e.message)}</div>`;
   }finally{

@@ -72,7 +72,7 @@ cp .env.example .env          # API 키 입력
 | `src/judge/` | **판정 엔진 (LLM 미사용)** |
 | `src/resolve/` | 목표 식별·설명 생성 (LLM) |
 | `src/api/` | HTTP 계층 |
-| `web/` | 데모 화면 |
+| `web/` | 데모 화면 (index.html · style.css · app.js) |
 | `tests/` | 결정론성·엣지 테스트 |
 | `eval/labels/` | 수동 라벨 (자동 추출 전에 사람이 만든 정답지) |
 | `eval/results/` | 측정 결과 |
@@ -179,6 +179,8 @@ cp .env.example .env          # API 키 입력
 **가상**: 사용자 상태는 데모용 프로필입니다. 실제 연동에는 내부 API가 필요합니다.
 
 > 이 시스템에서 가짜는 **사용자 상태 하나뿐**입니다. 나머지는 전부 실제 문서에서 나옵니다.
+> 그래서 그 하나도 감추지 않습니다 — 데모 화면에서 **대조한 상태값 전체**를 펼쳐 볼 수 있고,
+> 모르는 값은 `모름` 으로 표시됩니다.
 
 전체 한계와 근거 등급은 [docs/기획안.md](docs/기획안.md) 12장 및 [docs/EVIDENCE.md](docs/EVIDENCE.md) 참조.
 

@@ -282,3 +282,34 @@ ul.tree > li:last-child{border-bottom:0}
   margin-top:var(--s2); font-size:11.5px; color:var(--ink-2); line-height:1.6;
   padding-left:var(--s3); border-left:2px solid var(--mark);
 }
+
+/* ── 대조한 사용자 상태 — 이 시스템에서 유일하게 가짜인 것 ──── */
+.state{
+  margin-top:var(--s5); padding:var(--s4);
+  background:var(--surface-2); border:1px solid var(--rule); border-radius:var(--r-md);
+}
+.state h3{font-size:14px; margin-bottom:var(--s1)}
+.state .lede{font-size:13.5px; color:var(--ink-2); line-height:1.7}
+.state summary{
+  cursor:pointer; font-size:12.5px; font-weight:700; color:var(--ink-2);
+  margin-top:var(--s3); list-style:none;
+}
+.state summary::-webkit-details-marker{display:none}
+.state summary::before{content:"＋ "; color:var(--ink-3)}
+.state details[open] summary::before{content:"－ "}
+.state summary:focus-visible{outline:2px solid var(--mark); outline-offset:2px}
+
+table.st{width:100%; border-collapse:collapse; margin-top:var(--s3)}
+table.st td{
+  padding:5px 0; border-bottom:1px solid var(--rule-2);
+  font-size:12.5px; color:var(--ink); vertical-align:top;
+}
+table.st td:first-child{width:62%; padding-right:var(--s2)}
+table.st td:last-child{text-align:right; font-weight:700}
+table.st code{
+  font-family:ui-monospace,SFMono-Regular,Consolas,"D2Coding",monospace;
+  font-size:11.5px; color:var(--ink-2); word-break:break-all;
+}
+table.st tr.u td:last-child{color:var(--hold); font-weight:600}
+.state .foot{margin-top:var(--s3); font-size:11.5px; line-height:1.65}
+.state .foot b{color:var(--ink)}

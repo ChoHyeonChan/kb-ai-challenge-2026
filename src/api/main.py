@@ -106,6 +106,17 @@ def get_tree(goal_id: str) -> ConditionTree:
     return trees[goal_id]
 
 
+@app.get("/api/profile/{profile_id}", response_model=UserProfile)
+def get_profile(profile_id: str) -> UserProfile:
+    """사용자 상태 원본.
+
+    이 시스템에서 **가짜는 사용자 상태 하나뿐**이라고 말해왔다.
+    그렇다면 그 하나를 감추지 말고 화면에 펼쳐야 한다.
+    조건(트리) · 상태(프로필) · 판정(결과)이 모두 보여야 손으로 검증할 수 있다.
+    """
+    return _resolve_profile(profile_id)
+
+
 def _resolve_profile(profile_id: str) -> UserProfile:
     path = PROFILES_DIR / f"{profile_id}.json"
     if not path.exists():
