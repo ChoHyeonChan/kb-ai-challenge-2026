@@ -3,6 +3,7 @@
 import json
 from pathlib import Path
 
+from src.config import PROFILES_DIR, TREES_DIR
 from src.judge.engine import judge
 from src.judge.schema import ConditionTree, UserProfile
 
@@ -38,8 +39,11 @@ def run_case(tree_path: Path, profile_path: Path) -> tuple[int, int]:
 
 def test_all_combinations() -> None:
     """모든 조건 트리·프로필 조합은 10회 모두 같은 판정을 반환해야 한다."""
-    trees = sorted(Path("data/trees").glob("*.json"))
-    profiles = sorted(Path("data/profiles").glob("*.json"))
+    # 경로는 config 에서 가져온다 (AGENTS.md §4 "상수·경로는 config.py 한 곳").
+    # 상대경로를 쓰면 어느 폴더에서 pytest 를 돌리느냐에 따라 조합이 0개가 되고,
+    # 그래도 테스트가 통과해버린다 — 심사자가 다른 위치에서 실행할 수 있다.
+    trees = sorted(TREES_DIR.glob("*.json"))
+    profiles = sorted(PROFILES_DIR.glob("*.json"))
     assert trees and profiles, "조건트리 또는 프로필이 없습니다"
 
     failures: list[str] = []
