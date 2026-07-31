@@ -83,6 +83,17 @@ def test_paths_outside_state_groups_are_rejected() -> None:
         assert res.status_code == 400, f"막지 못한 경로: {bad}"
 
 
+def test_boolean_on_numeric_condition_stays_unknown() -> None:
+    """금액 조건에 참/거짓이 들어와도 추측하지 않고 unknown 으로 둔다.
+
+    화면은 이런 조건에 참/거짓 버튼을 붙이지 않지만, 엔진은 화면을 믿지 않는다.
+    """
+    verdict = _judge(overrides={"context.daily_used_krw": True})
+
+    assert "c_limit_daily" in {r["id"] for r in verdict["unknown"]}
+    assert "c_limit_daily" not in {r["id"] for r in verdict["met"]}
+
+
 def test_simulate_uses_the_same_overrides() -> None:
     """판정과 해결 계획이 다른 상태를 보면 화면이 앞뒤가 안 맞는 말을 하게 된다."""
     plan = CLIENT.post("/api/simulate", json={

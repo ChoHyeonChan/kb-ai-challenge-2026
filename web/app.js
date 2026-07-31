@@ -88,30 +88,47 @@ function planSection(plan){
 // 이 시스템에서 가짜는 사용자 상태 하나뿐이다. 그렇다면 감추지 말고 펼친다.
 // 조건 · 상태 · 판정이 모두 보여야 심사자가 손으로 검증할 수 있다.
 
-function stateRows(prof){
-  const rows = [];
+// 이 절은 "이 상태로 판정했습니다"라고 말한다. 그러므로 **판정에 실제로 쓰인 값**을
+// 보여야 한다. 직접 바꾼 값을 빼고 원본만 그리면 화면이 거짓말을 하게 된다.
+function effectiveState(prof){
+  const out = [];
   ["card", "account", "context"].forEach(group => {
     Object.entries(prof[group] || {}).forEach(([k, v]) => {
-      const unknown = v === null || v === undefined;
-      const val = unknown ? "모름"
-        : typeof v === "boolean" ? (v ? "예" : "아니오")
-        : typeof v === "number" ? v.toLocaleString("ko-KR") : String(v);
-      rows.push(`<tr class="${unknown ? "u" : ""}">
-        <td><code>${esc(group)}.${esc(k)}</code></td><td>${esc(val)}</td></tr>`);
+      const path = `${group}.${k}`;
+      const changed = path in overrides;
+      out.push({path, value: changed ? overrides[path] : v, changed});
     });
   });
-  return rows.join("");
+  return out;
+}
+
+function stateRows(prof){
+  return effectiveState(prof).map(({path, value, changed}) => {
+    const unknown = value === null || value === undefined;
+    const val = unknown ? "모름"
+      : typeof value === "boolean" ? (value ? "예" : "아니오")
+      : typeof value === "number" ? value.toLocaleString("ko-KR") : String(value);
+    return `<tr class="${[unknown ? "u" : "", changed ? "c" : ""].filter(Boolean).join(" ")}">
+      <td><code>${esc(path)}</code></td><td>${esc(val)}</td></tr>`;
+  }).join("");
 }
 
 function stateSection(prof){
   if(!prof) return "";
-  const all = ["card", "account", "context"]
-    .flatMap(g => Object.values(prof[g] || {}));
-  const unknown = all.filter(v => v === null || v === undefined).length;
+  const rows = effectiveState(prof);
+  const unknown = rows.filter(r => r.value === null || r.value === undefined).length;
+  const changed = rows.filter(r => r.changed).length;
+
+  // 값을 바꿨다면 프로필 설명은 더 이상 이 상태를 정확히 말하지 않는다. 그렇게 적는다.
+  const lede = changed
+    ? `${esc(prof.description)}<em class="edited">여기에 직접 바꾼 값 ${changed}개가 얹혀 있습니다.
+       아래 표는 <b>판정에 실제로 쓰인 값</b>입니다.</em>`
+    : esc(prof.description);
+
   return `<section class="state">
     <h3><span class="eyebrow">입력</span>대조한 사용자 상태</h3>
-    <p class="lede">${esc(prof.description)}</p>
-    <details><summary>상태값 ${all.length}개 보기${unknown ? ` · 모름 ${unknown}개` : ""}</summary>
+    <p class="lede">${lede}</p>
+    <details${changed ? " open" : ""}><summary>상태값 ${rows.length}개 보기${unknown ? ` · 모름 ${unknown}개` : ""}${changed ? ` · 바꿈 ${changed}개` : ""}</summary>
       <table class="st"><tbody>${stateRows(prof)}</tbody></table>
       <p class="foot">이 시스템에서 <b>가짜는 이 상태 하나뿐</b>입니다.
         조건과 근거는 전부 KB 공개문서에서 나옵니다.
@@ -290,7 +307,12 @@ function tweakSection(tree, prof, v){
   if(!tree || !prof) return "";
 
   // 참/거짓 조건만 다룬다. 금액·날짜는 세 버튼으로 표현할 수 없다.
+  //
+  // 판단 기준은 **조건 쪽**이다. 현재 값이 null 이라는 이유로 토글을 붙이면
+  // 금액 조건(≤ 6,000,000)에 '예'를 넣게 되고, 엔진은 그것을 비교하지 못해
+  // 무조건 unknown 을 낸다 — 누를 수는 있는데 아무 일도 일어나지 않는 버튼이 된다.
   const rows = tree.conditions.filter(c => {
+    if(typeof c.predicate.value !== "boolean") return false;   // 참/거짓 조건만
     const [g, k] = c.predicate.subject.split(".");
     if(!prof[g] || !(k in prof[g])) return false;      // 이 프로필에 없는 값은 못 바꾼다
     const cur = currentValue(c.predicate.subject, prof);
