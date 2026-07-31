@@ -70,9 +70,13 @@ def list_profiles() -> list[dict]:
         prof = load_profile(p)
         out.append({
             "profile_id": prof.profile_id,
+            # 드롭다운은 폭이 좁다. 설명문을 넣으면 잘리므로 짧은 이름을 따로 둔다.
+            "short": getattr(prof, "short", prof.profile_id),
             "description": prof.description,
-            # 데모를 열었을 때 처음 보여줄 조합. 화면이 id 를 추측하지 않도록 데이터로 지정한다.
-            "demo_goal": getattr(prof, "demo_goal", None),
+            # 이 상태로 판정하는 것이 의미 있는 목표. 화면이 목록을 걸러내는 데 쓴다.
+            # (엔진은 어떤 조합이든 받는다 — 걸러내는 것은 화면의 일이다)
+            "goals": getattr(prof, "goals", []),
+            "demo_default": bool(getattr(prof, "demo_default", False)),
         })
     return out
 

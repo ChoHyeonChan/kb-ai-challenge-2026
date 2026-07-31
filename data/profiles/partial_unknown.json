@@ -15,5 +15,9 @@
   "account": {},
   "context": {
     "daily_used_krw": null
-  }
+  },
+  "short": "상태 대부분 모름",
+  "goals": [
+    "overseas_payment_online"
+  ]
 }

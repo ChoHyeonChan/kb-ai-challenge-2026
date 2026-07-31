@@ -18,5 +18,9 @@
     "tne_accumulated_krw": 0,
     "daily_used_krw": 32000
   },
-  "demo_goal": "overseas_payment_online"
+  "short": "3개 막힘 — 앱 2 · 영업점 1",
+  "goals": [
+    "overseas_payment_online"
+  ],
+  "demo_default": true
 }

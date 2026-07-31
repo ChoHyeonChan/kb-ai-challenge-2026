@@ -17,5 +17,9 @@
     "amount_krw": 32000,
     "tne_accumulated_krw": 0,
     "daily_used_krw": 32000
-  }
+  },
+  "short": "모든 조건 충족",
+  "goals": [
+    "overseas_payment_online"
+  ]
 }

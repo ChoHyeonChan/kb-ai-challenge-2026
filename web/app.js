@@ -59,7 +59,7 @@ function planSection(plan){
        창구 방문이 전체 소요를 결정하므로 먼저 시작하는 편이 빠릅니다.</p>` : "";
 
   return `<section class="plan">
-    <h3>하나만 풀면 되나요?</h3>
+    <h3><span class="eyebrow">계획</span>하나만 풀면 되나요?</h3>
     <p class="lede">${esc(plan.summary)}</p>
     ${rows ? `<ul class="ladder">${rows}</ul>` : ""}
     ${visit}
@@ -92,7 +92,7 @@ function stateSection(prof){
     .flatMap(g => Object.values(prof[g] || {}));
   const unknown = all.filter(v => v === null || v === undefined).length;
   return `<section class="state">
-    <h3>대조한 사용자 상태</h3>
+    <h3><span class="eyebrow">입력</span>대조한 사용자 상태</h3>
     <p class="lede">${esc(prof.description)}</p>
     <details><summary>상태값 ${all.length}개 보기${unknown ? ` · 모름 ${unknown}개` : ""}</summary>
       <table class="st"><tbody>${stateRows(prof)}</tbody></table>
@@ -164,7 +164,7 @@ function treeSection(tree){
 
   const appOff = tree.conditions.filter(c => !c.remedy.actionable_in_app).length;
   return `<section class="asset">
-    <h3>이 목표의 조건 전체</h3>
+    <h3><span class="eyebrow">근거 자료</span>이 목표의 조건 전체</h3>
     <p class="lede">판정에 쓰인 조건을 그대로 펼칩니다.
       <b>사람이 쓴 문장이 아니라 KB 공개문서에서 자동 추출한 것</b>이며,
       각 조건은 기계가 평가하는 형태(<code>subject op value</code>)를 함께 가집니다.</p>
@@ -187,19 +187,24 @@ function render(v, plan, tree, prof){
   const total = v.unmet.length + v.met.length + v.unknown.length;
   const lowById = new Map(v.low_confidence.map(r => [r.id, r]));
 
+  // 판정은 이 서비스의 결론이다. 문서 위에 찍힌 도장처럼 한 덩어리로 세운다.
   let h = `<section class="verdict ${t.cls}">
-      <div class="line">${t.kicker}</div>
-      <h2>${t.title}</h2><p>${t.desc}</p>
+      <div class="v-head">
+        <span class="v-kicker">${t.kicker}</span>
+        <span class="v-goal">${esc(v.goal_label)}</span>
+      </div>
+      <h2>${t.title}</h2>
+      <p>${t.desc}</p>
       <div class="tally">
-        <div class="n-stop"><b>${v.unmet.length}</b>미충족</div>
-        <div><b>${v.met.length}</b>충족</div>
-        ${v.unknown.length ? `<div><b>${v.unknown.length}</b>확인 불가</div>` : ""}
-        <div><b>${total}</b>전체 조건</div>
+        <div class="n-stop"><b>${v.unmet.length}</b><span>미충족</span></div>
+        <div><b>${v.met.length}</b><span>충족</span></div>
+        ${v.unknown.length ? `<div class="n-hold"><b>${v.unknown.length}</b><span>확인 불가</span></div>` : ""}
+        <div class="n-all"><b>${total}</b><span>전체 조건</span></div>
       </div>
     </section>`;
 
   if(v.unmet.length || v.unknown.length){
-    h += `<section class="rail"><h3>어디서 막혔나</h3>
+    h += `<section class="rail"><h3><span class="eyebrow">원인</span>어디서 막혔나</h3>
       ${v.unmet.map(r => node(r, "stop")).join("")}
       ${v.unknown.map(r => node(r, "hold")).join("")}</section>`;
   }
@@ -214,7 +219,7 @@ function render(v, plan, tree, prof){
         ? `<li class="interp">${esc(r.label)}<em>${esc(low.reason || "근거 해석이 개입함")}</em></li>`
         : `<li>${esc(r.label)}</li>`;
     }).join("");
-    h += `<section class="met"><h3 class="eyebrow">충족한 조건</h3><ul>${rows}</ul></section>`;
+    h += `<section class="met"><h3><span class="eyebrow">확인됨</span>충족한 조건</h3><ul>${rows}</ul></section>`;
   }
 
   h += stateSection(prof);
@@ -257,15 +262,30 @@ async function judge(){
     ]);
     $("#goal").innerHTML = goals.map(g =>
       `<option value="${esc(g.goal_id)}">${esc(g.goal_label)} — 조건 ${g.condition_count}개</option>`).join("");
-    $("#profile").innerHTML = profiles.map(p =>
-      `<option value="${esc(p.profile_id)}">${esc(p.description || p.profile_id)}</option>`).join("");
-    // 데모는 빈 화면으로 두지 않는다. 첫 화면에 판정 결과가 이미 보이게 한다.
-    // 어느 조합을 보여줄지는 프로필 데이터(demo_goal)가 정한다.
-    const featured = profiles.find(p => p.demo_goal);
-    if(featured){
-      $("#goal").value = featured.demo_goal;
-      $("#profile").value = featured.profile_id;
+
+    // 목표에 맞는 상태만 보여준다. 계좌개설 목표에 해외결제용 상태를 고르면
+    // 관련 정보가 없어 indeterminate 가 나오는데, 데모에서는 혼란만 준다.
+    // (엔진은 어떤 조합이든 받는다 — 걸러내는 것은 화면의 일이다)
+    function fillProfiles(goalId, keep){
+      const list = profiles.filter(p => !p.goals.length || p.goals.includes(goalId));
+      $("#profile").innerHTML = list.map(p =>
+        `<option value="${esc(p.profile_id)}">${esc(p.short || p.profile_id)}</option>`).join("");
+      if(keep && list.some(p => p.profile_id === keep)) $("#profile").value = keep;
     }
+
+    // 데모는 빈 화면으로 두지 않는다. 첫 화면에 판정 결과가 이미 보이게 한다.
+    // 어느 조합을 보여줄지는 프로필 데이터가 정한다.
+    const featured = profiles.find(p => p.demo_default) || profiles[0];
+    $("#goal").value = featured.goals[0] || goals[0].goal_id;
+    fillProfiles($("#goal").value, featured.profile_id);
+
+    // 목표를 바꾸면 상태 목록도 함께 바뀐다
+    $("#goal").addEventListener("change", () => {
+      fillProfiles($("#goal").value);
+      judge();
+    });
+    $("#profile").addEventListener("change", judge);
+
     await judge();
   }catch{
     $("#out").innerHTML = `<div class="err">서버에 연결하지 못했습니다. <code>uvicorn src.api.main:app</code> 가 실행 중인지 확인해 주세요.</div>`;
