@@ -1,19 +1,28 @@
-# 수집·청킹
+# ASCII ONLY -- do not put Korean (or any non-ASCII) text in this file.
+#
+# pip reads requirements.txt using the system locale encoding
+# (locale.getpreferredencoding), not UTF-8. On Korean Windows that is cp949,
+# so UTF-8 Korean comments here made `pip install -r requirements.txt` fail
+# with UnicodeDecodeError -- i.e. a Korean Windows user could not install at all.
+# Found on 2026-07-31 by the clean-install reproduction. See docs/REPRODUCE.md.
+
+# collect / chunk
 requests>=2.32
 PyYAML>=6.0
 
-# 스키마·판정
+# schema / judge engine
 pydantic>=2.9
 
-# API·데모
+# API / demo
 fastapi>=0.115
 uvicorn>=0.30
 
-# 조건 추출 (LLM) — extract/ 에서만 사용
+# condition extraction (LLM) -- src/extract/ only, offline one-off.
+# Not needed to run the demo or the tests.
 openai>=1.50
 
-# 테스트
+# tests
 pytest>=8.0
 
-# .env 로드
+# .env loading
 python-dotenv>=1.0

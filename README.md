@@ -48,13 +48,29 @@ LLM은 **비정형 문서에서 조건을 뽑아내는 일**과 **사유를 설�
 
 ## 빠른 시작
 
+**필요한 것: Python 3.11 이상.** 그 외에는 없습니다.
+
 ```bash
+python -m venv .venv
+.venv/Scripts/activate        # Windows   (Mac/Linux: source .venv/bin/activate)
 pip install -r requirements.txt
-cp .env.example .env          # API 키 입력
-./run.sh                       # 데모 실행 → http://localhost:8000
+
+./run.sh                       # 데모 실행 → http://localhost:8000  (Windows: run.bat)
 ```
 
-전체 재현 절차는 [docs/REPRODUCE.md](docs/REPRODUCE.md) — **새 폴더에서 처음부터** 돌린 로그를 포함합니다.
+> ### ★ 데모를 보는 데 API 키가 필요 없습니다
+> 판정 경로에는 LLM 호출이 없습니다. 조건 추출은 **오프라인 1회성**으로 이미 끝나 있고,
+> 그 결과가 `data/trees/*.json` 에 들어 있습니다.
+> `.env` 와 API 키는 **조건 추출을 처음부터 다시 돌릴 때만** 필요합니다.
+
+```bash
+# 조건 추출까지 처음부터 재현하려는 경우에만
+cp .env.example .env           # 키는 각자 발급
+python -m src.collect.fetch && python -m src.collect.chunk
+python -m src.extract.extractor && python -m src.extract.assemble
+```
+
+전체 재현 절차와 실행 로그는 [docs/REPRODUCE.md](docs/REPRODUCE.md).
 
 ---
 
