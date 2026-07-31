@@ -139,11 +139,41 @@ def simulate_endpoint(req: JudgeRequest) -> Plan:
     return simulate(judge(_resolve_goal(req), _resolve_profile(req.profile_id), req.context))
 
 
+# ── 진단 ──────────────────────────────────────────────────────────
+
+@app.get("/api/health")
+def health() -> dict:
+    """이 함수가 무엇을 볼 수 있는지 그대로 보고한다.
+
+    배포 환경(서버리스)에서는 데이터 파일이 번들에 실리지 않아 조용히 빈 결과가
+    나오는 일이 흔하다. 그때 '왜 안 되는지'를 추측하지 않고 바로 확인하기 위한 창구다.
+    비밀값은 담지 않는다 — 경로와 개수만 본다.
+    """
+    return {
+        "ok": TREES_DIR.exists() and PROFILES_DIR.exists() and (WEB_DIR / "index.html").exists(),
+        "root": str(ROOT),
+        "trees_dir": {"path": str(TREES_DIR), "exists": TREES_DIR.exists(),
+                      "files": sorted(p.name for p in TREES_DIR.glob("*.json"))},
+        "profiles_dir": {"path": str(PROFILES_DIR), "exists": PROFILES_DIR.exists(),
+                         "count": len(list(PROFILES_DIR.glob("*.json")))},
+        "web": {"path": str(WEB_DIR), "exists": WEB_DIR.exists(),
+                "files": sorted(p.name for p in WEB_DIR.glob("*")) if WEB_DIR.exists() else []},
+        "conditions": sum(len(t.conditions) for t in load_all_trees().values()),
+    }
+
+
 # ── 데모 화면 ─────────────────────────────────────────────────────
 
 @app.get("/")
-def index() -> FileResponse:
-    return FileResponse(WEB_DIR / "index.html")
+def index():
+    """데모 화면. 파일이 없으면 크래시 대신 무엇이 없는지 알린다."""
+    page = WEB_DIR / "index.html"
+    if not page.exists():
+        raise HTTPException(
+            503,
+            f"데모 화면 파일을 찾지 못했습니다: {page}. /api/health 로 배포 상태를 확인하세요.",
+        )
+    return FileResponse(page)
 
 
 @app.get("/favicon.ico", include_in_schema=False)
