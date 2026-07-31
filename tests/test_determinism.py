@@ -2,6 +2,12 @@
 
 import json
 from pathlib import Path
+import sys
+
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.judge.engine import judge
 from src.judge.schema import ConditionTree, UserProfile
@@ -38,8 +44,8 @@ def run_case(tree_path: Path, profile_path: Path) -> tuple[int, int]:
 
 def test_all_combinations() -> None:
     """모든 조건 트리·프로필 조합은 10회 모두 같은 판정을 반환해야 한다."""
-    trees = sorted(Path("data/trees").glob("*.json"))
-    profiles = sorted(Path("data/profiles").glob("*.json"))
+    trees = sorted((PROJECT_ROOT / "data/trees").glob("*.json"))
+    profiles = sorted((PROJECT_ROOT / "data/profiles").glob("*.json"))
     assert trees and profiles, "조건트리 또는 프로필이 없습니다"
 
     failures: list[str] = []
