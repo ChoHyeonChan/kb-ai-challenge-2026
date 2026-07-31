@@ -21,7 +21,9 @@
 ```
 
 해외결제도 같습니다. KB Pay 설정 화면에 보이는 항목은 **2개**지만,
-KB 공개문서에서 자동으로 뽑아낸 조건은 **11개**입니다. 그중 **8개는 앱에서 해결할 수 없습니다.**
+KB 공개문서에서 자동으로 뽑아낸 조건은 **11개**입니다.
+그중 앱 안에서 해결할 수 있는 것은 **2개**뿐이고, 3개는 앱 밖에서 해결해야 하며,
+**6개는 어디서 해결하는지 KB 공개문서에서 찾지 못했습니다.**
 검색하면 FAQ가 뜨지만 *"확인하세요"* 라고 말할 뿐, **확인해주지는 않습니다.**
 
 > ### "확인하세요"와 "확인해드렸습니다"의 차이
@@ -181,7 +183,9 @@ python -m src.extract.extractor && python -m src.extract.assemble
 | 검수 통과율 | 병합된 조건 중 트리에 들어간 비율 | **12/16 = 0.75** ([사유 전문](data/review/decisions.yaml)) |
 | 조건 추출 정확도 | 수동 라벨 대비 정밀도·재현율 | [eval/results/extraction_accuracy.md](eval/results/extraction_accuracy.md) |
 | 근거 표시율 | 판정 중 evidence 링크 비율 | 구조적 100% (스키마 필수 + 인용 검증) |
-| 앱에서 해결 불가 비율 | `remedy.actionable_in_app == false` | **해외결제 8/11** |
+| 앱 안에서 해결 가능 | `remedy.actionable_in_app is True` | 해외결제 **2/11** |
+| 앱 밖에서 해결 | `... is False` (근거 확인된 것만) | 해외결제 **3/11** |
+| 해결 경로 미확인 | `... is None` | 해외결제 **6/11** |
 | 결정론성 | 동일 입력 N회 반복 일치율 | `eval/results/` (팀원 담당) |
 | 탐색 시간 대비 | 사람이 직접 확인하는 시간(실측) vs 판정 응답 시간 | [eval/results/lookup_vs_judge.md](eval/results/lookup_vs_judge.md) |
 

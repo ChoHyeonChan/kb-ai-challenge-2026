@@ -28,7 +28,8 @@
         "channels": [
           "branch:영업점"
         ],
-        "primary_path": "영업점 방문 (주민등록증 및 카드 지참)"
+        "primary_path": "영업점 방문 (주민등록증 및 카드 지참)",
+        "basis": "evidence"
       },
       "evidence": {
         "source_title": "해외이용 종합안내",
@@ -65,7 +66,8 @@
         "channels": [
           "app:KB Pay"
         ],
-        "primary_path": "KB Pay에서 해외원화결제 차단 해제"
+        "primary_path": "KB Pay에서 해외원화결제 차단 해제",
+        "basis": "measured"
       },
       "evidence": {
         "source_title": "해외 체류/결제 전 안내",
@@ -106,7 +108,8 @@
           "branch:영업점",
           "self:ATM"
         ],
-        "primary_path": "영업점 또는 ATM에서 IC칩 비밀번호 등록"
+        "primary_path": "영업점 또는 ATM에서 IC칩 비밀번호 등록",
+        "basis": "evidence"
       },
       "evidence": {
         "source_title": "해외 체류/결제 전 안내",
@@ -142,11 +145,11 @@
       },
       "severity": "warning",
       "remedy": {
-        "actionable_in_app": false,
-        "channels": [
-          "callcenter:1588-1688"
-        ],
-        "primary_path": "고객센터에 문의"
+        "actionable_in_app": null,
+        "channels": [],
+        "primary_path": null,
+        "basis": null,
+        "note": "KB 공개문서에서 이 조건의 해결 채널을 찾지 못했습니다"
       },
       "evidence": {
         "source_title": "해외 귀국/결제 후 안내",
@@ -194,7 +197,8 @@
           "callcenter:1588-1688",
           "branch:영업점"
         ],
-        "primary_path": "KB Pay 에서 해외거래정지 해제"
+        "primary_path": "KB Pay 에서 해외거래정지 해제",
+        "basis": "evidence"
       },
       "evidence": {
         "source_title": "해외 귀국/결제 후 안내",
@@ -229,11 +233,11 @@
       },
       "severity": "warning",
       "remedy": {
-        "actionable_in_app": false,
-        "channels": [
-          "self:본인 조치"
-        ],
-        "primary_path": "카드와 여권 영문명 일치 확인"
+        "actionable_in_app": null,
+        "channels": [],
+        "primary_path": null,
+        "basis": null,
+        "note": "KB 공개문서에서 이 조건의 해결 채널을 찾지 못했습니다"
       },
       "evidence": {
         "source_title": "해외 체류/결제 전 안내",
@@ -270,7 +274,8 @@
         "channels": [
           "self:실물 카드"
         ],
-        "primary_path": "카드 뒷면에 직접 서명"
+        "primary_path": "카드 뒷면에 직접 서명",
+        "basis": "self_evident"
       },
       "evidence": {
         "source_title": "해외 체류/결제 전 안내",
@@ -302,8 +307,11 @@
       },
       "severity": "blocking",
       "remedy": {
-        "actionable_in_app": false,
-        "channels": []
+        "actionable_in_app": null,
+        "channels": [],
+        "primary_path": null,
+        "basis": null,
+        "note": "KB 공개문서에서 이 조건의 해결 채널을 찾지 못했습니다"
       },
       "evidence": {
         "source_title": "해외이용 FAQ",
@@ -333,11 +341,11 @@
       },
       "severity": "blocking",
       "remedy": {
-        "actionable_in_app": true,
-        "channels": [
-          "app:KB Pay"
-        ],
-        "primary_path": "한도 조정"
+        "actionable_in_app": null,
+        "channels": [],
+        "primary_path": null,
+        "basis": null,
+        "note": "KB 공개문서에서 이 조건의 해결 채널을 찾지 못했습니다"
       },
       "evidence": {
         "source_title": "해외이용 FAQ",
@@ -370,8 +378,11 @@
       },
       "severity": "blocking",
       "remedy": {
-        "actionable_in_app": false,
-        "channels": []
+        "actionable_in_app": null,
+        "channels": [],
+        "primary_path": null,
+        "basis": null,
+        "note": "KB 공개문서에서 이 조건의 해결 채널을 찾지 못했습니다"
       },
       "evidence": {
         "source_title": "해외이용 종합안내",
@@ -403,11 +414,11 @@
       },
       "severity": "blocking",
       "remedy": {
-        "actionable_in_app": false,
-        "channels": [
-          "self:실물 카드"
-        ],
-        "primary_path": "카드 갱신 재발급"
+        "actionable_in_app": null,
+        "channels": [],
+        "primary_path": null,
+        "basis": null,
+        "note": "KB 공개문서에서 이 조건의 해결 채널을 찾지 못했습니다"
       },
       "evidence": {
         "source_title": "해외 체류/결제 전 안내",

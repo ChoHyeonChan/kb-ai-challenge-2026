@@ -36,7 +36,12 @@ function node(r, kind, open){
   let body = "";
   if(kind === "stop"){
     if(rem.primary_path) body += `<div class="meta">해결 <b>${esc(rem.primary_path)}</b></div>`;
-    if(rem.actionable_in_app === false) body += `<div><span class="offapp">앱에서 해결 불가</span></div>`;
+    // 세 값이다. null(모름)을 "앱에서 불가"로 뭉치면 근거 없는 주장이 된다.
+    if(rem.actionable_in_app === false){
+      body += `<div><span class="offapp">앱에서 해결 불가</span></div>`;
+    }else if(rem.actionable_in_app === null || rem.actionable_in_app === undefined){
+      body += `<div><span class="nopath">해결 경로가 문서에서 확인되지 않음</span></div>`;
+    }
     body += evidence(r.evidence, r.provenance, open);
   }else if(kind === "hold" && r.reason){
     body += `<div class="meta">${esc(r.reason)}</div>`;
@@ -167,17 +172,28 @@ function predText(p){
   return `${p.subject} ${op} ${v}`;
 }
 
+// 무엇이 이 해결 방법을 뒷받침하는가. 근거가 없으면 아무 말도 하지 않는다.
+const BASIS = {
+  evidence: "근거 원문에 채널 명시",
+  measured: "앱에서 직접 확인",
+  self_evident: "조건 자체로 자명",
+};
+
 function treeItem(c){
-  const app = c.remedy.actionable_in_app
-    ? `<span class="chip">앱에서 가능</span>`
-    : `<span class="chip off">앱에서 불가</span>`;
+  const a = c.remedy.actionable_in_app;
+  const app = a === true ? `<span class="chip">앱에서 가능</span>`
+            : a === false ? `<span class="chip off">앱에서 불가</span>`
+            : `<span class="chip none">해결 경로 확인 안 됨</span>`;
   const sev = c.severity === "blocking"
     ? `<span class="chip stop">차단</span>` : `<span class="chip warn">주의</span>`;
   const sup = (c.provenance && c.provenance.support_count) || 1;
   return `<li>
     <div class="t-label">${esc(c.label)}</div>
     <div class="t-pred"><code>${esc(predText(c.predicate))}</code></div>
-    <div class="t-meta">${sev}${app}<span class="chip q">근거 ${sup}곳</span></div>
+    <div class="t-meta">${sev}${app}<span class="chip q">근거 ${sup}곳</span>
+      ${c.remedy.basis ? `<span class="chip b">${esc(BASIS[c.remedy.basis] || c.remedy.basis)}</span>` : ""}</div>
+    ${c.remedy.note && c.remedy.actionable_in_app == null
+      ? `<div class="t-note">${esc(c.remedy.note)}</div>` : ""}
     <details><summary>근거 원문</summary>
       <blockquote>${esc(c.evidence.quote)}
         <cite>${esc(c.evidence.source_title)} · ${esc(c.evidence.collected_at)} 수집
@@ -196,7 +212,9 @@ function treeSection(tree){
     `<h4>${CAT[k]} <em>${byCat[k].length}</em></h4>
      <ul class="tree">${byCat[k].map(treeItem).join("")}</ul>`).join("");
 
-  const appOff = tree.conditions.filter(c => !c.remedy.actionable_in_app).length;
+  const appYes = tree.conditions.filter(c => c.remedy.actionable_in_app === true).length;
+  const appNo = tree.conditions.filter(c => c.remedy.actionable_in_app === false).length;
+  const noPath = tree.conditions.length - appYes - appNo;
   return `<section class="asset">
     <h3><span class="eyebrow">근거 자료</span>이 목표의 조건 전체</h3>
     <p class="lede">판정에 쓰인 조건을 그대로 펼칩니다.
@@ -204,7 +222,9 @@ function treeSection(tree){
       각 조건은 기계가 평가하는 형태(<code>subject op value</code>)를 함께 가집니다.</p>
     <div class="t-stat">
       <div><b>${tree.conditions.length}</b>조건</div>
-      <div><b>${appOff}</b>앱에서 불가</div>
+      <div><b>${appYes}</b>앱에서 가능</div>
+      <div><b>${appNo}</b>앱에서 불가</div>
+      ${noPath ? `<div><b>${noPath}</b>경로 확인 안 됨</div>` : ""}
       <div><b>${tree.source_meta.source_count}</b>근거 문서</div>
       <div><b>${esc(tree.source_meta.collected_at)}</b>수집</div>
     </div>
@@ -259,13 +279,22 @@ function railSection(v, tree){
   let impact = "";
   if(tree){
     const all = tree.conditions.length;
-    const off = tree.conditions.filter(c => !c.remedy.actionable_in_app).length;
+    const yes = tree.conditions.filter(c => c.remedy.actionable_in_app === true).length;
+    const no = tree.conditions.filter(c => c.remedy.actionable_in_app === false).length;
+    const unsure = all - yes - no;
+
     // "1개 중 1개" 같은 말이 되지 않게, 조건 수에 따라 문장을 고른다.
-    const text =
-      off === 0 ? "" :
-      off < all ? `이 목표의 조건 <b>${all}개</b> 중 <b>${off}개</b>는 앱 안에서 고칠 수 없습니다.` :
-      all === 1 ? `이 조건은 <b>앱 안에서 고칠 수 없습니다.</b>` :
-                  `이 목표의 조건 <b>${all}개 전부</b> 앱 안에서 고칠 수 없습니다.`;
+    // 해결 경로를 모르는 것은 "앱에서 불가"에 합치지 않는다. 다른 사실이다.
+    let text = "";
+    if(all === 1){
+      text = no ? `이 조건은 <b>앱 안에서 고칠 수 없습니다.</b>` : "";
+    }else if(yes + no + unsure){
+      text = `이 목표의 조건 <b>${all}개</b> 중 앱 안에서 해결할 수 있는 것은 <b>${yes}개</b>입니다.`;
+      const tail = [];
+      if(no) tail.push(`<b>${no}개</b>는 앱 밖에서 해결해야 합니다`);
+      if(unsure) tail.push(`<b>${unsure}개</b>는 어디서 해결하는지 KB 공개문서에서 찾지 못했습니다`);
+      if(tail.length) text += ` ${tail.join(" · ")}.`;
+    }
     if(text) impact = `<p class="impact">${text}</p>`;
   }
 

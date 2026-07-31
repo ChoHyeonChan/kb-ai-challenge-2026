@@ -8,7 +8,7 @@
 from __future__ import annotations
 
 FEW_SHOTS = """
-[예시 1 — 표 행에서 한도 조건]
+[예시 1 — 표 행에서 한도 조건. ★ 해결 채널이 원문에 없으면 **비운다**]
 입력 청크: "1일 한도 | 현금인출/가맹점이용 | 600만원 상당의 달러(USD) 환산액"
 출력:
 {
@@ -19,12 +19,16 @@ FEW_SHOTS = """
     "category": "limit",
     "predicate": {"subject": "context.daily_used_krw", "op": "lte", "value_json": "6000000"},
     "severity": "blocking",
-    "remedy": {"actionable_in_app": true, "channels": ["app:KB Pay"], "primary_path": "한도 조정"},
+    "remedy": {"actionable_in_app": null, "channels": [], "primary_path": null, "note": null},
     "evidence_quote": "1일 한도 | 현금인출/가맹점이용 | 600만원 상당의 달러(USD) 환산액",
     "confidence": "high",
     "note": null
   }]
 }
+→ 이 청크는 한도 **수치**만 말한다. 어디서 조정하는지는 한 글자도 없다.
+  그런데 "앱에서 한도 조정"이라고 쓰면 그것은 **지어낸 것**이다.
+  `false` 도 주장이다 — "앱에서 안 된다"고 말하는 것이므로 근거가 있어야 한다.
+  모르면 **null**. 이것이 유일하게 정직한 답이다.
 
 [예시 2 — 방향 뒤집힘 방지 + 앱에서 해결 불가]
 ※ 아래 청크는 형식을 보이기 위한 **가상 문장**이다. 실제 KB 문서 인용이 아니다.

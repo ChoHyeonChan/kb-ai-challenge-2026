@@ -79,6 +79,42 @@ def _note_with(note: str | None, added: str) -> str:
     return f"{note} / {added}" if (note or "").strip() else added
 
 
+# 해결 경로가 원문에 있는지 판단할 때 찾는 말. 이 중 하나도 없으면
+# 그 청크는 "무엇을 해야 하는지"를 말하지 않은 것이다.
+CHANNEL_WORDS = (
+    "앱", "어플", "KB Pay", "KB페이", "스타뱅킹", "인터넷뱅킹", "모바일",
+    "홈페이지", "웹", "영업점", "지점", "창구", "방문", "ATM",
+    "고객센터", "콜센터", "전화", "상담", "재발급", "신청", "해제", "등록",
+)
+
+
+def strip_unfounded_remedy(c, chunk_text: str):
+    """원문이 해결 경로를 말하지 않으면 remedy 를 비운다.
+
+    이 관문이 없던 동안 실제로 사고가 났다. 한도 조건의 근거 원문에는
+    한도 **수치**만 있는데 "앱에서 한도 조정"이 붙었다 — 프롬프트 예시가
+    그대로 새어나온 것이다. 그리고 검수자는 remedy 를 보지 않았다.
+
+    **`false` 도 비운다.** "앱에서 안 된다"도 주장이고, 주장에는 근거가 필요하다.
+    모르는 것은 `None` 으로 둔다.
+    """
+    r = c.remedy
+    if r.actionable_in_app is None and not r.channels and not r.primary_path:
+        return c, None                                   # 이미 비어 있다
+
+    if any(w in chunk_text for w in CHANNEL_WORDS):
+        return c, None                                   # 원문이 경로를 말한다
+
+    dropped = f"in_app={r.actionable_in_app} channels={r.channels} path={r.primary_path}"
+    cleaned = c.model_copy(update={
+        "remedy": r.model_copy(update={
+            "actionable_in_app": None, "channels": [], "primary_path": None,
+            "note": "KB 공개문서에서 이 조건의 해결 채널을 찾지 못했습니다",
+        }),
+    })
+    return cleaned, f"{c.id}: 근거 없는 remedy 를 비움 — {dropped}"
+
+
 def validate(out, chunk_text: str) -> tuple[list, list[str]]:
     """지어낸 인용·경로를 걸러낸다. 반환: (통과 조건, 폐기 사유 목록)
 
@@ -117,6 +153,12 @@ def validate(out, chunk_text: str) -> tuple[list, list[str]]:
                 "evidence_quote": fitted,
                 "note": _note_with(c.note, "인용 자동 보정: 모델 출력에서 원문에 없는 부분을 잘라냈다"),
             })
+
+        # 6. 해결 경로가 원문에 근거하는가.
+        #    조건 자체는 유효하므로 폐기하지 않고 remedy 만 비운다.
+        c, note = strip_unfounded_remedy(c, chunk_text)
+        if note:
+            rejected.append(note)
         kept.append(c)
 
     return kept, rejected

@@ -74,7 +74,8 @@ def build_tree(goal_id: str, conditions: list[Condition], goals: dict[str, dict]
 # ── 출력 ──────────────────────────────────────────────────────────
 
 def _line(c: Condition) -> str:
-    app = "앱O" if c.remedy.actionable_in_app else "앱X"
+    a = c.remedy.actionable_in_app
+    app = "앱O" if a is True else "앱X" if a is False else "앱?"
     sup = c.provenance.support_count if c.provenance else 1
     return (f"   [{c.severity:8s}] [{c.category:11s}] [{app}] x{sup:<2d} {c.label}\n"
             f"        {c.predicate.subject} {c.predicate.op} "

@@ -27,7 +27,8 @@
         "channels": [
           "branch:영업점"
         ],
-        "primary_path": "영업점 방문 (신분증 지참)"
+        "primary_path": "영업점 방문 (신분증 지참)",
+        "basis": "evidence"
       },
       "evidence": {
         "source_title": "비대면 계좌개설 안심차단으로 보이스피싱 피해 예방하기",

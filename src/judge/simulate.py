@@ -54,6 +54,10 @@ class Plan(BaseModel):
     optional_fix: list[ConditionResult] = Field(default_factory=list)
     in_app_ids: list[str] = Field(default_factory=list)
     needs_visit_ids: list[str] = Field(default_factory=list)
+    unsure_path_ids: list[str] = Field(
+        default_factory=list,
+        description="해결 채널이 KB 공개문서에서 확인되지 않은 조건. '영업점에 가라'고 말하지 않는다",
+    )
     what_ifs: list[WhatIf] = Field(default_factory=list)
     final_outcome: Outcome = "ok"
     final_note: str | None = None
@@ -94,15 +98,23 @@ def _step(verdict: Verdict, targets: list[ConditionResult], scope: str | None = 
     )
 
 
+# actionable_in_app 은 세 값이다. is True / is False 로 명시해서 읽는다 —
+# None(모름)을 falsy 로 흘리면 "앱에서 안 된다"고 주장하게 된다.
+def _is(results: list[ConditionResult], value: bool | None) -> list[ConditionResult]:
+    return [r for r in results
+            if (r.remedy.actionable_in_app if r.remedy else None) is value]
+
+
 def _grouped_steps(verdict: Verdict, must: list[ConditionResult]) -> list[WhatIf]:
     """채널별 묶음 — '앱에서 할 수 있는 것만 다 하면?' 이 가장 중요한 질문이다."""
-    in_app = [r for r in must if r.remedy and r.remedy.actionable_in_app]
+    in_app = _is(must, True)
     if 1 < len(in_app) < len(must):
         return [_step(verdict, in_app, scope="앱에서 할 수 있는 것 모두")]
     return []
 
 
-def _summary(must: list[ConditionResult], visit: list[str], final: Outcome, unknown: int) -> str:
+def _summary(must: list[ConditionResult], visit: list[str], unsure: list[str],
+             final: Outcome, unknown: int) -> str:
     if not must:
         if final == "indeterminate":
             return (f"막고 있는 조건은 찾지 못했습니다. 다만 확인되지 않은 값이 {unknown}개 있어 "
@@ -118,6 +130,10 @@ def _summary(must: list[ConditionResult], visit: list[str], final: Outcome, unkn
         if visit:
             head += (f" 그중 {len(visit)}개는 앱에서 할 수 없어, 그것이 전체 소요를 결정합니다 — "
                      f"먼저 시작하세요.")
+    # 해결 채널을 모르는 조건은 "영업점에 가라"고 말하지 않는다. 모른다고 말한다.
+    if unsure:
+        head += (f" {len(unsure)}개는 어디서 해결하는지 KB 공개문서에서 찾지 못해 "
+                 f"안내드리지 못합니다.")
     if final == "indeterminate":
         head += " 전부 해결해도 확인되지 않은 값이 남아 '됩니다'라고 단정하지는 않습니다."
     return head
@@ -128,8 +144,9 @@ def simulate(verdict: Verdict) -> Plan:
     must = [r for r in verdict.unmet if r.severity == "blocking"]
     optional = [r for r in verdict.unmet if r.severity != "blocking"]
 
-    in_app = [r.id for r in must if r.remedy and r.remedy.actionable_in_app]
-    needs_visit = [r.id for r in must if not (r.remedy and r.remedy.actionable_in_app)]
+    in_app = [r.id for r in _is(must, True)]
+    needs_visit = [r.id for r in _is(must, False)]
+    unsure = [r.id for r in _is(must, None)]      # 해결 채널이 확인되지 않은 것
 
     what_ifs: list[WhatIf] = []
     if len(must) > 1:
@@ -150,5 +167,6 @@ def simulate(verdict: Verdict) -> Plan:
         final_outcome=final,
         final_note=(f"확인되지 않은 조건 {unknown}개가 남습니다. 그 값을 알기 전에는 "
                     f"된다고 답하지 않습니다." if final == "indeterminate" else None),
-        summary=_summary(must, needs_visit, final, unknown),
+        unsure_path_ids=unsure,
+        summary=_summary(must, needs_visit, unsure, final, unknown),
     )

@@ -5,7 +5,8 @@
 설계 의도
   - evidence 필수        → 근거 없는 조건은 존재할 수 없다 (근거 표시율 100% 구조적 보장)
   - confidence           → 해석이 개입한 조건은 신뢰도를 낮춰 표시한다
-  - actionable_in_app    → 앱에서 못 고치는 조건을 데이터로 구분한다 (안심차단이 false)
+  - actionable_in_app    → 앱에서 못 고치는 조건을 데이터로 구분한다 (안심차단이 false).
+                           **근거로 확인되지 않으면 None** — 아래 remedy.basis 참조
   - unknown / low_confidence → 모르는 건 모른다고 한다
 """
 from __future__ import annotations
@@ -46,12 +47,36 @@ class Evidence(BaseModel):
     note: str | None = Field(default=None, description="해석이 개입했다면 무엇을 어떻게 옮겼는지")
 
 
+# 이 remedy 를 무엇이 뒷받침하는가. 근거가 없으면 아예 비운다.
+#
+# 이 필드가 없던 동안 LLM 이 해결 방법을 지어냈다. 근거 원문에는 한도 '수치'만
+# 있는데 "앱에서 한도 조정"이 붙는 식이었다(프롬프트 예시가 그대로 새어나왔다).
+# 조건·상태·판정에서는 "모르면 모른다"를 지켰으면서 remedy 에서만 빠져 있었다.
+RemedyBasis = Literal["evidence", "measured", "self_evident"]
+
+
 class Remedy(BaseModel):
-    """미충족일 때 무엇을 해야 하는가."""
-    actionable_in_app: bool = Field(description="앱 안에서 해결 가능한가. 안심차단은 False")
+    """미충족일 때 무엇을 해야 하는가.
+
+    **모르면 비운다.** actionable_in_app 이 None 이면 "앱에서 되는지 확인되지 않음"이며,
+    되지 않는다는 뜻이 아니다. 둘을 섞으면 근거 없는 주장을 하게 된다.
+    """
+    actionable_in_app: bool | None = Field(
+        default=None,
+        description="앱에서 해결 가능한가. 근거로 확인되지 않으면 None(모름). 추측하지 않는다",
+    )
     channels: list[str] = Field(default_factory=list, description='예: ["app:KB Pay", "branch:영업점"]')
     primary_path: str | None = None
     note: str | None = None
+    basis: RemedyBasis | None = Field(
+        default=None,
+        description=(
+            "evidence=근거 원문에 채널이 명시됨 / "
+            "measured=앱에서 직접 확인(eval/results/kbpay_hands_on.md) / "
+            "self_evident=조건 자체로 자명(실물 카드 등). "
+            "None 이면 actionable_in_app 도 None 이어야 한다"
+        ),
+    )
 
 
 class Predicate(BaseModel):

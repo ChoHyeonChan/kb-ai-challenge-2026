@@ -36,7 +36,9 @@ MODEL = os.getenv("EXTRACT_MODEL", "")
 # ── LLM 출력 스키마 (C1 의 Condition 과 1:1은 아니다. 평탄화해서 받는다) ──
 
 class RemedyOut(BaseModel):
-    actionable_in_app: bool
+    # 세 값이다. 스키마가 bool 만 받으면 모델은 모를 때도 반드시 하나를 고르게 되고,
+    # 그 결과 프롬프트 예시를 베낀 해결 방법이 들어왔다.
+    actionable_in_app: bool | None = None
     channels: list[str] = Field(default_factory=list)
     primary_path: str | None = None
     note: str | None = None
