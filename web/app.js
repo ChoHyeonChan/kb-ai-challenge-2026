@@ -252,11 +252,15 @@ function railSection(v, tree){
     if(text) impact = `<p class="impact">${text}</p>`;
   }
 
+  // 우리 최고의 증거(직접 바꿔 보기)가 스크롤 아래에 있다. 여기서 존재를 알린다.
+  const jump = `<p class="to-tweak-wrap"><a class="to-tweak" href="#tweak">이 조건들의
+    값을 직접 바꿔 판정이 어떻게 달라지는지 보실 수 있습니다</a></p>`;
+
   // 근거는 접어두면 없는 것과 같다. 첫 건은 펼쳐 둔다 —
   // 클릭하지 않는 사람에게도 "출처 있는 판정"이 즉시 보여야 한다.
   const stops = v.unmet.map((r, i) => node(r, "stop", i === 0)).join("");
   return `<section class="rail"><h3><span class="eyebrow">원인</span>어디서 막혔나</h3>
-    ${impact}${stops}${v.unknown.map(r => node(r, "hold")).join("")}</section>`;
+    ${impact}${stops}${v.unknown.map(r => node(r, "hold")).join("")}${jump}</section>`;
 }
 
 // ── 직접 바꿔 보기 ─────────────────────────────────────────────
@@ -310,7 +314,7 @@ function tweakSection(tree, prof, v){
   const reset = n
     ? `<button class="reset" type="button" id="reset">직접 바꾼 값 ${n}개 되돌리기</button>` : "";
 
-  return `<section class="tweak">
+  return `<section class="tweak" id="tweak">
     <h3><span class="eyebrow">실험</span>값을 바꾸면 판정이 바뀝니다</h3>
     <p class="lede">아래 상태를 바꾸면 판정을 <b>즉시 다시 계산</b>합니다.
       규칙 엔진이라 같은 값이면 항상 같은 답이 나옵니다.
@@ -418,6 +422,19 @@ async function judge(){
 
     // 값 바꾸기 — 다시 그려지는 영역이라 위임으로 받는다
     $("#out").addEventListener("click", e => {
+      // 안내를 눌렀을 때. 주소를 바꾸지 않고(뒤로가기를 만들지 않고) 데려간다
+      const jump = e.target.closest(".to-tweak");
+      if(jump){
+        e.preventDefault();
+        const el = $(".tweak");
+        if(!el) return;
+        const smooth = !window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+        el.scrollIntoView({behavior: smooth ? "smooth" : "auto", block: "center"});
+        el.classList.add("flash");
+        setTimeout(() => el.classList.remove("flash"), 1400);
+        return;
+      }
+
       const seg = e.target.closest("button.seg");
       if(seg){
         const raw = seg.dataset.value;
