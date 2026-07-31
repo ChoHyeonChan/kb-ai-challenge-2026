@@ -321,11 +321,31 @@ blockquote cite{
 ul.tw{list-style:none; margin:var(--s3) 0 0; padding:0}
 ul.tw > li{
   display:flex; align-items:center; justify-content:space-between; gap:var(--s3);
-  padding:7px 0; border-bottom:1px solid var(--rule-2);
+  padding:8px 0 8px 21px; border-bottom:1px solid var(--rule-2);
+  position:relative;
 }
 ul.tw > li:last-child{border-bottom:0}
+
+/* 지금 이 값이 조건을 충족하는가. 버튼을 눌렀을 때 이 표시가 바뀌는 것을 보면
+   "예를 눌렀는데 왜 미충족이지"가 생기지 않는다. */
+ul.tw > li::before{
+  position:absolute; left:2px; top:11px;
+  font-size:11px; font-weight:800; line-height:1;
+}
+li.ok::before{content:"✓"; color:var(--pass)}
+li.stop::before{content:"✕"; color:var(--stop)}
+li.hold::before{content:"?"; color:var(--hold)}
+
 .tw-label{font-size:13px; line-height:1.45; color:var(--ink-2)}
+li.stop .tw-label{color:var(--ink)}
 li.changed .tw-label{color:var(--ink); font-weight:700}
+
+/* 어느 쪽을 눌러야 충족인지. 조건마다 방향이 달라 이게 없으면 정반대로 읽힌다. */
+.want{
+  display:block; margin-top:2px; font-style:normal;
+  font-size:11px; color:var(--ink-3); letter-spacing:0;
+}
+.want b{color:var(--ink-2); font-weight:700}
 li.changed .tw-label::after{
   content:"바꿈"; margin-left:6px; padding:1px 5px;
   font-size:9.5px; letter-spacing:.08em; font-weight:800;

@@ -271,6 +271,15 @@ function railSection(v, tree){
 // 프로필 파일은 건드리지 않는다.
 let overrides = {};
 
+// 이 조건을 충족시키는 답이 '예'인가 '아니오'인가.
+// 참/거짓으로 말할 수 없는 조건(금액·날짜)에는 붙이지 않는다 — 없는 답을 지어내지 않는다.
+function wantedAnswer(p){
+  if(typeof p.value !== "boolean") return null;
+  if(p.op === "eq") return p.value ? "예" : "아니오";
+  if(p.op === "neq") return p.value ? "아니오" : "예";
+  return null;
+}
+
 function currentValue(subject, prof){
   if(subject in overrides) return overrides[subject];
   const [g, k] = subject.split(".");
@@ -291,8 +300,10 @@ function tweakSection(tree, prof, v){
 
   // 막힌 것부터 올린다. 지금 문제가 되는 조건이 맨 위에 있어야 바로 눌러본다.
   const rank = new Map();
-  v.unmet.forEach(r => rank.set(r.id, 0));
-  v.unknown.forEach(r => rank.set(r.id, 1));
+  const state = new Map();
+  v.unmet.forEach(r => { rank.set(r.id, 0); state.set(r.id, "stop"); });
+  v.unknown.forEach(r => { rank.set(r.id, 1); state.set(r.id, "hold"); });
+  v.met.forEach(r => state.set(r.id, "ok"));
   rows.sort((a, b) => (rank.has(a.id) ? rank.get(a.id) : 2) - (rank.has(b.id) ? rank.get(b.id) : 2));
 
   const seg = (subject, cur) => [[true,"예"],[false,"아니오"],[null,"모름"]]
@@ -303,9 +314,16 @@ function tweakSection(tree, prof, v){
 
   const list = rows.map(c => {
     const s = c.predicate.subject;
-    const changed = s in overrides ? " changed" : "";
-    return `<li class="${changed.trim()}">
-      <span class="tw-label">${esc(c.label)}</span>
+    const cls = [state.get(c.id), s in overrides ? "changed" : ""].filter(Boolean).join(" ");
+    // 어느 쪽을 눌러야 충족인지 조건마다 다르다.
+    //   card.locked 는 '아니오'여야 충족(잠기지 않아야 하므로)
+    //   card.ic_pin_registered 는 '예'여야 충족(등록되어 있어야 하므로)
+    // 조건 문장은 당위("~해야 합니다")고 버튼은 사실(현재 값)이라, 방향을 적어주지 않으면
+    // 버튼이 조건에 대한 예/아니오처럼 읽혀 정반대로 이해된다.
+    const want = wantedAnswer(c.predicate);
+    return `<li class="${cls}">
+      <span class="tw-label">${esc(c.label)}
+        ${want ? `<em class="want">충족하려면 <b>${want}</b></em>` : ""}</span>
       <span class="tw-seg">${seg(s, currentValue(s, prof))}</span>
     </li>`;
   }).join("");
