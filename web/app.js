@@ -4,6 +4,10 @@
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 
+// 검수 기록(decisions.yaml)은 사람이 읽으라고 쓴 문장이라 **강조**가 섞여 있다.
+// 이스케이프한 **뒤에** 강조만 되살린다 — 태그가 아니라 별표만 해석하므로 안전하다.
+const escEm = s => esc(s).replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
+
 const VERDICT = {
   blocked:       {cls:"v-blocked",       kicker:"판정",      title:"지금은 되지 않습니다",   desc:"아래 조건이 충족되지 않았습니다."},
   ok:            {cls:"v-ok",            kicker:"판정",      title:"가능합니다",             desc:"확인한 조건을 모두 충족합니다."},
@@ -63,7 +67,86 @@ function planSection(plan){
   </section>`;
 }
 
-function render(v, plan){
+// ── 조건 트리 원본 보기 ────────────────────────────────────────
+// 우리는 "핵심 산출물은 서비스가 아니라 조건 트리"라고 말한다.
+// 판정 결과만 보여주면 그 말을 확인할 방법이 없다. 트리를 그대로 펼쳐 둔다.
+
+const CAT = {
+  setting: "설정 상태", document: "실물·서류", limit: "금액·횟수 한도",
+  temporal: "날짜·기간", eligibility: "자격 요건",
+};
+const OPTEXT = {
+  eq: "=", neq: "≠", gte: "≥", lte: "≤", gt: ">", lt: "<",
+  in: "∈", not_in: "∉", exists: "존재", not_exists: "없음",
+  // 연산자는 기호로 — "card.expiry_date 이후 오늘" 처럼 어순이 깨지지 않게 한다
+  date_after: ">", date_before: "<",
+  within_days: "≤", not_within_days: ">",
+  count_lte: "횟수 ≤", count_gte: "횟수 ≥",
+};
+
+function predText(p){
+  const op = OPTEXT[p.op] || p.op;
+  let v = p.value;
+  if(v && typeof v === "object"){
+    if("now_plus_days" in v) v = v.now_plus_days === 0 ? "오늘" : `오늘+${v.now_plus_days}일`;
+    else if("days" in v) v = `${v.days}일`;
+    else v = JSON.stringify(v);
+  }else if(Array.isArray(v)) v = v.join(", ");
+  else if(typeof v === "number") v = v.toLocaleString("ko-KR");
+  else v = String(v);
+  return `${p.subject} ${op} ${v}`;
+}
+
+function treeItem(c){
+  const app = c.remedy.actionable_in_app
+    ? `<span class="chip">앱에서 가능</span>`
+    : `<span class="chip off">앱에서 불가</span>`;
+  const sev = c.severity === "blocking"
+    ? `<span class="chip stop">차단</span>` : `<span class="chip warn">주의</span>`;
+  const sup = (c.provenance && c.provenance.support_count) || 1;
+  return `<li>
+    <div class="t-label">${esc(c.label)}</div>
+    <div class="t-pred"><code>${esc(predText(c.predicate))}</code></div>
+    <div class="t-meta">${sev}${app}<span class="chip q">근거 ${sup}곳</span></div>
+    <details><summary>근거 원문</summary>
+      <blockquote>${esc(c.evidence.quote)}
+        <cite>${esc(c.evidence.source_title)} · ${esc(c.evidence.collected_at)} 수집
+          <a class="src" href="${esc(c.evidence.url)}" target="_blank" rel="noopener">원문 열기 ↗</a>
+        </cite></blockquote>
+      ${c.review_override ? `<p class="ovr">검수 기록 — ${escEm(c.review_override)}</p>` : ""}
+    </details>
+  </li>`;
+}
+
+function treeSection(tree){
+  if(!tree) return "";
+  const byCat = {};
+  tree.conditions.forEach(c => (byCat[c.category] = byCat[c.category] || []).push(c));
+  const groups = Object.keys(CAT).filter(k => byCat[k]).map(k =>
+    `<h4>${CAT[k]} <em>${byCat[k].length}</em></h4>
+     <ul class="tree">${byCat[k].map(treeItem).join("")}</ul>`).join("");
+
+  const appOff = tree.conditions.filter(c => !c.remedy.actionable_in_app).length;
+  return `<section class="asset">
+    <h3>이 목표의 조건 전체</h3>
+    <p class="lede">판정에 쓰인 조건을 그대로 펼칩니다.
+      <b>사람이 쓴 문장이 아니라 KB 공개문서에서 자동 추출한 것</b>이며,
+      각 조건은 기계가 평가하는 형태(<code>subject op value</code>)를 함께 가집니다.</p>
+    <div class="t-stat">
+      <div><b>${tree.conditions.length}</b>조건</div>
+      <div><b>${appOff}</b>앱에서 불가</div>
+      <div><b>${tree.source_meta.source_count}</b>근거 문서</div>
+      <div><b>${esc(tree.source_meta.collected_at)}</b>수집</div>
+    </div>
+    <details class="t-open"><summary>조건 ${tree.conditions.length}개 펼쳐 보기</summary>
+      ${groups}
+      <p class="foot">추출기 <code>${esc(tree.source_meta.extractor_version)}</code> ·
+        원본 <code>data/trees/${esc(tree.goal_id)}.json</code></p>
+    </details>
+  </section>`;
+}
+
+function render(v, plan, tree){
   const t = VERDICT[v.verdict] || VERDICT.indeterminate;
   const total = v.unmet.length + v.met.length + v.unknown.length;
   const lowById = new Map(v.low_confidence.map(r => [r.id, r]));
@@ -98,6 +181,8 @@ function render(v, plan){
     h += `<section class="met"><h3 class="eyebrow">충족한 조건</h3><ul>${rows}</ul></section>`;
   }
 
+  h += treeSection(tree);
+
   h += `<p class="foot">판정 엔진 v${esc(v.engine_version)} · 조건 수집일 ${esc(v.tree_collected_at)}</p>`;
   $("#out").innerHTML = h;
 }
@@ -108,13 +193,16 @@ async function judge(){
   try{
     const body = JSON.stringify({goal_id:$("#goal").value, profile_id:$("#profile").value});
     const opt = {method:"POST", headers:{"Content-Type":"application/json"}, body};
-    const [res, planRes] = await Promise.all([
+    const [res, planRes, treeRes] = await Promise.all([
       fetch("/api/judge", opt),
       fetch("/api/simulate", opt),
+      fetch(`/api/tree/${encodeURIComponent($("#goal").value)}`),
     ]);
     if(!res.ok) throw new Error((await res.json()).detail || "판정에 실패했습니다");
-    // 계획은 부가 정보다. 실패해도 판정은 보여준다.
-    render(await res.json(), planRes.ok ? await planRes.json() : null);
+    // 계획·트리는 부가 정보다. 실패해도 판정은 보여준다.
+    render(await res.json(),
+           planRes.ok ? await planRes.json() : null,
+           treeRes.ok ? await treeRes.json() : null);
   }catch(e){
     $("#out").innerHTML = `<div class="err">${esc(e.message)}</div>`;
   }finally{

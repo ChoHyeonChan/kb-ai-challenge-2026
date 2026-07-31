@@ -222,3 +222,63 @@ details summary b{ color:var(--ink); font-weight:700 }
   text-decoration:none; border-bottom:1px solid var(--rule); font-weight:600;
 }
 .src:hover{ color:var(--ink); border-color:var(--ink-3) }
+
+/* ── 조건 트리 원본 — 이 프로젝트의 핵심 산출물 ─────────────── */
+.asset{
+  margin-top:var(--s6); padding-top:var(--s4);
+  border-top:2px solid var(--ink);
+}
+.asset h3{font-size:15px; letter-spacing:-.01em; margin-bottom:var(--s2)}
+.asset .lede{font-size:13.5px; color:var(--ink-2); line-height:1.7}
+.asset .lede b{color:var(--ink); font-weight:700}
+.asset .lede code{font-size:12px}
+
+.t-stat{
+  display:flex; gap:var(--s5); flex-wrap:wrap;
+  margin:var(--s4) 0 var(--s3); padding:var(--s3) 0;
+  border-top:1px solid var(--rule); border-bottom:1px solid var(--rule);
+}
+.t-stat div{font-size:11.5px; color:var(--ink-3)}
+.t-stat b{display:block; font-size:18px; color:var(--ink); font-weight:800; line-height:1.25}
+
+.t-open > summary{
+  cursor:pointer; font-size:13px; font-weight:700; color:var(--ink);
+  padding:var(--s2) 0; list-style:none;
+}
+.t-open > summary::-webkit-details-marker{display:none}
+.t-open > summary::before{content:"＋ "; color:var(--ink-3)}
+.t-open[open] > summary::before{content:"－ "}
+.t-open > summary:focus-visible{outline:2px solid var(--mark); outline-offset:2px}
+
+.asset h4{
+  font-size:11px; letter-spacing:.14em; text-transform:uppercase;
+  color:var(--ink-3); font-weight:700;
+  margin:var(--s4) 0 var(--s2); padding-bottom:var(--s1);
+  border-bottom:1px solid var(--rule-2);
+}
+.asset h4 em{font-style:normal; color:var(--ink); font-weight:800}
+
+ul.tree{list-style:none; margin:0; padding:0}
+ul.tree > li{padding:var(--s3) 0; border-bottom:1px dashed var(--rule-2)}
+ul.tree > li:last-child{border-bottom:0}
+.t-label{font-size:14px; font-weight:700; line-height:1.55}
+.t-pred{margin-top:var(--s1)}
+.t-pred code{
+  font-family:ui-monospace,SFMono-Regular,Consolas,"D2Coding",monospace;
+  font-size:11.5px; color:var(--ink-2);
+  background:var(--surface-2); border:1px solid var(--rule-2);
+  border-radius:var(--r-sm); padding:2px 6px; word-break:break-all;
+}
+.t-meta{display:flex; gap:var(--s1); flex-wrap:wrap; margin-top:var(--s2)}
+.chip{
+  font-size:11px; font-weight:700; padding:2px var(--s2); border-radius:var(--r-sm);
+  border:1px solid var(--rule); color:var(--ink-2); background:var(--surface);
+}
+.chip.stop{border-color:#e3c6c2; color:var(--stop); background:#fdf6f5}
+.chip.warn{border-color:#e8e2cc; color:#8a6d1f; background:#fbf8ee}
+.chip.off{border-color:#e3c6c2; color:var(--stop); background:#fdf6f5}
+.chip.q{border-style:dashed; color:var(--ink-3)}
+.ovr{
+  margin-top:var(--s2); font-size:11.5px; color:var(--ink-2); line-height:1.6;
+  padding-left:var(--s3); border-left:2px solid var(--mark);
+}

@@ -94,6 +94,18 @@ def _resolve_goal(req: JudgeRequest) -> ConditionTree:
     raise HTTPException(400, "goal_id 또는 query 중 하나가 필요합니다")
 
 
+@app.get("/api/tree/{goal_id}", response_model=ConditionTree)
+def get_tree(goal_id: str) -> ConditionTree:
+    """조건 트리 원본 — 이 프로젝트의 핵심 산출물을 화면이 그대로 보여주기 위한 것.
+
+    판정 결과만 보여주면 '조건 트리가 재사용 가능한 자산'이라는 주장을 확인할 방법이 없다.
+    """
+    trees = load_all_trees()
+    if goal_id not in trees:
+        raise HTTPException(404, f"알 수 없는 goal_id: {goal_id}")
+    return trees[goal_id]
+
+
 def _resolve_profile(profile_id: str) -> UserProfile:
     path = PROFILES_DIR / f"{profile_id}.json"
     if not path.exists():
