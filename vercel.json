@@ -1,0 +1,10 @@
+{
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "functions": {
+    "src/api/main.py": {
+      "includeFiles": "{data/trees/**,data/profiles/**,web/**}",
+      "excludeFiles": "{data/raw/**,data/chunks/**,data/.llm_cache/**,eval/**,docs/**,tests/**,공식자료/**}",
+      "maxDuration": 10
+    }
+  }
+}

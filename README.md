@@ -202,6 +202,7 @@ cp .env.example .env          # API 키 입력
 - [재현 절차](docs/REPRODUCE.md) — 클린 설치부터 실행까지
 - [AI 사용 기록](docs/AI_USAGE.md)
 - [AGENTS.md](AGENTS.md) — 개발 규약
+- [배포 안내](docs/DEPLOY.md) — Vercel (선택 사항)
 - [팀원 시작하기](docs/팀원_시작하기.md) — 처음 합류했다면 여기부터
 
 ## clone 후 최초 1회 (필수)

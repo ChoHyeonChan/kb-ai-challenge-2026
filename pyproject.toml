@@ -1,0 +1,17 @@
+[project]
+name = "da-dwaessnayo"
+version = "0.1.0"
+description = "「다 됐나요?」 — 은행 앱이 말해주지 않는 실패 원인 판정 엔진"
+requires-python = ">=3.11"
+
+# ── Vercel 배포용 진입점 ───────────────────────────────────────────
+# Vercel 은 app.py / index.py / main.py 를 자동 탐색하는데, 우리 앱은
+# src/api/main.py 에 있어 자동 탐색 범위 밖이다. 그래서 명시한다.
+# (공식 권장 방식 — https://vercel.com/docs/frameworks/backend/fastapi)
+#
+# ★ 로컬 실행에는 영향이 없다. `./run.sh` 는 그대로 uvicorn 을 쓴다.
+[tool.vercel]
+entrypoint = "src.api.main:app"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
