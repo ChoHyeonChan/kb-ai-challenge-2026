@@ -8,32 +8,36 @@ const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;
 // 이스케이프한 **뒤에** 강조만 되살린다 — 태그가 아니라 별표만 해석하므로 안전하다.
 const escEm = s => esc(s).replace(/\*\*([^*]+)\*\*/g, "<b>$1</b>");
 
+// 조건 트리 11개를 처음부터 펼치면 페이지가 4.1화면이 된다(실측).
+// 대신 접힘 밖에서 규모(조건 수·근거 문서 수·수집일)를 보이고,
+// 근거 원문은 '어디서 막혔나'의 첫 건을 펼쳐 둔다 — 클릭하지 않아도 증거는 보인다.
+
 const VERDICT = {
   blocked:       {cls:"v-blocked",       kicker:"판정",      title:"지금은 되지 않습니다",   desc:"아래 조건이 충족되지 않았습니다."},
   ok:            {cls:"v-ok",            kicker:"판정",      title:"가능합니다",             desc:"확인한 조건을 모두 충족합니다."},
   indeterminate: {cls:"v-indeterminate", kicker:"판정 보류", title:"확인할 수 없습니다",     desc:"판정에 필요한 정보를 알 수 없어 된다고 말씀드릴 수 없습니다."},
 };
 
-function evidence(ev, prov){
+function evidence(ev, prov, open){
   if(!ev) return "";
   const conf = ev.confidence !== "high" ? ` · 신뢰도 ${esc(ev.confidence)}` : "";
   // 같은 조건이 여러 문서에서 확인됐다는 사실 자체가 신뢰의 근거다. 요약줄에 드러낸다.
   const n = prov && prov.support_count > 1 ? `<b>문서 ${prov.support_count}곳</b>에서 확인` : "";
   const link = ev.url
     ? `<a class="src" href="${esc(ev.url)}" target="_blank" rel="noopener">원문 열기 ↗</a>` : "";
-  return `<details><summary>근거 원문 ${n}</summary>
+  return `<details${open ? " open" : ""}><summary>근거 원문 ${n}</summary>
     <blockquote>${esc(ev.quote)}
       <cite>${esc(ev.source_title)} · ${esc(ev.collected_at)} 수집${conf} ${link}</cite>
     </blockquote></details>`;
 }
 
-function node(r, kind){
+function node(r, kind, open){
   const rem = r.remedy || {};
   let body = "";
   if(kind === "stop"){
     if(rem.primary_path) body += `<div class="meta">해결 <b>${esc(rem.primary_path)}</b></div>`;
     if(rem.actionable_in_app === false) body += `<div><span class="offapp">앱에서 해결 불가</span></div>`;
-    body += evidence(r.evidence, r.provenance);
+    body += evidence(r.evidence, r.provenance, open);
   }else if(kind === "hold" && r.reason){
     body += `<div class="meta">${esc(r.reason)}</div>`;
   }
@@ -46,11 +50,24 @@ function planSection(plan){
   if(!plan || !plan.must_fix.length) return "";
 
   // 필수 조건이 하나뿐이면 사다리가 요약문과 같은 말을 반복한다. 요약만 보여준다.
-  const rows = plan.what_ifs.length < 2 ? "" : plan.what_ifs.map(w => {
-    const last = w.outcome === "ok";
-    return `<li class="${last ? "reach" : "short"}">
-      <span class="scope">${esc(w.scope)}</span>
-      <span class="result">${esc(w.result)}</span>
+  //
+  // 조건이 전부 AND 로 묶이면 "어느 하나만 풀어도 안 된다"가 전부 같은 문장이 된다.
+  // 실제로 5줄 중 3줄이 글자까지 같았다 — 정보는 늘지 않고 높이만 먹는다.
+  // 서버 출력은 그대로 두고(검증 가능해야 하므로), 화면에서 같은 결과끼리 묶어 보여준다.
+  const groups = [];
+  plan.what_ifs.forEach(w => {
+    const prev = groups[groups.length - 1];
+    if(prev && prev.result === w.result && prev.outcome === w.outcome) prev.scopes.push(w.scope);
+    else groups.push({result: w.result, outcome: w.outcome, scopes: [w.scope]});
+  });
+
+  const rows = plan.what_ifs.length < 2 ? "" : groups.map(g => {
+    const scope = g.scopes.length === 1
+      ? g.scopes[0]
+      : `${g.scopes.length}개 중 어느 하나만 해결`;
+    return `<li class="${g.outcome === "ok" ? "reach" : "short"}">
+      <span class="scope">${esc(scope)}</span>
+      <span class="result">${esc(g.result)}</span>
     </li>`;
   }).join("");
 
@@ -174,7 +191,7 @@ function treeSection(tree){
       <div><b>${tree.source_meta.source_count}</b>근거 문서</div>
       <div><b>${esc(tree.source_meta.collected_at)}</b>수집</div>
     </div>
-    <details class="t-open"><summary>조건 ${tree.conditions.length}개 펼쳐 보기</summary>
+    <details class="t-open"><summary>조건 ${tree.conditions.length}개를 근거 원문과 함께 펼쳐 보기</summary>
       ${groups}
       <p class="foot">추출기 <code>${esc(tree.source_meta.extractor_version)}</code> ·
         원본 <code>data/trees/${esc(tree.goal_id)}.json</code></p>
@@ -182,51 +199,92 @@ function treeSection(tree){
   </section>`;
 }
 
-function render(v, plan, tree, prof){
+// ── 판정 — 왼쪽에 붙박이는 결론 ────────────────────────────────
+// 이 수치의 출처는 eval/results/determinism_interim.md (10조합 × 200회).
+// 화면에서 다시 재지 않는다. 잰 값을 인용할 뿐이다.
+const DETERMINISM_RUNS = 2000;
+
+function trustStrip(v){
+  // 무엇이 이 판정을 만들었는가. 결론과 같은 덩어리 안에 둔다.
+  // 페이지 맨 밑 12px 각주로 보내면 아무도 읽지 않는다 — 실제로 그랬다.
+  return `<div class="trust">
+    <span>규칙 엔진 <b>v${esc(v.engine_version)}</b></span><i>·</i>
+    <span>실행 시점 LLM <b>0회</b></span><i>·</i>
+    <span>동일 입력 <b>${DETERMINISM_RUNS.toLocaleString("ko-KR")}회</b> 반복 <b>100%</b> 일치</span>
+  </div>`;
+}
+
+function verdictSection(v){
   const t = VERDICT[v.verdict] || VERDICT.indeterminate;
   const total = v.unmet.length + v.met.length + v.unknown.length;
+  return `<section class="verdict ${t.cls}">
+    <div class="v-head">
+      <span class="v-kicker">${t.kicker}</span>
+      <span class="v-goal">${esc(v.goal_label)}</span>
+    </div>
+    <h2>${t.title}</h2>
+    <p>${t.desc}</p>
+    <div class="tally">
+      <div class="n-stop"><b>${v.unmet.length}</b><span>미충족</span></div>
+      <div><b>${v.met.length}</b><span>충족</span></div>
+      ${v.unknown.length ? `<div class="n-hold"><b>${v.unknown.length}</b><span>확인 불가</span></div>` : ""}
+      <div class="n-all"><b>${total}</b><span>전체 조건</span></div>
+    </div>
+    ${trustStrip(v)}
+  </section>`;
+}
+
+function railSection(v, tree){
+  if(!v.unmet.length && !v.unknown.length) return "";
+
+  // 문제 정의를 끝내는 한 줄. "조건이 많다"가 아니라 "앱 안에서 끝낼 수 없다"가
+  // 우리가 문서에서 찾아낸 것이고, 이 서비스가 필요한 이유다.
+  let impact = "";
+  if(tree){
+    const all = tree.conditions.length;
+    const off = tree.conditions.filter(c => !c.remedy.actionable_in_app).length;
+    // "1개 중 1개" 같은 말이 되지 않게, 조건 수에 따라 문장을 고른다.
+    const text =
+      off === 0 ? "" :
+      off < all ? `이 목표의 조건 <b>${all}개</b> 중 <b>${off}개</b>는 앱 안에서 고칠 수 없습니다.` :
+      all === 1 ? `이 조건은 <b>앱 안에서 고칠 수 없습니다.</b>` :
+                  `이 목표의 조건 <b>${all}개 전부</b> 앱 안에서 고칠 수 없습니다.`;
+    if(text) impact = `<p class="impact">${text}</p>`;
+  }
+
+  // 근거는 접어두면 없는 것과 같다. 첫 건은 펼쳐 둔다 —
+  // 클릭하지 않는 사람에게도 "출처 있는 판정"이 즉시 보여야 한다.
+  const stops = v.unmet.map((r, i) => node(r, "stop", i === 0)).join("");
+  return `<section class="rail"><h3><span class="eyebrow">원인</span>어디서 막혔나</h3>
+    ${impact}${stops}${v.unknown.map(r => node(r, "hold")).join("")}</section>`;
+}
+
+function metSection(v, lowById){
+  if(!v.met.length) return "";
+  // 해석이 개입한 조건은 별도 섹션으로 빼지 않고 충족 목록 안에서 `~` 로 표시한다.
+  const rows = v.met.map(r => {
+    const low = lowById.get(r.id);
+    return low
+      ? `<li class="interp">${esc(r.label)}<em>${esc(low.reason || "근거 해석이 개입함")}</em></li>`
+      : `<li>${esc(r.label)}</li>`;
+  }).join("");
+  return `<section class="met"><h3><span class="eyebrow">확인됨</span>충족한 조건</h3><ul>${rows}</ul></section>`;
+}
+
+function render(v, plan, tree, prof){
   const lowById = new Map(v.low_confidence.map(r => [r.id, r]));
 
-  // 판정은 이 서비스의 결론이다. 문서 위에 찍힌 도장처럼 한 덩어리로 세운다.
-  let h = `<section class="verdict ${t.cls}">
-      <div class="v-head">
-        <span class="v-kicker">${t.kicker}</span>
-        <span class="v-goal">${esc(v.goal_label)}</span>
-      </div>
-      <h2>${t.title}</h2>
-      <p>${t.desc}</p>
-      <div class="tally">
-        <div class="n-stop"><b>${v.unmet.length}</b><span>미충족</span></div>
-        <div><b>${v.met.length}</b><span>충족</span></div>
-        ${v.unknown.length ? `<div class="n-hold"><b>${v.unknown.length}</b><span>확인 불가</span></div>` : ""}
-        <div class="n-all"><b>${total}</b><span>전체 조건</span></div>
-      </div>
-    </section>`;
+  $("#verdict").innerHTML = verdictSection(v);
 
-  if(v.unmet.length || v.unknown.length){
-    h += `<section class="rail"><h3><span class="eyebrow">원인</span>어디서 막혔나</h3>
-      ${v.unmet.map(r => node(r, "stop")).join("")}
-      ${v.unknown.map(r => node(r, "hold")).join("")}</section>`;
-  }
-
-  h += planSection(plan);
-
-  if(v.met.length){
-    // 해석이 개입한 조건은 별도 섹션으로 빼지 않고 충족 목록 안에서 `~` 로 표시한다.
-    const rows = v.met.map(r => {
-      const low = lowById.get(r.id);
-      return low
-        ? `<li class="interp">${esc(r.label)}<em>${esc(low.reason || "근거 해석이 개입함")}</em></li>`
-        : `<li>${esc(r.label)}</li>`;
-    }).join("");
-    h += `<section class="met"><h3><span class="eyebrow">확인됨</span>충족한 조건</h3><ul>${rows}</ul></section>`;
-  }
-
-  h += stateSection(prof);
-  h += treeSection(tree);
-
-  h += `<p class="foot">판정 엔진 v${esc(v.engine_version)} · 조건 수집일 ${esc(v.tree_collected_at)}</p>`;
-  $("#out").innerHTML = h;
+  // 오른쪽은 근거의 흐름이다. 진짜(조건 트리)를 가짜(가상 상태)보다 앞에 둔다.
+  $("#out").innerHTML =
+      railSection(v, tree)
+    + planSection(plan)
+    + metSection(v, lowById)
+    + treeSection(tree)
+    + stateSection(prof)
+    + `<p class="foot">판정 엔진 v${esc(v.engine_version)} · 조건 수집일 ${esc(v.tree_collected_at)}<br>
+        조건은 KB 공개 안내·약관·FAQ에서 추출했으며 항목마다 <b>출처와 수집일</b>이 있습니다.</p>`;
 }
 
 async function judge(){
@@ -248,6 +306,9 @@ async function judge(){
            treeRes.ok ? await treeRes.json() : null,
            profRes.ok ? await profRes.json() : null);
   }catch(e){
+    // 마운트가 둘이므로 둘 다 비운다. 판정이 실패했는데 왼쪽에 이전 결론이
+    // 남아 있으면 화면이 거짓말을 하게 된다.
+    $("#verdict").innerHTML = "";
     $("#out").innerHTML = `<div class="err">${esc(e.message)}</div>`;
   }finally{
     btn.disabled = false; btn.textContent = "판정하기";
@@ -260,8 +321,11 @@ async function judge(){
       fetch("/api/goals").then(r => r.json()),
       fetch("/api/profiles").then(r => r.json()),
     ]);
+    // 조건 수는 드롭다운에 쓰지 않는다. 목표마다 조건 수가 달라
+    // "조건 1개"가 나란히 보이면 자산의 규모를 스스로 깎는다.
+    // 규모는 판정 뒤 조건 트리 섹션에서 근거와 함께 보여준다.
     $("#goal").innerHTML = goals.map(g =>
-      `<option value="${esc(g.goal_id)}">${esc(g.goal_label)} — 조건 ${g.condition_count}개</option>`).join("");
+      `<option value="${esc(g.goal_id)}">${esc(g.goal_label)}</option>`).join("");
 
     // 목표에 맞는 상태만 보여준다. 계좌개설 목표에 해외결제용 상태를 고르면
     // 관련 정보가 없어 indeterminate 가 나오는데, 데모에서는 혼란만 준다.

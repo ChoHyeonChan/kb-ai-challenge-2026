@@ -18,7 +18,7 @@
     "tne_accumulated_krw": 0,
     "daily_used_krw": 32000
   },
-  "short": "모든 조건 충족",
+  "short": "차단 설정 없음 · 신용카드",
   "goals": [
     "overseas_payment_online"
   ]

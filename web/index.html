@@ -8,34 +8,41 @@
 </head>
 <body>
 <div class="wrap">
-  <header>
-    <div class="eyebrow">실행 실패 원인 판정</div>
-    <h1>다 됐나요?</h1>
-    <p class="sub">하나 풀어도 안 되는 이유를 <b>앱은 말해주지 않습니다.</b><br>흩어진 약관·이용조건을 대조해 <b>근거와 함께</b> 지목합니다.</p>
-    <div class="origin">
-      <span class="tag real"><b>조건·근거</b> KB 공개문서에서 추출</span>
-      <span class="tag mock"><b>사용자 상태</b> 데모용 가상값</span>
-    </div>
-  </header>
 
-  <div class="panel">
-    <div class="field">
-      <label for="goal">무엇을 하려고 하시나요</label>
-      <div class="sel"><select id="goal"></select></div>
-    </div>
-    <div class="field">
-      <label for="profile">사용자 상태</label>
-      <div class="sel"><select id="profile"></select></div>
-    </div>
-    <button id="run">판정하기</button>
-  </div>
+  <!-- 왼쪽: 입력과 결론. 스크롤해도 화면에 남는다.
+       근거를 읽는 동안 "그래서 결론이 뭐였지"가 생기지 않게 한다. -->
+  <aside class="side">
+    <header>
+      <div class="eyebrow">해외결제 · 계좌개설이 안 될 때</div>
+      <h1>다 됐나요?</h1>
+      <p class="sub">설정을 바꿨는데도 안 되는 이유를 <b>앱은 말해주지 않습니다.</b>
+        KB 공개문서에서 뽑은 조건과 대조해 <b>근거와 함께</b> 지목합니다.</p>
+      <div class="origin">
+        <span class="tag real"><b>조건·근거</b> KB 공개문서</span>
+        <span class="tag mock"><b>사용자 상태</b> 가상값</span>
+      </div>
+    </header>
 
-  <div id="out"></div>
+    <div class="panel">
+      <div class="field">
+        <label for="goal">무엇을 하려다 막히셨나요</label>
+        <div class="sel"><select id="goal"></select></div>
+      </div>
+      <div class="field">
+        <label for="profile">대조할 사용자 상태</label>
+        <div class="sel"><select id="profile"></select></div>
+        <p class="hint">실제 서비스라면 은행이 내부에서 조회하는 값이라 고를 일이 없지만,
+          데모에는 내부 조회가 없어 직접 고르게 했습니다.</p>
+      </div>
+      <button id="run">판정하기</button>
+    </div>
 
-  <p class="foot">
-    조건은 KB 공개 안내·약관·FAQ에서 추출했으며 항목마다 <b>출처와 수집일</b>이 있습니다.<br>
-    판정은 규칙 엔진이 수행하며 <b>LLM이 개입하지 않습니다</b> — 같은 입력엔 같은 결과가 나옵니다.
-  </p>
+    <div id="verdict"></div>
+  </aside>
+
+  <!-- 오른쪽: 근거. 아무것도 탭 뒤로 숨기지 않는다. -->
+  <main id="out"></main>
+
 </div>
 
 <script src="/static/app.js" defer></script>

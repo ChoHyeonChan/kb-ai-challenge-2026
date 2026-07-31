@@ -22,18 +22,32 @@ body{
   font-size:16px; line-height:1.65; word-break:keep-all;
   -webkit-font-smoothing:antialiased;
 }
-.wrap{max-width:520px;margin:0 auto;padding:var(--s5) var(--s4) var(--s7)}
+/* ── 뼈대 ──
+   왼쪽에 입력과 결론을 붙박고, 오른쪽에 근거를 흘린다.
+   탭으로 나누지 않는 이유: 이 프로젝트는 결과가 아니라 근거의 두께로 평가받는다.
+   숨기면 그 두께가 없는 것과 같다. */
+.wrap{
+  max-width:1200px; margin:0 auto; padding:var(--s5) var(--s4) var(--s7);
+  display:grid; grid-template-columns:380px minmax(0,1fr);
+  gap:var(--s7); align-items:start;
+}
+.side{
+  position:sticky; top:var(--s4);
+  max-height:calc(100vh - var(--s6));   /* 낮은 노트북에서 잘리지 않게 하는 안전망 */
+  overflow-y:auto; overscroll-behavior:contain;
+  scrollbar-width:thin;
+}
+main{min-width:0}
 
 /* ── 머리 ── */
 .eyebrow{
-  font-size:11px; letter-spacing:.18em; text-transform:uppercase;
-  color:var(--ink-3); font-weight:700; margin-bottom:var(--s2);
+  font-size:11px; letter-spacing:.14em;
+  color:var(--ink-3); font-weight:700; margin-bottom:6px;
 }
 h1{
-  font-size:34px; line-height:1.12; letter-spacing:-.045em; font-weight:800;
-  margin-top:2px;
+  font-size:31px; line-height:1.1; letter-spacing:-.045em; font-weight:800;
 }
-.sub{color:var(--ink-2); font-size:14px; margin-top:var(--s3); line-height:1.65}
+.sub{color:var(--ink-2); font-size:13.5px; margin-top:var(--s2); line-height:1.6}
 .sub b{color:var(--ink); font-weight:700}
 
 /* 출처 고지 — 의심받을 것을 먼저 밝힌다 */
@@ -52,10 +66,16 @@ h1{
 /* ── 조작부 ── */
 .panel{
   background:var(--surface); border:1px solid var(--rule); border-radius:var(--r-md);
-  padding:var(--s4); margin:var(--s5) 0 var(--s4);
+  padding:var(--s4); margin:var(--s4) 0 var(--s3);
 }
 .field + .field{margin-top:var(--s3)}
 label{display:block; font-size:12px; color:var(--ink-2); margin-bottom:6px; font-weight:600}
+
+/* 왜 사용자가 상태를 고르는지 — 고르는 그 자리에서 답한다.
+   판정 결과 안의 각주는 실행하고 펼쳐야 보이므로, 고르는 시점에는 없는 것과 같다. */
+.hint{
+  margin-top:6px; font-size:11.5px; line-height:1.55; color:var(--ink-3);
+}
 
 /* select 는 기본 모양이 그대로 보이면 화면 전체가 미완성으로 읽힌다.
    화살표를 지우고 CSS 로 다시 그린다. */
@@ -86,7 +106,7 @@ button[disabled]{opacity:.45; cursor:default}
 
 /* ── 판정 — 이 서비스의 결론. 한 덩어리로 세운다 ────────────── */
 .verdict{
-  margin:var(--s6) 0 var(--s5); padding:var(--s5) var(--s4) var(--s4) var(--s5);
+  padding:var(--s4) var(--s4) var(--s3) var(--s5);
   background:var(--ink); color:#fff; border-radius:var(--r-md);
   position:relative; overflow:hidden;
 }
@@ -123,10 +143,31 @@ button[disabled]{opacity:.45; cursor:default}
 .tally .n-hold b{color:#c8ccd0}
 .tally .n-all b{color:#8b9199}
 
+/* 이 판정을 무엇이 만들었는가 — 결론과 같은 덩어리 안에 둔다.
+   판정문 아래 찍힌 검인처럼. 페이지 맨 밑 각주로 보내면 아무도 읽지 않는다. */
+.trust{
+  margin:var(--s3) calc(var(--s4) * -1) calc(var(--s3) * -1) calc(var(--s5) * -1);
+  padding:9px var(--s4) 9px var(--s5);
+  background:#0e1113; border-top:1px solid #2a2f34;
+  font-size:10.5px; color:#868c93; line-height:1.6;
+}
+.trust b{color:#dfe2e5; font-weight:700; font-variant-numeric:tabular-nums}
+.trust i{font-style:normal; color:#4a5056; padding:0 5px}
+
 /* ── 판정 레일 : 이 화면의 서명 ──
    조건이 세로선으로 이어지다가 막힌 지점에서 끊긴다.
    확인 불가 항목은 색을 주지 않고 점선으로 — 판단을 유보했음을 시각적 공백으로 표현. */
-.rail{margin-top:var(--s5)}
+.rail{margin-top:0}
+
+/* 문제 정의를 끝내는 한 줄. 이 프로젝트가 왜 필요한지가 여기서 끝난다.
+   "조건이 많다"가 아니라 "앱 안에서는 끝낼 수 없다"가 우리가 찾은 것이다. */
+.impact{
+  margin-bottom:var(--s4); padding:var(--s3) var(--s4);
+  background:#fbf0e7; border:1px solid #eed6bf; border-radius:var(--r-sm);
+  font-size:13.5px; line-height:1.5; color:#7a3410;
+}
+.impact b{font-weight:800; font-size:15.5px; font-variant-numeric:tabular-nums}
+
 h3 .eyebrow{
   display:inline-block; margin-right:var(--s2); padding:2px 7px;
   font-size:10px; letter-spacing:.14em; font-weight:700;
@@ -188,15 +229,18 @@ blockquote cite{
   font-size:11.5px; color:var(--ink-3); letter-spacing:.01em;
 }
 
-/* 충족 목록 — 접어서 조용히 */
+/* 충족 목록 — 숫자는 판정에 이미 있다. 여기선 칩으로 눕혀 자리를 아낀다. */
 .met{margin-top:var(--s5); border-top:1px solid var(--rule); padding-top:var(--s4)}
-.met ul{list-style:none}
+.met ul{list-style:none; display:flex; flex-wrap:wrap; gap:6px}
 .met li{
-  font-size:13.5px; color:var(--ink-2); padding:3px 0 3px 20px; position:relative;
+  font-size:12px; color:var(--ink-2); line-height:1.5;
+  padding:4px var(--s2) 4px 21px; position:relative;
+  background:var(--surface); border:1px solid var(--rule); border-radius:var(--r-sm);
 }
-.met li::before{content:"✓"; position:absolute; left:2px; color:var(--pass); font-size:12px}
+.met li::before{content:"✓"; position:absolute; left:7px; color:var(--pass); font-size:11px}
+.met li.interp{border-style:dashed}
 .met li.interp::before{content:"~"; color:#7a6a9e}
-.met li em{display:block; font-style:normal; font-size:12px; color:var(--ink-3); margin-top:2px}
+.met li em{font-style:normal; font-size:11px; color:var(--ink-3); margin-left:5px}
 
 .foot{
   margin-top:var(--s6); padding-top:var(--s4); border-top:1px solid var(--rule);
@@ -310,6 +354,13 @@ details summary b{ color:var(--ink); font-weight:700 }
 ul.tree{list-style:none; margin:0; padding:0}
 ul.tree > li{padding:var(--s3) 0; border-bottom:1px dashed var(--rule-2)}
 ul.tree > li:last-child{border-bottom:0}
+
+/* 넓은 화면에서는 조건을 두 단으로 눕힌다.
+   오른쪽 단은 770px 이라 한 줄에 하나씩 쌓으면 가로를 버리고 세로만 늘린다. */
+@media (min-width:1001px){
+  ul.tree{display:grid; grid-template-columns:1fr 1fr; gap:0 var(--s5); align-items:start}
+  ul.tree > li:last-child{border-bottom:1px dashed var(--rule-2)}
+}
 .t-label{font-size:14px; font-weight:700; line-height:1.55}
 .t-pred{margin-top:var(--s1)}
 .t-pred code{
@@ -362,3 +413,39 @@ table.st code{
 table.st tr.u td:last-child{color:var(--hold); font-weight:600}
 .state .foot{margin-top:var(--s3); font-size:11.5px; line-height:1.65}
 .state .foot b{color:var(--ink)}
+
+/* ── 낮은 화면(노트북 1366×768 등) ──
+   결론과 그 아래 검인(규칙 엔진·LLM 0회·2,000회 일치)까지가 첫 화면에 들어와야 한다.
+   실측에서 720px 높이일 때 46px 이 넘쳐 검인이 잘렸다. 왼쪽 열만 조인다. */
+@media (min-width:1001px) and (max-height:790px){
+  .wrap{padding-top:var(--s3)}
+  h1{font-size:27px}
+  .sub{font-size:12.5px; margin-top:6px; line-height:1.55}
+  .origin{margin-top:var(--s3); padding-top:var(--s2)}
+  .panel{padding:var(--s3); margin:var(--s3) 0}
+  .hint{font-size:11px; line-height:1.5}
+  select{min-height:42px}
+  button{min-height:44px; margin-top:var(--s3)}
+  .verdict{padding:var(--s3) var(--s4) var(--s2) var(--s4)}
+  .verdict h2{font-size:24px}
+  .verdict p{font-size:12.5px}
+  .tally{margin-top:var(--s3); padding-top:var(--s2); gap:var(--s4)}
+  .tally b{font-size:19px}
+  .trust{margin-left:calc(var(--s4) * -1)}
+}
+
+/* ── 좁은 화면 : 한 컬럼으로 눕힌다 ──
+   컬럼을 나눌 수 없으므로 여기서 목표는 "짧게"가 아니라
+   "결론이 첫 화면 안에 들어오게" 다. 그래서 머리를 줄인다. */
+@media (max-width:1000px){
+  .wrap{
+    grid-template-columns:1fr; gap:var(--s5);
+    max-width:620px; padding:var(--s4) var(--s4) var(--s7);
+  }
+  .side{position:static; max-height:none; overflow:visible}
+  h1{font-size:27px}
+  .sub{font-size:13px}
+  .verdict h2{font-size:24px}
+  .tally{gap:var(--s4)}
+  .tally b{font-size:20px}
+}

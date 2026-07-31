@@ -8,7 +8,7 @@
   "context": {
     "account_type": "수시입출금"
   },
-  "short": "안심차단 없음 — 개설 가능",
+  "short": "안심차단 없음",
   "goals": [
     "account_open_nonface"
   ]

@@ -8,7 +8,7 @@
   "context": {
     "account_type": "수시입출금"
   },
-  "short": "안심차단 켜짐 (본인은 모름)",
+  "short": "안심차단 켜짐",
   "goals": [
     "account_open_nonface"
   ]
