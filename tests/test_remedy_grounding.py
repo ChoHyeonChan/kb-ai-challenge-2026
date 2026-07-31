@@ -58,18 +58,36 @@ def test_no_channels_without_basis() -> None:
     assert not bad, "근거 없는 해결 경로:\n" + "\n".join(bad)
 
 
-def test_evidence_based_remedy_really_has_channel_in_quote() -> None:
-    """basis=evidence 라면 근거 원문에 채널을 가리키는 말이 실제로 있어야 한다.
+def test_app_claim_needs_a_channel_in_the_quote() -> None:
+    """앱에서 되는지/안 되는지를 말했다면 인용에 **채널**이 있어야 한다.
 
+    채널은 '어디서'(앱·영업점·고객센터)다. '무엇을'(재발급·해제)은 채널이 아니다.
     라벨만 바꿔 놓고 근거는 그대로인 상태를 막는다.
     """
     bad = [
-        f"{f}:{c.id} — 인용에 채널어가 없음: {c.evidence.quote[:45]}…"
+        f"{f}:{c.id} — in_app={c.remedy.actionable_in_app} 인데 인용에 채널이 없음: {c.evidence.quote[:45]}…"
         for f, c in _conditions()
-        if c.remedy.basis == "evidence"
+        if c.remedy.basis == "evidence" and c.remedy.actionable_in_app is not None
         and not any(w in c.evidence.quote for w in CHANNEL_WORDS)
     ]
-    assert not bad, "evidence 라고 했지만 인용에 근거가 없음:\n" + "\n".join(bad)
+    assert not bad, "evidence 라고 했지만 인용에 채널이 없음:\n" + "\n".join(bad)
+
+
+def test_action_only_evidence_still_quotes_the_action() -> None:
+    """채널은 몰라도 '무엇을 해야 하는지'를 적었다면 그 말이 인용에 있어야 한다.
+
+    카드 유효기한이 이 경우다 — 원문이 "사용 전 갱신 재발급이 필요합니다"라고
+    말하므로 할 일은 알지만, 어디서 하는지는 원문에 없다.
+    """
+    action_words = ("재발급", "해제", "등록", "신청", "변경", "갱신", "서명", "확인")
+    bad = [
+        f"{f}:{c.id} — path='{c.remedy.primary_path}' 인데 인용에 근거가 없음"
+        for f, c in _conditions()
+        if c.remedy.basis == "evidence" and c.remedy.actionable_in_app is None
+        and c.remedy.primary_path
+        and not any(w in c.evidence.quote for w in action_words)
+    ]
+    assert not bad, "할 일을 적었지만 인용에 없음:\n" + "\n".join(bad)
 
 
 def test_measured_remedy_has_a_record() -> None:
@@ -85,15 +103,33 @@ def test_measured_remedy_has_a_record() -> None:
     assert not missing, f"실측 문서에 언급되지 않은 조건: {missing}"
 
 
-def test_unknown_remedy_is_fully_empty() -> None:
-    """모른다고 했으면 채널·경로도 비어 있어야 한다. 절반만 비우면 더 헷갈린다."""
+def test_remedy_without_basis_is_fully_empty() -> None:
+    """근거가 없다면 채널·경로도 비어 있어야 한다. 절반만 비우면 더 헷갈린다.
+
+    `actionable_in_app` 이 None 이어도 해결 **방법**은 알 수 있다.
+    카드 유효기한이 그렇다 — 원문이 "사용 전 갱신 재발급이 필요합니다"라고 말하므로
+    무엇을 해야 하는지는 안다(basis=evidence). 다만 어디서 하는지는 원문에 없어
+    `actionable_in_app` 은 None 이다. 이 둘은 다른 층위다.
+    """
     bad = [
-        f"{f}:{c.id} — in_app=None 인데 channels={c.remedy.channels} path={c.remedy.primary_path}"
+        f"{f}:{c.id} — basis 없음인데 channels={c.remedy.channels} path={c.remedy.primary_path}"
         for f, c in _conditions()
-        if c.remedy.actionable_in_app is None
-        and (c.remedy.channels or c.remedy.primary_path)
+        if c.remedy.basis is None and (c.remedy.channels or c.remedy.primary_path)
     ]
-    assert not bad, "모른다면서 경로를 말함:\n" + "\n".join(bad)
+    assert not bad, "근거 없이 경로를 말함:\n" + "\n".join(bad)
+
+
+def test_unknown_remedy_says_why() -> None:
+    """모른다고 했으면 **무엇을 못 찾았는지** 적혀 있어야 한다.
+
+    빈칸은 "해당 없음"으로도 읽힌다. 찾아봤지만 없었다는 사실 자체가 정보다.
+    """
+    bad = [
+        f"{f}:{c.id} — actionable_in_app=None 인데 note 가 없음"
+        for f, c in _conditions()
+        if c.remedy.actionable_in_app is None and not (c.remedy.note or "").strip()
+    ]
+    assert not bad, "모른다면서 이유를 안 적음:\n" + "\n".join(bad)
 
 
 def test_prompt_example_does_not_teach_ungrounded_remedy() -> None:

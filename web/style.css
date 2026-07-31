@@ -514,6 +514,8 @@ ul.tree > li:last-child{border-bottom:0}
   margin-top:var(--s2); font-size:11.5px; line-height:1.55; color:var(--ink-3);
   padding-left:var(--s2); border-left:2px dashed var(--rule);
 }
+.t-path{margin-top:6px; font-size:12px; color:var(--ink-2)}
+.t-path b{color:var(--ink); font-weight:700}
 .ovr{
   margin-top:var(--s2); font-size:11.5px; color:var(--ink-2); line-height:1.6;
   padding-left:var(--s3); border-left:2px solid var(--mark);

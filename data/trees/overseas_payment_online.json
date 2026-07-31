@@ -149,7 +149,7 @@
         "channels": [],
         "primary_path": null,
         "basis": null,
-        "note": "KB 공개문서에서 이 조건의 해결 채널을 찾지 못했습니다"
+        "note": "해제 방법을 수집한 문서에서 찾지 못했습니다. 원문은 이용 여부를 나이스평가정보 고객센터 또는 통신사에서 확인하라고만 안내합니다"
       },
       "evidence": {
         "source_title": "해외 귀국/결제 후 안내",
@@ -237,7 +237,7 @@
         "channels": [],
         "primary_path": null,
         "basis": null,
-        "note": "KB 공개문서에서 이 조건의 해결 채널을 찾지 못했습니다"
+        "note": "해결 방법을 수집한 문서(8건)에서 찾지 못했습니다"
       },
       "evidence": {
         "source_title": "해외 체류/결제 전 안내",
@@ -311,7 +311,7 @@
         "channels": [],
         "primary_path": null,
         "basis": null,
-        "note": "KB 공개문서에서 이 조건의 해결 채널을 찾지 못했습니다"
+        "note": "해결 방법을 수집한 문서(8건)에서 찾지 못했습니다"
       },
       "evidence": {
         "source_title": "해외이용 FAQ",
@@ -345,7 +345,7 @@
         "channels": [],
         "primary_path": null,
         "basis": null,
-        "note": "KB 공개문서에서 이 조건의 해결 채널을 찾지 못했습니다"
+        "note": "해결 방법을 수집한 문서(8건)에서 찾지 못했습니다"
       },
       "evidence": {
         "source_title": "해외이용 FAQ",
@@ -382,7 +382,7 @@
         "channels": [],
         "primary_path": null,
         "basis": null,
-        "note": "KB 공개문서에서 이 조건의 해결 채널을 찾지 못했습니다"
+        "note": "해결 방법을 수집한 문서(8건)에서 찾지 못했습니다"
       },
       "evidence": {
         "source_title": "해외이용 종합안내",
@@ -416,9 +416,9 @@
       "remedy": {
         "actionable_in_app": null,
         "channels": [],
-        "primary_path": null,
-        "basis": null,
-        "note": "KB 공개문서에서 이 조건의 해결 채널을 찾지 못했습니다"
+        "primary_path": "사용 전 갱신 재발급",
+        "note": "재발급을 어디서 신청하는지는 수집한 문서에서 찾지 못했습니다",
+        "basis": "evidence"
       },
       "evidence": {
         "source_title": "해외 체류/결제 전 안내",

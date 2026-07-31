@@ -40,7 +40,8 @@ function node(r, kind, open){
     if(rem.actionable_in_app === false){
       body += `<div><span class="offapp">앱에서 해결 불가</span></div>`;
     }else if(rem.actionable_in_app === null || rem.actionable_in_app === undefined){
-      body += `<div><span class="nopath">해결 경로가 문서에서 확인되지 않음</span></div>`;
+      body += `<div><span class="nopath">해결 경로가 수집한 문서에 없음</span></div>`;
+      if(rem.note) body += `<div class="t-note">${esc(rem.note)}</div>`;
     }
     body += evidence(r.evidence, r.provenance, open);
   }else if(kind === "hold" && r.reason){
@@ -173,17 +174,23 @@ function predText(p){
 }
 
 // 무엇이 이 해결 방법을 뒷받침하는가. 근거가 없으면 아무 말도 하지 않는다.
-const BASIS = {
-  evidence: "근거 원문에 채널 명시",
-  measured: "앱에서 직접 확인",
-  self_evident: "조건 자체로 자명",
-};
+//
+// evidence 는 두 경우가 있다. 원문이 **어디서** 하라고 말한 경우와,
+// **무엇을** 하라고만 말한 경우다. 카드 유효기한이 후자다 —
+// "갱신 재발급이 필요합니다"는 있지만 어디서 하는지는 없다. 라벨을 구분한다.
+function basisLabel(r){
+  if(!r.basis) return "";
+  if(r.basis === "measured") return "앱에서 직접 확인";
+  if(r.basis === "self_evident") return "조건 자체로 자명";
+  return r.actionable_in_app === null || r.actionable_in_app === undefined
+    ? "근거 원문에 할 일 명시" : "근거 원문에 채널 명시";
+}
 
 function treeItem(c){
   const a = c.remedy.actionable_in_app;
   const app = a === true ? `<span class="chip">앱에서 가능</span>`
             : a === false ? `<span class="chip off">앱에서 불가</span>`
-            : `<span class="chip none">해결 경로 확인 안 됨</span>`;
+            : `<span class="chip none">앱 여부 미확인</span>`;
   const sev = c.severity === "blocking"
     ? `<span class="chip stop">차단</span>` : `<span class="chip warn">주의</span>`;
   const sup = (c.provenance && c.provenance.support_count) || 1;
@@ -191,7 +198,8 @@ function treeItem(c){
     <div class="t-label">${esc(c.label)}</div>
     <div class="t-pred"><code>${esc(predText(c.predicate))}</code></div>
     <div class="t-meta">${sev}${app}<span class="chip q">근거 ${sup}곳</span>
-      ${c.remedy.basis ? `<span class="chip b">${esc(BASIS[c.remedy.basis] || c.remedy.basis)}</span>` : ""}</div>
+      ${c.remedy.basis ? `<span class="chip b">${esc(basisLabel(c.remedy))}</span>` : ""}</div>
+    ${c.remedy.primary_path ? `<div class="t-path">해결 <b>${esc(c.remedy.primary_path)}</b></div>` : ""}
     ${c.remedy.note && c.remedy.actionable_in_app == null
       ? `<div class="t-note">${esc(c.remedy.note)}</div>` : ""}
     <details><summary>근거 원문</summary>
@@ -224,7 +232,7 @@ function treeSection(tree){
       <div><b>${tree.conditions.length}</b>조건</div>
       <div><b>${appYes}</b>앱에서 가능</div>
       <div><b>${appNo}</b>앱에서 불가</div>
-      ${noPath ? `<div><b>${noPath}</b>경로 확인 안 됨</div>` : ""}
+      ${noPath ? `<div><b>${noPath}</b>경로 미확인</div>` : ""}
       <div><b>${tree.source_meta.source_count}</b>근거 문서</div>
       <div><b>${esc(tree.source_meta.collected_at)}</b>수집</div>
     </div>
@@ -292,7 +300,9 @@ function railSection(v, tree){
       text = `이 목표의 조건 <b>${all}개</b> 중 앱 안에서 해결할 수 있는 것은 <b>${yes}개</b>입니다.`;
       const tail = [];
       if(no) tail.push(`<b>${no}개</b>는 앱 밖에서 해결해야 합니다`);
-      if(unsure) tail.push(`<b>${unsure}개</b>는 어디서 해결하는지 KB 공개문서에서 찾지 못했습니다`);
+      // "KB 공개문서에" 라고 쓰면 KB 전체를 다 봤다는 뜻이 된다. 우리가 본 것은
+      // 수집한 문서뿐이다. 범위를 넘겨 말하지 않는다.
+      if(unsure) tail.push(`<b>${unsure}개</b>는 어디서 해결하는지 <b>수집한 문서에서 찾지 못했습니다</b>`);
       if(tail.length) text += ` ${tail.join(" · ")}.`;
     }
     if(text) impact = `<p class="impact">${text}</p>`;
