@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>다 됐나요? — 은행 앱 실행 실패 원인 판정</title>
+<!-- 파비콘도 자작 SVG. 16px 에서는 선 세 줄이 뭉개지므로 체크 하나와 남은 하나만 남긴다. -->
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cpath d='M3 14l5 5 9-9' fill='none' stroke='%232c6349' stroke-width='4.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3Ccircle cx='23' cy='23' r='6' fill='none' stroke='%23a83226' stroke-width='3.4' stroke-dasharray='4.6 4.8'/%3E%3C/svg%3E">
 <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
@@ -14,7 +16,25 @@
   <aside class="side">
     <header>
       <div class="eyebrow">해외결제 · 계좌개설이 안 될 때</div>
-      <h1>다 됐나요?</h1>
+
+      <!-- 표식은 이 서비스가 하는 일 그대로다.
+           조건 셋 중 둘은 확인됐고, 마지막 하나가 아직 남아 있다.
+           외부 이미지·폰트를 쓰지 않는다(제3자 저작권 = 실격 조항) — 전부 자작 SVG. -->
+      <div class="brand">
+        <svg class="logo" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+          <g class="lg-done">
+            <path d="M2 6.5l3 3 5.5-5.5"/>
+            <path d="M2 16.5l3 3 5.5-5.5"/>
+            <line x1="15.5" y1="6" x2="30" y2="6"/>
+            <line x1="15.5" y1="16" x2="26" y2="16"/>
+          </g>
+          <g class="lg-left">
+            <circle cx="6" cy="26" r="4"/>
+            <line x1="15.5" y1="26" x2="22.5" y2="26"/>
+          </g>
+        </svg>
+        <h1>다 됐나요?</h1>
+      </div>
       <p class="sub">설정을 바꿨는데도 안 되는 이유를 <b>앱은 말해주지 않습니다.</b>
         KB 공개문서에서 뽑은 조건과 대조해 <b>근거와 함께</b> 지목합니다.</p>
       <div class="origin">

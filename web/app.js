@@ -259,6 +259,67 @@ function railSection(v, tree){
     ${impact}${stops}${v.unknown.map(r => node(r, "hold")).join("")}</section>`;
 }
 
+// ── 직접 바꿔 보기 ─────────────────────────────────────────────
+// "프로필마다 답을 박아둔 것 아니냐"는 의심에 대한 답은 말이 아니라 조작이다.
+// 값을 바꾸면 판정이 그 자리에서 다시 계산된다. 규칙 엔진이라 그럴 수 있다.
+//
+// overrides 는 이 브라우저 세션에만 있다. 서버는 요청 한 건에만 적용하고
+// 프로필 파일은 건드리지 않는다.
+let overrides = {};
+
+function currentValue(subject, prof){
+  if(subject in overrides) return overrides[subject];
+  const [g, k] = subject.split(".");
+  return (prof && prof[g]) ? prof[g][k] : undefined;
+}
+
+function tweakSection(tree, prof, v){
+  if(!tree || !prof) return "";
+
+  // 참/거짓 조건만 다룬다. 금액·날짜는 세 버튼으로 표현할 수 없다.
+  const rows = tree.conditions.filter(c => {
+    const [g, k] = c.predicate.subject.split(".");
+    if(!prof[g] || !(k in prof[g])) return false;      // 이 프로필에 없는 값은 못 바꾼다
+    const cur = currentValue(c.predicate.subject, prof);
+    return typeof cur === "boolean" || cur === null;
+  });
+  if(!rows.length) return "";
+
+  // 막힌 것부터 올린다. 지금 문제가 되는 조건이 맨 위에 있어야 바로 눌러본다.
+  const rank = new Map();
+  v.unmet.forEach(r => rank.set(r.id, 0));
+  v.unknown.forEach(r => rank.set(r.id, 1));
+  rows.sort((a, b) => (rank.has(a.id) ? rank.get(a.id) : 2) - (rank.has(b.id) ? rank.get(b.id) : 2));
+
+  const seg = (subject, cur) => [[true,"예"],[false,"아니오"],[null,"모름"]]
+    .map(([val, text]) =>
+      `<button class="seg${cur === val ? " on" : ""}" type="button"
+        data-subject="${esc(subject)}" data-value="${val === null ? "null" : val}">${text}</button>`)
+    .join("");
+
+  const list = rows.map(c => {
+    const s = c.predicate.subject;
+    const changed = s in overrides ? " changed" : "";
+    return `<li class="${changed.trim()}">
+      <span class="tw-label">${esc(c.label)}</span>
+      <span class="tw-seg">${seg(s, currentValue(s, prof))}</span>
+    </li>`;
+  }).join("");
+
+  const n = Object.keys(overrides).length;
+  const reset = n
+    ? `<button class="reset" type="button" id="reset">직접 바꾼 값 ${n}개 되돌리기</button>` : "";
+
+  return `<section class="tweak">
+    <h3><span class="eyebrow">실험</span>값을 바꾸면 판정이 바뀝니다</h3>
+    <p class="lede">아래 상태를 바꾸면 판정을 <b>즉시 다시 계산</b>합니다.
+      규칙 엔진이라 같은 값이면 항상 같은 답이 나옵니다.
+      바꾼 값은 이 화면에만 적용되고 <b>저장되지 않습니다</b>.</p>
+    <ul class="tw">${list}</ul>
+    ${reset}
+  </section>`;
+}
+
 function metSection(v, lowById){
   if(!v.met.length) return "";
   // 해석이 개입한 조건은 별도 섹션으로 빼지 않고 충족 목록 안에서 `~` 로 표시한다.
@@ -279,6 +340,7 @@ function render(v, plan, tree, prof){
   // 오른쪽은 근거의 흐름이다. 진짜(조건 트리)를 가짜(가상 상태)보다 앞에 둔다.
   $("#out").innerHTML =
       railSection(v, tree)
+    + tweakSection(tree, prof, v)
     + planSection(plan)
     + metSection(v, lowById)
     + treeSection(tree)
@@ -291,7 +353,9 @@ async function judge(){
   const btn = $("#run");
   btn.disabled = true; btn.textContent = "판정 중…";
   try{
-    const body = JSON.stringify({goal_id:$("#goal").value, profile_id:$("#profile").value});
+    const body = JSON.stringify({
+      goal_id: $("#goal").value, profile_id: $("#profile").value, overrides,
+    });
     const opt = {method:"POST", headers:{"Content-Type":"application/json"}, body};
     const [res, planRes, treeRes, profRes] = await Promise.all([
       fetch("/api/judge", opt),
@@ -343,12 +407,26 @@ async function judge(){
     $("#goal").value = featured.goals[0] || goals[0].goal_id;
     fillProfiles($("#goal").value, featured.profile_id);
 
-    // 목표를 바꾸면 상태 목록도 함께 바뀐다
+    // 목표나 상태를 다시 고르면 직접 바꾼 값은 버린다.
+    // 다른 사람의 상태에 내가 바꾼 값을 얹으면 그건 아무의 상태도 아니다.
     $("#goal").addEventListener("change", () => {
+      overrides = {};
       fillProfiles($("#goal").value);
       judge();
     });
-    $("#profile").addEventListener("change", judge);
+    $("#profile").addEventListener("change", () => { overrides = {}; judge(); });
+
+    // 값 바꾸기 — 다시 그려지는 영역이라 위임으로 받는다
+    $("#out").addEventListener("click", e => {
+      const seg = e.target.closest("button.seg");
+      if(seg){
+        const raw = seg.dataset.value;
+        overrides[seg.dataset.subject] = raw === "null" ? null : raw === "true";
+        judge();
+        return;
+      }
+      if(e.target.closest("#reset")){ overrides = {}; judge(); }
+    });
 
     await judge();
   }catch{

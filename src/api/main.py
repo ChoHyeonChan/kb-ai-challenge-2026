@@ -44,6 +44,9 @@ class JudgeRequest(BaseModel):
     query: str | None = None          # 자연어. resolve/ 붙기 전엔 alias 단순 매칭
     profile_id: str
     context: dict | None = None
+    # 화면에서 사람이 직접 바꾼 상태값. {"card.dcc_block": false} 형태.
+    # 규칙 엔진이 정말 값에 반응하는지 그 자리에서 확인시키기 위한 것이다.
+    overrides: dict | None = None
 
 
 # ── 엔드포인트 ────────────────────────────────────────────────────
@@ -128,9 +131,41 @@ def _resolve_profile(profile_id: str) -> UserProfile:
     return load_profile(path)
 
 
+# 상태를 바꿀 수 있는 묶음. 프로필 스키마가 정한 세 곳뿐이다.
+OVERRIDABLE_GROUPS = ("card", "account", "context")
+
+
+def _apply_overrides(prof: UserProfile, overrides: dict | None) -> UserProfile:
+    """화면에서 바꾼 상태값을 이 요청에만 덮어쓴다.
+
+    파일은 건드리지 않는다. 요청이 끝나면 원래 프로필 그대로다.
+
+    **이미 있는 키만** 바꿀 수 있다. 없는 키를 만들 수 있게 하면 조건 트리에
+    없는 상태를 지어내는 셈이고, 그 값이 맞는지 아무도 보증할 수 없다.
+    """
+    if not overrides:
+        return prof
+
+    data = prof.model_dump()
+    for path, value in overrides.items():
+        group, _, key = str(path).partition(".")
+        if group not in OVERRIDABLE_GROUPS or not key or "." in key:
+            raise HTTPException(400, f"바꿀 수 없는 경로입니다: {path}")
+        if key not in data.get(group, {}):
+            raise HTTPException(400, f"이 프로필에 없는 상태값입니다: {path}")
+        if value is not None and not isinstance(value, (bool, int, float, str)):
+            raise HTTPException(400, f"상태값으로 쓸 수 없는 형태입니다: {path}")
+        data[group][key] = value
+    return UserProfile.model_validate(data)
+
+
+def _profile_for(req: JudgeRequest) -> UserProfile:
+    return _apply_overrides(_resolve_profile(req.profile_id), req.overrides)
+
+
 @app.post("/api/judge", response_model=Verdict)
 def judge_endpoint(req: JudgeRequest) -> Verdict:
-    return judge(_resolve_goal(req), _resolve_profile(req.profile_id), req.context)
+    return judge(_resolve_goal(req), _profile_for(req), req.context)
 
 
 @app.post("/api/simulate", response_model=Plan)
@@ -140,7 +175,7 @@ def simulate_endpoint(req: JudgeRequest) -> Plan:
     판정(C3)과 계약을 분리해 둔다. 화면이 계획을 안 쓰더라도 판정은 그대로 동작해야 하고,
     팀원이 작성하는 /api/judge 테스트도 영향을 받지 않아야 한다.
     """
-    return simulate(judge(_resolve_goal(req), _resolve_profile(req.profile_id), req.context))
+    return simulate(judge(_resolve_goal(req), _profile_for(req), req.context))
 
 
 # ── 진단 ──────────────────────────────────────────────────────────

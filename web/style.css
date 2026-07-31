@@ -44,6 +44,18 @@ main{min-width:0}
   font-size:11px; letter-spacing:.14em;
   color:var(--ink-3); font-weight:700; margin-bottom:6px;
 }
+/* 표식 + 이름. 둘을 한 덩어리로 묶어 기준선을 맞춘다. */
+.brand{display:flex; align-items:center; gap:12px}
+.logo{width:33px; height:33px; flex:none; overflow:visible}
+.logo line, .logo path, .logo circle{
+  fill:none; stroke-linecap:round; stroke-linejoin:round;
+}
+.logo .lg-done path{stroke:var(--pass); stroke-width:3}
+.logo .lg-done line{stroke:var(--ink-3); stroke-width:2.6}
+/* 남은 하나. 판정을 기다리는 자리라 점선으로 비워 둔다 — 화면의 hold 마커와 같은 언어. */
+.logo .lg-left circle{stroke:var(--stop); stroke-width:2.6; stroke-dasharray:3.6 3.7}
+.logo .lg-left line{stroke:var(--rule); stroke-width:2.6}
+
 h1{
   font-size:31px; line-height:1.1; letter-spacing:-.045em; font-weight:800;
 }
@@ -256,6 +268,55 @@ blockquote cite{
   @keyframes in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
 }
 
+/* ── 직접 바꿔 보기 ──
+   "프로필마다 답을 박아둔 것 아니냐"에 대한 답은 말이 아니라 조작이다.
+   심사자가 값을 눌러 판정이 뒤집히는 것을 직접 봐야 규칙 엔진이 증명된다. */
+.tweak{
+  margin-top:var(--s5); padding:var(--s4);
+  background:var(--surface); border:1px solid var(--rule); border-radius:var(--r-md);
+}
+.tweak .lede{font-size:12.5px; color:var(--ink-2); line-height:1.65}
+.tweak .lede b{color:var(--ink); font-weight:700}
+
+ul.tw{list-style:none; margin:var(--s3) 0 0; padding:0}
+ul.tw > li{
+  display:flex; align-items:center; justify-content:space-between; gap:var(--s3);
+  padding:7px 0; border-bottom:1px solid var(--rule-2);
+}
+ul.tw > li:last-child{border-bottom:0}
+.tw-label{font-size:13px; line-height:1.45; color:var(--ink-2)}
+li.changed .tw-label{color:var(--ink); font-weight:700}
+li.changed .tw-label::after{
+  content:"바꿈"; margin-left:6px; padding:1px 5px;
+  font-size:9.5px; letter-spacing:.08em; font-weight:800;
+  color:#7a5b0f; background:#fbf3dd; border-radius:2px; vertical-align:1px;
+}
+
+/* 세 값 — 예 / 아니오 / 모름.
+   "모름"이 버튼으로 있는 것 자체가 이 시스템의 원칙이다. */
+.tw-seg{
+  display:inline-flex; flex:none;
+  border:1px solid var(--rule); border-radius:var(--r-sm); overflow:hidden;
+}
+.seg{
+  width:auto; min-height:0; margin:0; border:0; border-radius:0;
+  padding:5px 10px; font:inherit; font-size:11.5px; font-weight:700;
+  color:var(--ink-3); background:var(--surface); cursor:pointer;
+}
+.seg + .seg{border-left:1px solid var(--rule)}
+.seg:hover{background:var(--surface-2); color:var(--ink-2)}
+.seg.on{background:var(--ink); color:#fff}
+.seg.on:hover{background:#000; color:#fff}
+.seg:focus-visible{outline:2px solid var(--mark); outline-offset:-2px}
+
+.reset{
+  width:auto; min-height:0; margin-top:var(--s3); padding:6px var(--s3);
+  font:inherit; font-size:11.5px; font-weight:700; letter-spacing:0;
+  color:var(--ink-2); background:var(--surface-2);
+  border:1px solid var(--rule); border-radius:var(--r-sm); cursor:pointer;
+}
+.reset:hover{background:var(--surface); color:var(--ink); border-color:var(--ink-3)}
+
 /* ── 해결 계획 "하나만 풀면 되나요?" ───────────────────────── */
 .plan{
   margin-top:var(--s5); padding-top:var(--s4);
@@ -448,4 +509,9 @@ table.st tr.u td:last-child{color:var(--hold); font-weight:600}
   .verdict h2{font-size:24px}
   .tally{gap:var(--s4)}
   .tally b{font-size:20px}
+  /* 좁은 화면에선 조건 이름과 세 버튼이 한 줄에 못 선다 */
+  ul.tw > li{flex-direction:column; align-items:flex-start; gap:var(--s2); padding:var(--s3) 0}
+  /* 손가락으로 누르는 화면이다. 44px 아래로 내려가면 오조작이 난다. */
+  .seg{padding:12px 18px; font-size:12.5px}
+  .reset{min-height:44px; padding:0 var(--s4)}
 }
