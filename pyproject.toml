@@ -2,7 +2,28 @@
 name = "da-dwaessnayo"
 version = "0.1.0"
 description = "「다 됐나요?」 — 은행 앱이 말해주지 않는 실패 원인 판정 엔진"
-requires-python = ">=3.11"
+
+# Vercel 지원 버전은 3.12 / 3.13 / 3.14 이고 미지정 시 3.12 가 기본이다.
+# 지원 목록 밖 값을 적으면 무시되므로 3.12 로 맞춘다.
+requires-python = ">=3.12"
+
+# ── 배포(런타임) 의존성 ────────────────────────────────────────────
+#
+# ★ 이 목록이 짧은 것 자체가 이 프로젝트의 설계 증거다.
+#   판정 경로에는 LLM 호출이 없어 openai 가 들어가지 않는다.
+#   조건 추출은 오프라인 1회성이고, 그 결과는 data/trees/*.json 에 고정돼 있다.
+#   실제로 `import src.api.main` 이 끌어오는 서드파티 최상위 모듈을 측정해 만든 목록이다
+#   (starlette·anyio·pydantic_core 등은 아래 셋에서 전이로 따라온다).
+#
+# ⚠️ Vercel 은 pyproject.toml 의 [project] 가 있으면 그것을 우선 본다.
+#    여기가 비어 있어서 requirements.txt 가 무시됐고, 배포본에 fastapi 가
+#    설치되지 않아 ModuleNotFoundError 로 죽었다 (2026-07-31, 로그로 확인).
+#    로컬 개발·추출·테스트용 전체 목록은 requirements.txt 에 있다.
+dependencies = [
+  "fastapi>=0.115",
+  "pydantic>=2.9",
+  "python-dotenv>=1.0",
+]
 
 # ── Vercel 배포용 진입점 ───────────────────────────────────────────
 # Vercel 은 app.py / index.py / main.py 를 자동 탐색하는데, 우리 앱은
