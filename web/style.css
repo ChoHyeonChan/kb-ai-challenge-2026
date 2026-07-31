@@ -5,7 +5,10 @@
 :root{
   /* 종이 위의 판정문 — 서류의 질감을 배경으로, 상태는 잉크로 */
   --paper:#f6f5f2; --surface:#fff; --surface-2:#fbfaf8;
-  --ink:#191c1f; --ink-2:#5c636b; --ink-3:#8b9199;
+  /* --ink-3 은 본문 대비 4.5:1 을 넘겨야 한다. #8b9199 는 흰 배경에서 3.18:1 로
+     미달이었고, 하필 세그먼트 버튼 글자에 쓰이고 있었다(인터랙티브 컨트롤). */
+  --ink:#191c1f; --ink-2:#5c636b; --ink-3:#6b7178;
+  --hold-text:#6e747b;   /* 회색을 '텍스트'로 쓰는 자리. --hold 는 마커·선 전용 */
   --rule:#e4e1db; --rule-2:#eeece7;
   --stop:#a83226;        /* 막힘 */
   --pass:#2c6349;        /* 통과 */
@@ -15,6 +18,20 @@
   --r-sm:4px; --r-md:10px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+
+/* 화면에는 없고 보조기술에만 읽히는 글. 상태·역할처럼 색으로만 전달되던 것을 말로 준다. */
+.sr-only{
+  position:absolute; width:1px; height:1px; margin:-1px; padding:0;
+  overflow:hidden; clip-path:inset(50%); white-space:nowrap; border:0;
+}
+
+/* 포커스 표시는 밝은 배경에서도 보여야 한다. --mark 단독은 흰 배경에서 2.65:1 이라
+   비텍스트 대비 3:1 에 못 미친다. 어두운 보조 링을 겹쳐 양쪽 배경 모두에서 보이게 한다. */
+select:focus-visible, button:focus-visible, summary:focus-visible,
+a:focus-visible, .side:focus-visible{
+  outline:2px solid var(--mark); outline-offset:2px;
+  box-shadow:0 0 0 4px rgba(25,28,31,.55);
+}
 html{-webkit-text-size-adjust:100%}
 body{
   background:var(--paper); color:var(--ink);
@@ -164,7 +181,7 @@ button[disabled]{opacity:.45; cursor:default}
   font-size:10.5px; color:#868c93; line-height:1.6;
 }
 .trust b{color:#dfe2e5; font-weight:700; font-variant-numeric:tabular-nums}
-.trust i{font-style:normal; color:#4a5056; padding:0 5px}
+.trust i{font-style:normal; color:#5b6167; padding:0 5px}
 
 /* ── 판정 레일 : 이 화면의 서명 ──
    조건이 세로선으로 이어지다가 막힌 지점에서 끊긴다.
@@ -177,14 +194,15 @@ button[disabled]{opacity:.45; cursor:default}
   margin-bottom:var(--s4); padding-bottom:var(--s3);
   border-bottom:1px solid var(--rule);
 }
-.guide span{
+.guide{list-style:none}
+.guide li{
   display:inline-flex; align-items:center; gap:6px;
   font-size:11.5px; color:var(--ink-3); line-height:1.5;
 }
 .guide b{
   display:inline-flex; align-items:center; justify-content:center;
   width:16px; height:16px; flex:none;
-  font-size:10px; font-weight:800; color:var(--surface); background:var(--ink-3);
+  font-size:10px; font-weight:800; color:var(--surface); background:var(--ink-2);
   border-radius:50%;
 }
 
@@ -309,8 +327,15 @@ blockquote cite{
 .foot b{color:var(--ink-2)}
 .err{
   background:#fdf3f2; border:1px solid #f0d5d1; color:var(--stop);
-  padding:var(--s3); border-radius:var(--r-sm); font-size:14px;
+  padding:var(--s3); border-radius:var(--r-sm); font-size:13.5px; line-height:1.6;
+  margin-bottom:var(--s3);
 }
+.err button{
+  width:auto; min-height:36px; margin:var(--s2) 0 0; padding:0 var(--s3);
+  font:inherit; font-size:12.5px; font-weight:700;
+  color:#fff; background:var(--stop); border:0; border-radius:var(--r-sm); cursor:pointer;
+}
+.err button:hover{background:#8e2a20}
 @media (prefers-reduced-motion:no-preference){
   .node{animation:in .34s ease-out both}
   @keyframes in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
@@ -342,9 +367,9 @@ ul.tw > li::before{
 }
 li.ok::before{content:"✓"; color:var(--pass)}
 li.stop::before{content:"✕"; color:var(--stop)}
-li.hold::before{content:"?"; color:var(--hold)}
+li.hold::before{content:"?"; color:var(--hold-text)}
 
-.tw-label{font-size:13px; line-height:1.45; color:var(--ink-2)}
+.tw-label{font-size:13px; line-height:1.45; color:var(--ink-2); overflow-wrap:anywhere}
 li.stop .tw-label{color:var(--ink)}
 li.changed .tw-label{color:var(--ink); font-weight:700}
 
@@ -375,7 +400,8 @@ li.changed .tw-label::after{
 .seg:hover{background:var(--surface-2); color:var(--ink-2)}
 .seg.on{background:var(--ink); color:#fff}
 .seg.on:hover{background:#000; color:#fff}
-.seg:focus-visible{outline:2px solid var(--mark); outline-offset:-2px}
+.seg:focus-visible{outline:2px solid var(--mark); outline-offset:-2px;
+  box-shadow:inset 0 0 0 4px rgba(25,28,31,.55)}
 
 .reset{
   width:auto; min-height:0; margin-top:var(--s3); padding:6px var(--s3);
@@ -538,17 +564,17 @@ ul.tree > li:last-child{border-bottom:0}
 .state summary:focus-visible{outline:2px solid var(--mark); outline-offset:2px}
 
 table.st{width:100%; border-collapse:collapse; margin-top:var(--s3)}
-table.st td{
+table.st th, table.st td{
   padding:5px 0; border-bottom:1px solid var(--rule-2);
   font-size:12.5px; color:var(--ink); vertical-align:top;
 }
-table.st td:first-child{width:62%; padding-right:var(--s2)}
+table.st th{width:62%; padding-right:var(--s2); text-align:left; font-weight:400}
 table.st td:last-child{text-align:right; font-weight:700}
 table.st code{
   font-family:ui-monospace,SFMono-Regular,Consolas,"D2Coding",monospace;
   font-size:11.5px; color:var(--ink-2); word-break:break-all;
 }
-table.st tr.u td:last-child{color:var(--hold); font-weight:600}
+table.st tr.u td:last-child{color:var(--hold-text); font-weight:600}
 
 /* 직접 바꾼 값. 원본과 섞여 보이면 어느 것이 프로필이고 어느 것이 내 조작인지 알 수 없다. */
 table.st tr.c td{background:#fdf9ee}

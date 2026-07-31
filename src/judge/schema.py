@@ -147,6 +147,21 @@ class UserProfile(BaseModel):
     account: dict[str, Any] = Field(default_factory=dict)
     context: dict[str, Any] = Field(default_factory=dict)
 
+    def has_path(self, path: str) -> bool:
+        """경로가 존재하는가. **값이 None 이어도 True.**
+
+        '아직 확인하지 못한 값'과 '이 상태에 해당 항목이 아예 없는 것'은 다르다.
+        둘을 한 문장으로 뭉개면 화면이 사실과 다른 말을 하게 된다 —
+        프로필에 `name_matches_passport: null` 이 분명히 있는데 "값이 없습니다"라고
+        표시하던 문제가 실제로 있었다.
+        """
+        cur: Any = self.model_dump()
+        for part in path.split("."):
+            if not isinstance(cur, dict) or part not in cur:
+                return False
+            cur = cur[part]
+        return True
+
     def lookup(self, path: str) -> tuple[Any, bool]:
         """subject 경로로 값을 찾는다. 반환: (값, 알고있음 여부)"""
         cur: Any = self.model_dump()

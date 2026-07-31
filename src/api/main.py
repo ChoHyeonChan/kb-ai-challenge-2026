@@ -221,5 +221,19 @@ def favicon() -> Response:
     return Response(status_code=204)
 
 
+@app.middleware("http")
+async def no_stale_screen(request, call_next):
+    """화면 파일을 캐시하지 않는다.
+
+    배포한 뒤에도 브라우저가 옛 app.js 를 계속 실행해, 고친 것이 반영되지 않은
+    것처럼 보이는 일이 반복됐다. 심사위원이 새로고침을 두 번 눌러야 최신 화면을
+    보는 상황은 만들지 않는다. 파일 셋 합쳐 수십 KB 라 비용도 없다.
+    """
+    response = await call_next(request)
+    if request.url.path.startswith("/static/") or request.url.path == "/":
+        response.headers["Cache-Control"] = "no-cache, must-revalidate"
+    return response
+
+
 if WEB_DIR.exists():
     app.mount("/static", StaticFiles(directory=WEB_DIR), name="static")

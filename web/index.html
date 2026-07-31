@@ -12,8 +12,11 @@
 <div class="wrap">
 
   <!-- 왼쪽: 입력과 결론. 스크롤해도 화면에 남는다.
-       근거를 읽는 동안 "그래서 결론이 뭐였지"가 생기지 않게 한다. -->
-  <aside class="side">
+       근거를 읽는 동안 "그래서 결론이 뭐였지"가 생기지 않게 한다.
+
+       <aside> 가 아니다 — 이 화면의 결론이 여기 있는데 보조 콘텐츠로 안내되면 안 된다.
+       낮은 창에서는 세로로 스크롤되므로 키보드로도 닿게 tabindex 를 준다. -->
+  <div class="side" tabindex="0" role="region" aria-label="판정 입력과 결론">
     <header>
       <div class="eyebrow">해외결제 · 계좌개설이 안 될 때</div>
 
@@ -50,30 +53,39 @@
       </div>
       <div class="field">
         <label for="profile">대조할 사용자 상태</label>
-        <div class="sel"><select id="profile"></select></div>
-        <p class="hint">실제 서비스라면 은행이 내부에서 조회하는 값이라 고를 일이 없지만,
+        <div class="sel"><select id="profile" aria-describedby="profile-hint"></select></div>
+        <p class="hint" id="profile-hint">실제 서비스라면 은행이 내부에서 조회하는 값이라 고를 일이 없지만,
           데모에는 내부 조회가 없어 직접 고르게 했습니다.</p>
       </div>
       <button id="run">판정하기</button>
     </div>
 
+    <!-- 오류는 화면을 갈아치우지 않고 여기에만 뜬다.
+         되돌리기 버튼과 실험 절이 오른쪽에 있어서, 그쪽을 덮으면
+         사용자가 바꾼 값을 되돌릴 방법이 사라진다. -->
+    <div id="err" role="alert" aria-live="assertive"></div>
     <div id="verdict"></div>
-  </aside>
+  </div>
 
   <!-- 오른쪽: 근거. 아무것도 탭 뒤로 숨기지 않는다. -->
   <main>
     <!-- 처음 온 사람에게 보는 순서를 알려준다. 오버레이로 화면을 덮지 않는다 —
          심사는 30초인데 닫기 클릭을 요구하면 그 자체가 첫인상이 된다.
-         번호를 쓴 것은 이것이 실제로 순서이기 때문이다. -->
-    <!-- 위치("왼쪽")로 쓰지 않는다. 좁은 화면에서는 한 줄로 접혀 왼쪽이 없어진다.
-         대신 무엇인지를 말한다 — 각 절의 머리말(원인·실험·근거)과 같은 말이다. -->
-    <nav class="guide">
-      <span><b>1</b> 판정 · 조건을 대조한 결론</span>
-      <span><b>2</b> 근거 · 어느 문서의 어느 문장인지</span>
-      <span><b>3</b> 실험 · 값을 바꾸면 판정이 바뀝니다</span>
-    </nav>
+         번호를 쓴 것은 이것이 실제로 순서이기 때문이다.
+
+         <nav> 가 아니다 — 이동할 링크가 하나도 없다. 순서 있는 안내문이므로 <ol> 이다.
+         위치("왼쪽")로 쓰지 않는다. 좁은 화면에서는 한 줄로 접혀 왼쪽이 없어진다. -->
+    <ol class="guide">
+      <li><b>1</b> 판정 · 조건을 대조한 결론</li>
+      <li><b>2</b> 근거 · 어느 문서의 어느 문장인지</li>
+      <li><b>3</b> 실험 · 값을 바꾸면 판정이 바뀝니다</li>
+    </ol>
     <div id="out"></div>
   </main>
+
+  <!-- 판정이 다시 계산됐다는 사실을 보조기술에 알린다.
+       통째로 교체되는 #out 밖에 두어야 한다 — 안에 두면 리전 자체가 파괴돼 울리지 않는다. -->
+  <p id="announce" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
 
 </div>
 

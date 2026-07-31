@@ -18,14 +18,37 @@ const VERDICT = {
   indeterminate: {cls:"v-indeterminate", kicker:"판정 보류", title:"확인할 수 없습니다",     desc:"판정에 필요한 정보를 알 수 없어 된다고 말씀드릴 수 없습니다."},
 };
 
-function evidence(ev, prov, open){
+// `support_count` 는 **문장(청크) 수**다. 문서 수가 아니다.
+// (merge.py 가 같은 뜻으로 읽힌 청크 묶음의 크기를 넣는다)
+// 이걸 "문서 N곳"이라고 표시하고 있었다 — 12개 조건 중 5개가 부풀려졌고,
+// 심사자가 트리의 source_ids 만 세어도 걸리는 자리였다.
+// 문서 수와 문장 수를 나눠서, 각각 정확히 말한다.
+function support(prov){
+  const docs = prov && prov.source_ids ? new Set(prov.source_ids).size : 0;
+  const spans = (prov && prov.support_count) || 0;
+  return {docs, spans};
+}
+
+function supportText(prov){
+  const {docs, spans} = support(prov);
+  if(docs > 1) return `<b>문서 ${docs}곳</b>에서 확인` + (spans > docs ? ` · 문장 ${spans}개` : "");
+  if(spans > 1) return `한 문서의 <b>문장 ${spans}개</b>에서 확인`;
+  return "";
+}
+
+// 링크로 그릴 수 있는 주소인가. 조건 트리는 LLM 이 만든 데이터이므로
+// `javascript:` 같은 스킴이 섞여 들어올 여지를 남기지 않는다.
+const safeUrl = u => /^https?:\/\//i.test(String(u || "")) ? String(u) : "";
+
+function evidence(ev, prov, open, key){
   if(!ev) return "";
   const conf = ev.confidence !== "high" ? ` · 신뢰도 ${esc(ev.confidence)}` : "";
-  // 같은 조건이 여러 문서에서 확인됐다는 사실 자체가 신뢰의 근거다. 요약줄에 드러낸다.
-  const n = prov && prov.support_count > 1 ? `<b>문서 ${prov.support_count}곳</b>에서 확인` : "";
-  const link = ev.url
-    ? `<a class="src" href="${esc(ev.url)}" target="_blank" rel="noopener">원문 열기 ↗</a>` : "";
-  return `<details${open ? " open" : ""}><summary>근거 원문 ${n}</summary>
+  // 같은 조건이 여러 곳에서 확인됐다는 사실 자체가 신뢰의 근거다. 요약줄에 드러낸다.
+  const n = supportText(prov);
+  const href = safeUrl(ev.url);
+  const link = href
+    ? `<a class="src" href="${esc(href)}" target="_blank" rel="noopener">원문 열기 ↗<span class="sr-only">(새 창)</span></a>` : "";
+  return `<details${open ? " open" : ""} data-key="ev-${esc(key || "")}"><summary>근거 원문 ${n}</summary>
     <blockquote>${esc(ev.quote)}
       <cite>${esc(ev.source_title)} · ${esc(ev.collected_at)} 수집${conf} ${link}</cite>
     </blockquote></details>`;
@@ -43,17 +66,33 @@ function node(r, kind, open){
       body += `<div><span class="nopath">해결 경로가 수집한 문서에 없음</span></div>`;
       if(rem.note) body += `<div class="t-note">${esc(rem.note)}</div>`;
     }
-    body += evidence(r.evidence, r.provenance, open);
+    body += evidence(r.evidence, r.provenance, open, r.id);
   }else if(kind === "hold" && r.reason){
     body += `<div class="meta">${esc(r.reason)}</div>`;
   }
-  return `<div class="node ${kind}"><div class="label">${esc(r.label)}</div>${body}</div>`;
+  // 레일 마커는 색과 테두리 모양으로만 상태를 말한다. 보조기술에는 안 들린다.
+  return `<div class="node ${kind}">
+    <div class="label"><span class="sr-only">${NODE_STATE[kind] || ""}. </span>${esc(r.label)}</div>
+    ${body}</div>`;
 }
 
 // 해결 계획 — "하나만 풀면 어떻게 되나".
 // 서버(judge/simulate.py)가 계산한 문장을 그대로 쓴다. 화면에서 다시 판단하지 않는다.
 function planSection(plan){
-  if(!plan || !plan.must_fix.length) return "";
+  // 막는 조건이 없어도 서버는 상황을 설명하는 문장을 만든다.
+  //   "막고 있는 조건은 찾지 못했습니다. 다만 확인되지 않은 값이 N개 있어
+  //    된다고 답하지는 않습니다."
+  // 이 문장이 「모르면 모른다」는 우리 원칙을 담은 유일한 자리인데,
+  // must_fix 가 비었다는 이유로 화면이 통째로 버리고 있었다.
+  if(!plan) return "";
+  if(!plan.must_fix.length){
+    if(!plan.summary) return "";
+    return `<section class="plan">
+      <h3><span class="eyebrow">계획</span>지금 무엇이 남았나</h3>
+      <p class="lede">${esc(plan.summary)}</p>
+      ${plan.final_note ? `<p class="order">${esc(plan.final_note)}</p>` : ""}
+    </section>`;
+  }
 
   // 필수 조건이 하나뿐이면 사다리가 요약문과 같은 말을 반복한다. 요약만 보여준다.
   //
@@ -77,9 +116,11 @@ function planSection(plan){
     </li>`;
   }).join("");
 
+  // 소요 시간은 잰 적이 없다. 그리고 '앱에서 불가'가 곧 '창구'도 아니다 —
+  // 영업점·ATM·고객센터가 섞여 있다. 데이터가 보증하는 데까지만 말한다.
   const visit = plan.needs_visit_ids.length
-    ? `<p class="order"><b>${plan.needs_visit_ids.length}개는 앱에서 할 수 없습니다.</b>
-       창구 방문이 전체 소요를 결정하므로 먼저 시작하는 편이 빠릅니다.</p>` : "";
+    ? `<p class="order"><b>${plan.needs_visit_ids.length}개는 앱 밖에서 해결해야 합니다.</b>
+       각 조건의 근거 원문에 어디서 하는지가 적혀 있습니다.</p>` : "";
 
   return `<section class="plan">
     <h3><span class="eyebrow">계획</span>하나만 풀면 되나요?</h3>
@@ -115,7 +156,7 @@ function stateRows(prof){
       : typeof value === "boolean" ? (value ? "예" : "아니오")
       : typeof value === "number" ? value.toLocaleString("ko-KR") : String(value);
     return `<tr class="${[unknown ? "u" : "", changed ? "c" : ""].filter(Boolean).join(" ")}">
-      <td><code>${esc(path)}</code></td><td>${esc(val)}</td></tr>`;
+      <th scope="row"><code>${esc(path)}</code></th><td>${esc(val)}</td></tr>`;
   }).join("");
 }
 
@@ -127,18 +168,20 @@ function stateSection(prof){
 
   // 값을 바꿨다면 프로필 설명은 더 이상 이 상태를 정확히 말하지 않는다. 그렇게 적는다.
   const lede = changed
-    ? `${esc(prof.description)}<em class="edited">여기에 직접 바꾼 값 ${changed}개가 얹혀 있습니다.
-       아래 표는 <b>판정에 실제로 쓰인 값</b>입니다.</em>`
+    ? `${esc(prof.description)}<span class="edited">여기에 직접 바꾼 값 ${changed}개가 얹혀 있습니다.
+       아래 표는 <b>판정에 실제로 쓰인 값</b>입니다.</span>`
     : esc(prof.description);
 
   return `<section class="state">
     <h3><span class="eyebrow">입력</span>대조한 사용자 상태</h3>
     <p class="lede">${lede}</p>
-    <details${changed ? " open" : ""}><summary>상태값 ${rows.length}개 보기${unknown ? ` · 모름 ${unknown}개` : ""}${changed ? ` · 바꿈 ${changed}개` : ""}</summary>
-      <table class="st"><tbody>${stateRows(prof)}</tbody></table>
+    <details${changed ? " open" : ""} data-key="state"><summary>상태값 ${rows.length}개 보기${unknown ? ` · 모름 ${unknown}개` : ""}${changed ? ` · 바꿈 ${changed}개` : ""}</summary>
+      <table class="st"><caption class="sr-only">판정에 실제로 쓰인 사용자 상태값</caption>
+        <tbody>${stateRows(prof)}</tbody></table>
       <p class="foot">이 시스템에서 <b>가짜는 이 상태 하나뿐</b>입니다.
-        조건과 근거는 전부 KB 공개문서에서 나옵니다.
-        실제 서비스에서는 이 값을 은행 내부 API로 조회합니다.</p>
+        조건과 인용은 KB 공개문서에서 나옵니다. 문서에 없어 저희가 앱에서
+        직접 확인한 것은 <b>「앱에서 직접 확인」</b>으로 표시했습니다.
+        실제 서비스라면 이 값은 은행 내부 조회로 채워지게 됩니다.</p>
     </details>
   </section>`;
 }
@@ -160,14 +203,23 @@ const OPTEXT = {
   count_lte: "횟수 ≤", count_gte: "횟수 ≥",
 };
 
+// 값이 필요 없는 연산자. "card.pin 존재 null" 같은 문장이 나오지 않게 한다.
+const OP_NO_VALUE = new Set(["exists", "not_exists"]);
+
 function predText(p){
   const op = OPTEXT[p.op] || p.op;
+  if(OP_NO_VALUE.has(p.op)) return `${p.subject} ${op}`;
+
   let v = p.value;
-  if(v && typeof v === "object"){
+  // 배열을 먼저 본다. object 분기가 앞에 있으면 배열이 거기로 삼켜져
+  // join 이 영원히 실행되지 않고 원시 JSON 이 그대로 노출된다.
+  if(Array.isArray(v)) v = v.join(", ");
+  else if(v && typeof v === "object"){
     if("now_plus_days" in v) v = v.now_plus_days === 0 ? "오늘" : `오늘+${v.now_plus_days}일`;
+    else if("days" in v && "n" in v) v = `${v.days}일 내 ${v.n}회`;   // n 을 빠뜨리면 뜻이 바뀐다
     else if("days" in v) v = `${v.days}일`;
     else v = JSON.stringify(v);
-  }else if(Array.isArray(v)) v = v.join(", ");
+  }
   else if(typeof v === "number") v = v.toLocaleString("ko-KR");
   else v = String(v);
   return `${p.subject} ${op} ${v}`;
@@ -193,19 +245,22 @@ function treeItem(c){
             : `<span class="chip none">앱 여부 미확인</span>`;
   const sev = c.severity === "blocking"
     ? `<span class="chip stop">차단</span>` : `<span class="chip warn">주의</span>`;
-  const sup = (c.provenance && c.provenance.support_count) || 1;
+  // 근거의 두께는 **문서 수**로 센다. 문장 수는 부가 정보다.
+  // provenance 가 없으면 "1곳"이라고 지어내지 않고 칩 자체를 뺀다.
+  const {docs, spans} = support(c.provenance);
+  const supChip = docs
+    ? `<span class="chip q">문서 ${docs}곳${spans > docs ? ` · 문장 ${spans}` : ""}</span>` : "";
   return `<li>
     <div class="t-label">${esc(c.label)}</div>
     <div class="t-pred"><code>${esc(predText(c.predicate))}</code></div>
-    <div class="t-meta">${sev}${app}<span class="chip q">근거 ${sup}곳</span>
+    <div class="t-meta">${sev}${app}${supChip}
       ${c.remedy.basis ? `<span class="chip b">${esc(basisLabel(c.remedy))}</span>` : ""}</div>
     ${c.remedy.primary_path ? `<div class="t-path">해결 <b>${esc(c.remedy.primary_path)}</b></div>` : ""}
-    ${c.remedy.note && c.remedy.actionable_in_app == null
-      ? `<div class="t-note">${esc(c.remedy.note)}</div>` : ""}
-    <details><summary>근거 원문</summary>
+    ${c.remedy.note ? `<div class="t-note">${esc(c.remedy.note)}</div>` : ""}
+    <details data-key="tree-${esc(c.id)}"><summary>근거 원문</summary>
       <blockquote>${esc(c.evidence.quote)}
         <cite>${esc(c.evidence.source_title)} · ${esc(c.evidence.collected_at)} 수집
-          <a class="src" href="${esc(c.evidence.url)}" target="_blank" rel="noopener">원문 열기 ↗</a>
+          ${safeUrl(c.evidence.url) ? `<a class="src" href="${esc(safeUrl(c.evidence.url))}" target="_blank" rel="noopener">원문 열기 ↗<span class="sr-only">(새 창)</span></a>` : ""}
         </cite></blockquote>
       ${c.review_override ? `<p class="ovr">검수 기록 — ${escEm(c.review_override)}</p>` : ""}
     </details>
@@ -226,8 +281,9 @@ function treeSection(tree){
   return `<section class="asset">
     <h3><span class="eyebrow">근거 자료</span>이 목표의 조건 전체</h3>
     <p class="lede">판정에 쓰인 조건을 그대로 펼칩니다.
-      <b>사람이 쓴 문장이 아니라 KB 공개문서에서 자동 추출한 것</b>이며,
-      각 조건은 기계가 평가하는 형태(<code>subject op value</code>)를 함께 가집니다.</p>
+      조건과 인용은 <b>KB 공개문서에서 자동 추출</b>했고, 각 조건은 기계가 평가하는
+      형태(<code>subject op value</code>)를 함께 가집니다.
+      사람이 검수 단계에서 더한 메모는 <b>그 자리에 함께 표시</b>합니다.</p>
     <div class="t-stat">
       <div><b>${tree.conditions.length}</b>조건</div>
       <div><b>${appYes}</b>앱에서 가능</div>
@@ -236,7 +292,7 @@ function treeSection(tree){
       <div><b>${tree.source_meta.source_count}</b>근거 문서</div>
       <div><b>${esc(tree.source_meta.collected_at)}</b>수집</div>
     </div>
-    <details class="t-open"><summary>조건 ${tree.conditions.length}개를 근거 원문과 함께 펼쳐 보기</summary>
+    <details class="t-open" data-key="tree-all"><summary>조건 ${tree.conditions.length}개를 근거 원문과 함께 펼쳐 보기</summary>
       ${groups}
       <p class="foot">추출기 <code>${esc(tree.source_meta.extractor_version)}</code> ·
         원본 <code>data/trees/${esc(tree.goal_id)}.json</code></p>
@@ -253,10 +309,25 @@ function trustStrip(v){
   // 무엇이 이 판정을 만들었는가. 결론과 같은 덩어리 안에 둔다.
   // 페이지 맨 밑 12px 각주로 보내면 아무도 읽지 않는다 — 실제로 그랬다.
   return `<div class="trust">
-    <span>규칙 엔진 <b>v${esc(v.engine_version)}</b></span><i>·</i>
-    <span>실행 시점 LLM <b>0회</b></span><i>·</i>
-    <span>동일 입력 <b>${DETERMINISM_RUNS.toLocaleString("ko-KR")}회</b> 반복 <b>100%</b> 일치</span>
+    <span>규칙 엔진 <b>v${esc(v.engine_version)}</b></span><i aria-hidden="true">·</i>
+    <span>실행 시점 LLM <b>0회</b></span><i aria-hidden="true">·</i>
+    <span><b>10가지 입력</b> × 200회 = <b>${DETERMINISM_RUNS.toLocaleString("ko-KR")}회</b> 판정 <b>전부 일치</b></span>
   </div>`;
+}
+
+// 판정은 **차단(blocking) 조건**만 보고 정해진다. 주의(warning) 조건이 미충족이거나
+// 값을 몰라도 `ok` 가 나온다. 그런데 화면이 "확인한 조건을 모두 충족합니다"라고 하면
+// 바로 옆 집계의 "확인 불가 1"과 정면으로 부딪힌다.
+// 남은 것이 있으면 남았다고 말한다.
+function verdictDesc(v){
+  const t = VERDICT[v.verdict] || VERDICT.indeterminate;
+  if(v.verdict !== "ok") return t.desc;
+
+  const left = [];
+  if(v.unknown.length) left.push(`확인하지 못한 값 <b>${v.unknown.length}개</b>`);
+  if(v.unmet.length) left.push(`주의 조건 <b>${v.unmet.length}개</b>`);
+  if(!left.length) return t.desc;
+  return `막는 조건은 없습니다. 다만 ${left.join(" · ")}가 남아 있습니다.`;
 }
 
 function verdictSection(v){
@@ -268,7 +339,7 @@ function verdictSection(v){
       <span class="v-goal">${esc(v.goal_label)}</span>
     </div>
     <h2>${t.title}</h2>
-    <p>${t.desc}</p>
+    <p>${verdictDesc(v)}</p>
     <div class="tally">
       <div class="n-stop"><b>${v.unmet.length}</b><span>미충족</span></div>
       <div><b>${v.met.length}</b><span>충족</span></div>
@@ -315,8 +386,20 @@ function railSection(v, tree){
   // 근거는 접어두면 없는 것과 같다. 첫 건은 펼쳐 둔다 —
   // 클릭하지 않는 사람에게도 "출처 있는 판정"이 즉시 보여야 한다.
   const stops = v.unmet.map((r, i) => node(r, "stop", i === 0)).join("");
-  return `<section class="rail"><h3><span class="eyebrow">원인</span>어디서 막혔나</h3>
-    ${impact}${stops}${v.unknown.map(r => node(r, "hold")).join("")}${jump}</section>`;
+  const holds = v.unknown.map(r => node(r, "hold")).join("");
+
+  // 제목이 판정과 어긋나면 안 된다. `ok` 인데 "어디서 막혔나"가 뜨면
+  // 바로 위 판정과 정면으로 부딪힌다. 무엇이 남았는지에 따라 이름을 고른다.
+  const head =
+    v.verdict === "blocked" ? {tag: "원인", title: "어디서 막혔나"} :
+    v.verdict === "indeterminate" ? {tag: "확인 필요", title: "무엇을 알아야 하나"} :
+    {tag: "남은 것", title: "막지는 않지만 확인이 필요합니다"};
+
+  // 문제 정의 문장은 '막혔을 때'의 말이다. 통과한 화면에 붙이면 맥락이 없다.
+  const lead = v.verdict === "blocked" ? impact : "";
+
+  return `<section class="rail"><h3><span class="eyebrow">${head.tag}</span>${head.title}</h3>
+    ${lead}${stops}${holds}${jump}</section>`;
 }
 
 // ── 직접 바꿔 보기 ─────────────────────────────────────────────
@@ -326,6 +409,8 @@ function railSection(v, tree){
 // overrides 는 이 브라우저 세션에만 있다. 서버는 요청 한 건에만 적용하고
 // 프로필 파일은 건드리지 않는다.
 let overrides = {};
+// 실험 목록의 표시 순서. 목표·상태를 다시 고를 때만 새로 정한다.
+let tweakOrder = null;
 
 // 이 조건을 충족시키는 답이 '예'인가 '아니오'인가.
 // 참/거짓으로 말할 수 없는 조건(금액·날짜)에는 붙이지 않는다 — 없는 답을 지어내지 않는다.
@@ -359,33 +444,53 @@ function tweakSection(tree, prof, v){
   });
   if(!rows.length) return "";
 
-  // 막힌 것부터 올린다. 지금 문제가 되는 조건이 맨 위에 있어야 바로 눌러본다.
-  const rank = new Map();
   const state = new Map();
-  v.unmet.forEach(r => { rank.set(r.id, 0); state.set(r.id, "stop"); });
-  v.unknown.forEach(r => { rank.set(r.id, 1); state.set(r.id, "hold"); });
+  v.unmet.forEach(r => state.set(r.id, "stop"));
+  v.unknown.forEach(r => state.set(r.id, "hold"));
   v.met.forEach(r => state.set(r.id, "ok"));
-  rows.sort((a, b) => (rank.has(a.id) ? rank.get(a.id) : 2) - (rank.has(b.id) ? rank.get(b.id) : 2));
 
+  // 막힌 것부터 올린다 — 지금 문제가 되는 조건이 맨 위에 있어야 바로 눌러본다.
+  //
+  // 다만 순서를 **매번** 다시 매기면 안 된다. 조건을 풀 때마다 그 행이 아래로
+  // 내려가고, 방금 누른 버튼이 손가락 밑에서 사라진다(실측 225~316px 이동).
+  // 순서는 목표·상태를 고른 시점에 한 번 정하고 그대로 유지한다.
+  if(!tweakOrder){
+    const rank = new Map();
+    v.unmet.forEach(r => rank.set(r.id, 0));
+    v.unknown.forEach(r => rank.set(r.id, 1));
+    tweakOrder = rows.slice()
+      .sort((a, b) => (rank.has(a.id) ? rank.get(a.id) : 2) - (rank.has(b.id) ? rank.get(b.id) : 2))
+      .map(c => c.id);
+  }
+  rows.sort((a, b) => tweakOrder.indexOf(a.id) - tweakOrder.indexOf(b.id));
+
+  // 선택 상태를 배경색으로만 표현하면 보조기술은 알 수 없다 (WCAG 1.4.1 · 4.1.2).
   const seg = (subject, cur) => [[true,"예"],[false,"아니오"],[null,"모름"]]
     .map(([val, text]) =>
       `<button class="seg${cur === val ? " on" : ""}" type="button"
+        aria-pressed="${cur === val}"
         data-subject="${esc(subject)}" data-value="${val === null ? "null" : val}">${text}</button>`)
     .join("");
 
-  const list = rows.map(c => {
+  const list = rows.map((c, i) => {
     const s = c.predicate.subject;
-    const cls = [state.get(c.id), s in overrides ? "changed" : ""].filter(Boolean).join(" ");
+    const st = state.get(c.id);
+    const cls = [st, s in overrides ? "changed" : ""].filter(Boolean).join(" ");
+    // 버튼 이름이 "예/아니오/모름" 뿐이라 어느 조건인지 알 수 없었다. 라벨과 묶는다.
+    const labelId = `tw-l${i}`;
     // 어느 쪽을 눌러야 충족인지 조건마다 다르다.
     //   card.locked 는 '아니오'여야 충족(잠기지 않아야 하므로)
     //   card.ic_pin_registered 는 '예'여야 충족(등록되어 있어야 하므로)
     // 조건 문장은 당위("~해야 합니다")고 버튼은 사실(현재 값)이라, 방향을 적어주지 않으면
     // 버튼이 조건에 대한 예/아니오처럼 읽혀 정반대로 이해된다.
     const want = wantedAnswer(c.predicate);
+    // ✓/✕/? 는 CSS ::before 로 그린 기호다. 읽히지 않거나 뜻이 모호하므로 말로도 준다.
+    const stateText = st === "ok" ? "현재 충족" : st === "stop" ? "현재 미충족" : "현재 확인 불가";
     return `<li class="${cls}">
-      <span class="tw-label">${esc(c.label)}
-        ${want ? `<em class="want">충족하려면 <b>${want}</b></em>` : ""}</span>
-      <span class="tw-seg">${seg(s, currentValue(s, prof))}</span>
+      <span class="sr-only">${stateText}. </span>
+      <span class="tw-label" id="${labelId}">${esc(c.label)}
+        ${want ? `<span class="want">충족하려면 <b>${want}</b></span>` : ""}</span>
+      <span class="tw-seg" role="group" aria-labelledby="${labelId}">${seg(s, currentValue(s, prof))}</span>
     </li>`;
   }).join("");
 
@@ -415,6 +520,50 @@ function metSection(v, lowById){
   return `<section class="met"><h3><span class="eyebrow">확인됨</span>충족한 조건</h3><ul>${rows}</ul></section>`;
 }
 
+// 화면을 통째로 다시 그리면 세 가지가 사라진다.
+//   ① 방금 누른 버튼의 포커스 → 키보드로는 다음 조건을 만질 수 없다 (버튼이 21개다)
+//   ② 펼쳐 둔 근거 원문 → 우리가 자산이라 부르는 것이 값을 바꿀 때마다 접힌다 (6개 → 2개 실측)
+//   ③ 스크롤 위치 → 조건이 풀려 위가 줄면 아래가 당겨진다 (89px 튐 실측)
+// 다시 그리기 전에 기억하고, 그린 뒤에 되돌린다.
+const NODE_STATE = {stop: "미충족", pass: "충족", hold: "확인 불가"};
+
+function announce(v){
+  const t = VERDICT[v.verdict] || VERDICT.indeterminate;
+  const parts = [t.title, `미충족 ${v.unmet.length}`, `충족 ${v.met.length}`];
+  if(v.unknown.length) parts.push(`확인 불가 ${v.unknown.length}`);
+  $("#announce").textContent = parts.join(", ") + ".";
+}
+
+function summaryKey(d){
+  return d.dataset.key || "";
+}
+
+function renderKeeping(v, plan, tree, prof){
+  const active = document.activeElement;
+  const focusKey = active && active.classList && active.classList.contains("seg")
+    ? [active.dataset.subject, active.dataset.value] : null;
+  const wasOpen = new Set(
+    [...document.querySelectorAll("#out details[open]")].map(summaryKey).filter(Boolean));
+  const anchorTop = (() => {
+    const el = focusKey ? active : document.querySelector("#tweak");
+    return el ? el.getBoundingClientRect().top : null;
+  })();
+
+  render(v, plan, tree, prof);
+
+  // 펼침을 먼저 되돌린다 — 높이가 달라지므로 스크롤 보정보다 앞서야 한다
+  document.querySelectorAll("#out details").forEach(d => {
+    if(wasOpen.has(summaryKey(d))) d.open = true;
+  });
+  const back = focusKey
+    ? document.querySelector(
+        `button.seg[data-subject="${CSS.escape(focusKey[0])}"][data-value="${focusKey[1]}"]`)
+    : document.querySelector("#tweak");
+  if(anchorTop !== null && back) window.scrollBy(0, back.getBoundingClientRect().top - anchorTop);
+  if(focusKey && back) back.focus({preventScroll: true});
+  announce(v);
+}
+
 function render(v, plan, tree, prof){
   const lowById = new Map(v.low_confidence.map(r => [r.id, r]));
 
@@ -432,7 +581,25 @@ function render(v, plan, tree, prof){
         조건은 KB 공개 안내·약관·FAQ에서 추출했으며 항목마다 <b>출처와 수집일</b>이 있습니다.</p>`;
 }
 
+// 값을 빠르게 여러 번 바꾸면 요청이 겹친다. 응답은 보낸 순서대로 오지 않는다.
+// 늦게 도착한 옛 응답이 최신 판정을 덮어쓰면, 버튼·상태표는 새 값인데 판정만
+// 과거가 되어 화면이 앞뒤가 안 맞는 말을 하게 된다.
+// (느린 응답 1.8초를 주입해 실제로 재현했다 — 판정만 이전 값으로 남았다)
+let requestSeq = 0;
+
+// FastAPI 의 422 는 `detail` 이 **배열**이다. 그대로 Error 에 넣으면 화면에
+// `[object Object]` 가 뜬다. 서버가 HTML 오류 페이지를 내면 json() 자체가 던진다.
+async function errorText(res){
+  try{
+    const body = await res.json();
+    if(typeof body.detail === "string") return body.detail;
+  }catch{ /* JSON 이 아니면 아래 기본 문구로 */ }
+  return `요청이 처리되지 않았습니다 (HTTP ${res.status})`;
+}
+
 async function judge(){
+  const mine = ++requestSeq;
+  const stale = () => mine !== requestSeq;
   const btn = $("#run");
   btn.disabled = true; btn.textContent = "판정 중…";
   try{
@@ -446,19 +613,28 @@ async function judge(){
       fetch(`/api/tree/${encodeURIComponent($("#goal").value)}`),
       fetch(`/api/profile/${encodeURIComponent($("#profile").value)}`),
     ]);
-    if(!res.ok) throw new Error((await res.json()).detail || "판정에 실패했습니다");
+    if(stale()) return;                 // 더 최신 요청이 있다. 이 결과는 버린다
+    if(!res.ok) throw new Error(await errorText(res));
     // 계획·트리는 부가 정보다. 실패해도 판정은 보여준다.
-    render(await res.json(),
-           planRes.ok ? await planRes.json() : null,
-           treeRes.ok ? await treeRes.json() : null,
-           profRes.ok ? await profRes.json() : null);
+    const [verdict, plan, tree, prof] = [
+      await res.json(),
+      planRes.ok ? await planRes.json() : null,
+      treeRes.ok ? await treeRes.json() : null,
+      profRes.ok ? await profRes.json() : null,
+    ];
+    if(stale()) return;                 // 본문을 읽는 동안에도 새 요청이 올 수 있다
+    $("#err").innerHTML = "";           // 지난 오류를 남겨두지 않는다
+    renderKeeping(verdict, plan, tree, prof);
   }catch(e){
-    // 마운트가 둘이므로 둘 다 비운다. 판정이 실패했는데 왼쪽에 이전 결론이
-    // 남아 있으면 화면이 거짓말을 하게 된다.
+    if(stale()) return;                 // 옛 요청의 실패로 최신 화면을 지우지 않는다
+    // 판정이 실패했는데 이전 결론이 남아 있으면 화면이 거짓말을 하게 된다.
+    // 다만 오른쪽(#out)은 지우지 않는다 — 되돌리기 버튼이 거기 있어서,
+    // 덮어버리면 사용자가 직접 바꾼 값을 되돌릴 방법이 사라진다.
     $("#verdict").innerHTML = "";
-    $("#out").innerHTML = `<div class="err">${esc(e.message)}</div>`;
+    $("#err").innerHTML = `<div class="err">${esc(e.message)}
+      <button type="button" id="retry">다시 시도</button></div>`;
   }finally{
-    btn.disabled = false; btn.textContent = "판정하기";
+    if(!stale()){ btn.disabled = false; btn.textContent = "판정하기"; }
   }
 }
 
@@ -493,11 +669,11 @@ async function judge(){
     // 목표나 상태를 다시 고르면 직접 바꾼 값은 버린다.
     // 다른 사람의 상태에 내가 바꾼 값을 얹으면 그건 아무의 상태도 아니다.
     $("#goal").addEventListener("change", () => {
-      overrides = {};
+      overrides = {}; tweakOrder = null;
       fillProfiles($("#goal").value);
       judge();
     });
-    $("#profile").addEventListener("change", () => { overrides = {}; judge(); });
+    $("#profile").addEventListener("change", () => { overrides = {}; tweakOrder = null; judge(); });
 
     // 값 바꾸기 — 다시 그려지는 영역이라 위임으로 받는다
     $("#out").addEventListener("click", e => {
@@ -521,7 +697,10 @@ async function judge(){
         judge();
         return;
       }
-      if(e.target.closest("#reset")){ overrides = {}; judge(); }
+      if(e.target.closest("#reset")){ overrides = {}; tweakOrder = null; judge(); }
+    });
+    $("#err").addEventListener("click", e => {
+      if(e.target.closest("#retry")) judge();
     });
 
     await judge();

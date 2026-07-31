@@ -56,7 +56,7 @@ class Plan(BaseModel):
     needs_visit_ids: list[str] = Field(default_factory=list)
     unsure_path_ids: list[str] = Field(
         default_factory=list,
-        description="해결 채널이 KB 공개문서에서 확인되지 않은 조건. '영업점에 가라'고 말하지 않는다",
+        description="해결 채널이 수집한 문서에서 확인되지 않은 조건. '영업점에 가라'고 말하지 않는다",
     )
     what_ifs: list[WhatIf] = Field(default_factory=list)
     final_outcome: Outcome = "ok"
@@ -81,7 +81,7 @@ def _result_text(outcome: Outcome, blocking: int, unknown: int) -> str:
     if outcome == "blocked":
         return f"여전히 안 됩니다 · 필수 조건 {blocking}개 남음"
     if outcome == "indeterminate":
-        return f"막는 조건은 없음 · 확인되지 않은 값 {unknown}개 남음"
+        return f"막는 조건은 없음 · 판정에 필요한 값 {unknown}개 미확인"
     return "됩니다"
 
 
@@ -117,8 +117,8 @@ def _summary(must: list[ConditionResult], visit: list[str], unsure: list[str],
              final: Outcome, unknown: int) -> str:
     if not must:
         if final == "indeterminate":
-            return (f"막고 있는 조건은 찾지 못했습니다. 다만 확인되지 않은 값이 {unknown}개 있어 "
-                    f"된다고 답하지는 않습니다.")
+            return (f"막고 있는 조건은 찾지 못했습니다. 다만 판정에 필요한 값 {unknown}개를 "
+                    f"알 수 없어 된다고 답하지는 않습니다.")
         return "지금 막고 있는 조건은 없습니다."
 
     if len(must) == 1:
@@ -128,14 +128,13 @@ def _summary(must: list[ConditionResult], visit: list[str], unsure: list[str],
     else:
         head = f"{len(must)}개를 모두 해결해야 합니다. 하나만 해결하면 여전히 막힙니다."
         if visit:
-            head += (f" 그중 {len(visit)}개는 앱에서 할 수 없어, 그것이 전체 소요를 결정합니다 — "
-                     f"먼저 시작하세요.")
+            head += f" 그중 {len(visit)}개는 앱 밖에서 해결해야 합니다."
     # 해결 채널을 모르는 조건은 "영업점에 가라"고 말하지 않는다. 모른다고 말한다.
     if unsure:
-        head += (f" {len(unsure)}개는 어디서 해결하는지 KB 공개문서에서 찾지 못해 "
+        head += (f" {len(unsure)}개는 어디서 해결하는지 수집한 문서에서 찾지 못해 "
                  f"안내드리지 못합니다.")
     if final == "indeterminate":
-        head += " 전부 해결해도 확인되지 않은 값이 남아 '됩니다'라고 단정하지는 않습니다."
+        head += " 전부 해결해도 판정에 필요한 값이 남아 '됩니다'라고 단정하지는 않습니다."
     return head
 
 
@@ -165,7 +164,7 @@ def simulate(verdict: Verdict) -> Plan:
         needs_visit_ids=needs_visit,
         what_ifs=what_ifs,
         final_outcome=final,
-        final_note=(f"확인되지 않은 조건 {unknown}개가 남습니다. 그 값을 알기 전에는 "
+        final_note=(f"판정에 필요한 값 {unknown}개가 확인되지 않았습니다. 그 값을 알기 전에는 "
                     f"된다고 답하지 않습니다." if final == "indeterminate" else None),
         unsure_path_ids=unsure,
         summary=_summary(must, needs_visit, unsure, final, unknown),

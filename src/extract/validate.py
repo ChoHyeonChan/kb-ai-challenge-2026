@@ -109,7 +109,7 @@ def strip_unfounded_remedy(c, chunk_text: str):
     cleaned = c.model_copy(update={
         "remedy": r.model_copy(update={
             "actionable_in_app": None, "channels": [], "primary_path": None,
-            "note": "KB 공개문서에서 이 조건의 해결 채널을 찾지 못했습니다",
+            "note": "해결 방법을 수집한 문서에서 찾지 못했습니다",
         }),
     })
     return cleaned, f"{c.id}: 근거 없는 remedy 를 비움 — {dropped}"

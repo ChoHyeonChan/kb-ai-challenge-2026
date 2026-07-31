@@ -45,7 +45,8 @@ KB 공개문서 (약관·이용조건·FAQ)
 ```
 
 **판정은 LLM이 하지 않습니다.** 같은 입력에 항상 같은 결과가 나오며, 그 일치율을 측정해 함께 제출합니다.
-LLM은 **비정형 문서에서 조건을 뽑아내는 일**과 **사유를 설명하는 일**만 합니다.
+LLM은 **비정형 문서에서 조건을 뽑아내는 일**만 합니다.
+미충족 사유를 문장으로 **생성하지 않습니다** — 근거 원문을 그대로 보여줍니다.
 
 → Retrieval-Augmented **Generation**이 아니라 Retrieval-Augmented **Verification**.
 
@@ -91,10 +92,10 @@ python -m src.extract.extractor && python -m src.extract.assemble
 | `src/collect/` | 문서 수집·분할 |
 | `src/extract/` | **조건 추출 (LLM)** |
 | `src/judge/` | **판정 엔진 (LLM 미사용)** |
-| `src/resolve/` | 목표 식별·설명 생성 (LLM) |
+| `src/resolve/` | 목표 식별 (LLM) — **개발 계획. 지금은 비어 있습니다** |
 | `src/api/` | HTTP 계층 |
 | `web/` | 데모 화면 (index.html · style.css · app.js) |
-| `tests/` | 결정론성·엣지 테스트 |
+| `tests/` | 결정론성 1 · 엣지 6 · 상태변경 8 · 근거묶음 10 = **25건** |
 | `eval/labels/` | 수동 라벨 (자동 추출 전에 사람이 만든 정답지) |
 | `eval/results/` | 측정 결과 |
 | `docs/` | 기획안·근거 대장·재현 절차 |
@@ -186,7 +187,7 @@ python -m src.extract.extractor && python -m src.extract.assemble
 | 앱 안에서 해결 가능 | `remedy.actionable_in_app is True` | 해외결제 **2/11** |
 | 앱 밖에서 해결 | `... is False` (근거 확인된 것만) | 해외결제 **3/11** |
 | 해결 경로 미확인 | `... is None` | 해외결제 **6/11** |
-| 결정론성 | 동일 입력 N회 반복 일치율 | `eval/results/` (팀원 담당) |
+| 결정론성 | 10조합 × 200회 = 2,000회 판정 | **100% 일치** · 중앙값 0.056ms |
 | 탐색 시간 대비 | 사람이 직접 확인하는 시간(실측) vs 판정 응답 시간 | [eval/results/lookup_vs_judge.md](eval/results/lookup_vs_judge.md) |
 
 ---

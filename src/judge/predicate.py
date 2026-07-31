@@ -126,7 +126,13 @@ def evaluate(pred: Predicate, profile: UserProfile, *, today: date | None = None
     if op == "not_exists":
         return not known
     if not known:
-        raise Unknown(f"사용자 상태에 이 값이 없습니다 ({pred.subject})")
+        # 값이 null 인 것과 키 자체가 없는 것은 다른 사실이다.
+        # 내부 경로(subject)는 사유 문장에 넣지 않는다 — 화면에는 조건 label 이
+        # 바로 옆에 있고, 경로가 궁금한 사람을 위해 조건 트리 절이 따로 있다.
+        raise Unknown(
+            "이 값을 아직 확인하지 못했습니다" if profile.has_path(pred.subject)
+            else "이 사용자 상태에는 해당 항목이 없습니다"
+        )
 
     value = _resolve_value(pred.value, profile, today)
 
