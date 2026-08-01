@@ -350,11 +350,16 @@ function verdictDesc(v){
   const t = VERDICT[v.verdict] || VERDICT.indeterminate;
   if(v.verdict !== "ok") return t.desc;
 
+  // 「해당 없음」이 있는데 "확인한 조건을 모두 충족합니다"만 쓰면,
+  // 바로 옆 집계의 숫자가 무엇인지 화면이 답하지 않는 채로 남는다.
+  const na = (v.not_applicable || []).length;
+  const naText = na ? ` <b>${na}개</b>는 이 상태에 걸리지 않아 판정에서 제외했습니다.` : "";
+
   const left = [];
   if(v.unknown.length) left.push(`확인하지 못한 값 <b>${v.unknown.length}개</b>`);
   if(v.unmet.length) left.push(`주의 조건 <b>${v.unmet.length}개</b>`);
-  if(!left.length) return t.desc;
-  return `막는 조건은 없습니다. 다만 ${left.join(" · ")}가 남아 있습니다.`;
+  if(!left.length) return t.desc + naText;
+  return `막는 조건은 없습니다. 다만 ${left.join(" · ")}가 남아 있습니다.${naText}`;
 }
 
 function verdictSection(v){

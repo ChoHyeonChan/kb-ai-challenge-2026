@@ -723,4 +723,8 @@ table.st tr.c td:last-child::after{
   /* 손가락으로 누르는 화면이다. 44px 아래로 내려가면 오조작이 난다. */
   .seg{padding:12px 18px; font-size:12.5px}
   .reset{min-height:44px; padding:0 var(--s4)}
+  /* 「원문 열기」가 21px 이었다. WCAG 2.5.8 의 최소 크기(24px)에 못 미친다.
+     본문 안에 섞인 링크라 44px 까지 키우면 줄 간격이 무너지므로 26px 로 맞춘다. */
+  .src{padding:4px 2px; margin-left:var(--s3)}
+  summary{padding:5px 0}
 }
