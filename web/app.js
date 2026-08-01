@@ -285,13 +285,18 @@ function treeSection(tree){
   const appYes = tree.conditions.filter(c => c.remedy.actionable_in_app === true).length;
   const appNo = tree.conditions.filter(c => c.remedy.actionable_in_app === false).length;
   const noPath = tree.conditions.length - appYes - appNo;
+  // 화면이 여기서 범위를 바꾼다. 위는 '고른 상태 한 사람', 아래는 '사람과 무관한 원본'.
+  // 이 경계를 말하지 않으면 판정이 「가능」인데 조건 목록이 또 뜨는 것으로 읽힌다.
+  // 「근거 자료」라는 이름도 같은 오해를 키웠다 — 이 판정의 근거로 읽혔다.
   return `<section class="asset">
-    <h3><span class="eyebrow">근거 자료</span>이 목표의 조건 전체</h3>
-    <p class="lede"><b>판정 결과와 무관하게</b> 이 목표에 걸린 조건을 전부 펼칩니다.
-      통과했든 막혔든 같은 목록입니다 — 이 트리가 저희가 만든 자산이기 때문입니다.
-      조건과 인용은 <b>KB 공개문서에서 자동 추출</b>했고, 각 조건은 기계가 평가하는
+    <p class="scope-break"><b>여기부터는 판정과 별개입니다.</b>
+      아래 목록은 <b>지금 고른 상태와 무관하게 언제나 같습니다.</b>
+      위에서 충족·미충족으로 나뉘었던 조건이 여기서는 원본 그대로 다시 나옵니다.</p>
+    <h3><span class="eyebrow">조건 원본</span>이 목표에 걸린 조건 전체</h3>
+    <p class="lede">조건과 인용은 <b>KB 공개문서에서 자동 추출</b>했고, 각 조건은 기계가 평가하는
       형태(<code>subject op value</code>)를 함께 가집니다.
-      사람이 검수 단계에서 더한 메모는 <b>그 자리에 함께 표시</b>합니다.</p>
+      사람이 검수 단계에서 더한 메모는 <b>그 자리에 함께 표시</b>합니다.
+      <b>이 트리가 저희가 만든 자산입니다.</b></p>
     <div class="t-stat">
       <div><b>${tree.conditions.length}</b>조건</div>
       <div><b>${appYes}</b>앱에서 가능</div>
@@ -602,14 +607,16 @@ function render(v, plan, tree, prof){
 
   $("#verdict").innerHTML = verdictSection(v);
 
-  // 오른쪽은 근거의 흐름이다. 진짜(조건 트리)를 가짜(가상 상태)보다 앞에 둔다.
+  // 오른쪽은 범위 순이다. **고른 상태 한 사람** 이야기를 먼저 다 끝내고(원인·실험·계획·
+  // 충족·그 판정에 쓴 입력), 그 다음에 사람과 무관한 조건 원본으로 넘어간다.
+  // 트리를 가운데 끼우면 경계가 두 번 생겨 "여기부터 판정과 별개"라고 말할 수 없다.
   $("#out").innerHTML =
       railSection(v, tree)
     + tweakSection(tree, prof, v)
     + planSection(plan)
     + metSection(v, lowById)
-    + treeSection(tree)
     + stateSection(prof)
+    + treeSection(tree)
     + `<p class="foot">판정 엔진 v${esc(v.engine_version)} · 조건 수집일 ${esc(v.tree_collected_at)}<br>
         조건은 KB <b>공개 안내 페이지·FAQ·카드뉴스</b>에서 추출했으며 항목마다 출처와 수집일이 있습니다.
         <br>이 목록은 저희가 수집한 문서에서 찾아낸 조건이며, <b>KB 조건의 전부라고 보증하지 않습니다.</b>

@@ -199,10 +199,13 @@ button[disabled]{opacity:.45; cursor:default}
 /* ── 보는 순서 안내 ──
    오버레이로 덮지 않는다. 심사는 30초인데 닫기 클릭을 요구하면 그게 첫인상이 된다.
    자리를 조금 쓰고 아무것도 가리지 않는 쪽을 택했다. */
+.intro{
+  margin-bottom:var(--s4); padding-bottom:var(--s3);
+  border-bottom:1px solid var(--rule);
+}
 .guide{
   display:flex; flex-wrap:wrap; gap:var(--s2) var(--s5);
-  margin-bottom:var(--s4); padding-bottom:var(--s3);
-  border-bottom:1px solid var(--rule); list-style:none;
+  list-style:none;
 }
 .guide li{
   display:inline-flex; align-items:center; gap:6px;
@@ -214,6 +217,13 @@ button[disabled]{opacity:.45; cursor:default}
   font-size:10px; font-weight:800; color:var(--surface); background:var(--ink-2);
   border-radius:50%;
 }
+/* 1·2 와 3 의 범위가 다르다는 것 — 화면을 보기 전에 말해 둔다.
+   보고 나서 설명하면 이미 "왜 두 번 나오지"가 생긴 뒤다. */
+.scope-note{
+  margin-top:var(--s2); font-size:11.5px; line-height:1.6; color:var(--ink-3);
+  max-width:74ch;
+}
+.scope-note b{color:var(--ink-2); font-weight:700}
 
 /* 직접 바꿔 보기로 데려가는 안내.
    우리 최고의 증거가 스크롤 아래에 있으므로 원인 바로 다음에서 존재를 알린다. */
@@ -495,6 +505,16 @@ details summary b{ color:var(--ink); font-weight:700 }
   margin-top:var(--s6); padding-top:var(--s4);
   border-top:2px solid var(--ink);
 }
+/* 범위가 바뀌는 경계. 위는 '고른 상태 한 사람', 아래는 '사람과 무관한 원본'.
+   .asset 위쪽 2px 굵은 선 바로 아래 붙어, 문서의 장 구분처럼 읽히게 한다. */
+.scope-break{
+  margin-bottom:var(--s4); padding:var(--s3) var(--s4);
+  background:var(--surface); border:1px solid var(--rule);
+  border-left:3px solid var(--ink); border-radius:0 var(--r-sm) var(--r-sm) 0;
+  font-size:12.5px; line-height:1.65; color:var(--ink-2); max-width:60ch;
+}
+.scope-break b{color:var(--ink); font-weight:700}
+
 .asset h3{font-size:15px; letter-spacing:-.01em; margin-bottom:var(--s2)}
 .asset .lede{font-size:13.5px; color:var(--ink-2); line-height:1.7; max-width:52ch}
 .asset .lede b{color:var(--ink); font-weight:700}
@@ -652,8 +672,12 @@ table.st tr.c td:last-child::after{
   .verdict h2{font-size:24px}
   .tally{gap:var(--s4)}
   .tally b{font-size:20px}
-  /* 좁은 화면에선 조건 이름과 세 버튼이 한 줄에 못 선다 */
-  ul.tw > li{flex-direction:column; align-items:flex-start; gap:var(--s2); padding:var(--s3) 0}
+  /* 좁은 화면에선 조건 이름과 세 버튼이 한 줄에 못 선다.
+     왼쪽 여백은 유지해야 한다 — 0 으로 두면 ✓/✕/? 마커가 조건 이름 첫 글자를 덮는다. */
+  ul.tw > li{
+    flex-direction:column; align-items:flex-start; gap:var(--s2);
+    padding:var(--s3) 0 var(--s3) 21px;
+  }
   /* 손가락으로 누르는 화면이다. 44px 아래로 내려가면 오조작이 난다. */
   .seg{padding:12px 18px; font-size:12.5px}
   .reset{min-height:44px; padding:0 var(--s4)}
