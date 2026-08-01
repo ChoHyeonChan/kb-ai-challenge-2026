@@ -54,20 +54,22 @@ function evidence(ev, prov, open, key){
     </blockquote></details>`;
 }
 
-function node(r, kind, open){
+function node(r, kind, open, hideReason){
   const rem = r.remedy || {};
   let body = "";
   if(kind === "stop"){
     if(rem.primary_path) body += `<div class="meta">해결 <b>${esc(rem.primary_path)}</b></div>`;
     // 세 값이다. null(모름)을 "앱에서 불가"로 뭉치면 근거 없는 주장이 된다.
     if(rem.actionable_in_app === false){
-      body += `<div><span class="offapp">앱에서 해결 불가</span></div>`;
+      body += `<div><span class="offapp">앱 밖에서만</span></div>`;
     }else if(rem.actionable_in_app === null || rem.actionable_in_app === undefined){
-      body += `<div><span class="nopath">해결 경로가 수집한 문서에 없음</span></div>`;
+      body += rem.primary_path
+        ? `<div><span class="nopath">어디서 하는지는 수집한 문서에 없음</span></div>`
+        : `<div><span class="nopath">해결 방법이 수집한 문서에 없음</span></div>`;
       if(rem.note) body += `<div class="t-note">${esc(rem.note)}</div>`;
     }
     body += evidence(r.evidence, r.provenance, open, r.id);
-  }else if(kind === "hold" && r.reason){
+  }else if(kind === "hold" && r.reason && !hideReason){
     body += `<div class="meta">${esc(r.reason)}</div>`;
   }
   // 레일 마커는 색과 테두리 모양으로만 상태를 말한다. 보조기술에는 안 들린다.
@@ -86,9 +88,10 @@ function planSection(plan){
   // must_fix 가 비었다는 이유로 화면이 통째로 버리고 있었다.
   if(!plan) return "";
   if(!plan.must_fix.length){
-    if(!plan.summary) return "";
+    // ok 는 판정 블록이 이미 다 말했다. 같은 말을 절 하나 더 써서 반복하지 않는다.
+    if(plan.final_outcome !== "indeterminate" || !plan.summary) return "";
     return `<section class="plan">
-      <h3><span class="eyebrow">계획</span>지금 무엇이 남았나</h3>
+      <h3><span class="eyebrow">계획</span>무엇을 더 알아야 하나</h3>
       <p class="lede">${esc(plan.summary)}</p>
       ${plan.final_note ? `<p class="order">${esc(plan.final_note)}</p>` : ""}
     </section>`;
@@ -241,8 +244,10 @@ function basisLabel(r){
 function treeItem(c){
   const a = c.remedy.actionable_in_app;
   const app = a === true ? `<span class="chip">앱에서 가능</span>`
-            : a === false ? `<span class="chip off">앱에서 불가</span>`
-            : `<span class="chip none">앱 여부 미확인</span>`;
+            : a === false ? `<span class="chip off">앱 밖에서만</span>`
+            : c.remedy.primary_path
+              ? `<span class="chip none">해결 장소 미확인</span>`
+              : `<span class="chip none">해결 방법 미확인</span>`;
   const sev = c.severity === "blocking"
     ? `<span class="chip stop">차단</span>` : `<span class="chip warn">주의</span>`;
   // 근거의 두께는 **문서 수**로 센다. 문장 수는 부가 정보다.
@@ -287,7 +292,7 @@ function treeSection(tree){
     <div class="t-stat">
       <div><b>${tree.conditions.length}</b>조건</div>
       <div><b>${appYes}</b>앱에서 가능</div>
-      <div><b>${appNo}</b>앱에서 불가</div>
+      <div><b>${appNo}</b>앱 밖에서만</div>
       ${noPath ? `<div><b>${noPath}</b>경로 미확인</div>` : ""}
       <div><b>${tree.source_meta.source_count}</b>근거 문서</div>
       <div><b>${esc(tree.source_meta.collected_at)}</b>수집</div>
@@ -311,8 +316,9 @@ function trustStrip(v){
   return `<div class="trust">
     <span>규칙 엔진 <b>v${esc(v.engine_version)}</b></span><i aria-hidden="true">·</i>
     <span>실행 시점 LLM <b>0회</b></span><i aria-hidden="true">·</i>
-    <span><b>10가지 입력</b> × 200회 = <b>${DETERMINISM_RUNS.toLocaleString("ko-KR")}회</b> 판정 <b>전부 일치</b></span>
-  </div>`;
+    <span>같은 입력 <b>10가지</b>를 각 200회, <b>${DETERMINISM_RUNS.toLocaleString("ko-KR")}회</b> 돌려 <b>매번 같은 판정</b></span>
+  </div>
+  <p class="trust-note">정답률이 아니라 <b>흔들림이 없다</b>는 뜻입니다. 목표 2종 × 상태 5종 = 10가지 조합.</p>`;
 }
 
 // 판정은 **차단(blocking) 조건**만 보고 정해진다. 주의(warning) 조건이 미충족이거나
@@ -355,28 +361,17 @@ function railSection(v, tree){
 
   // 문제 정의를 끝내는 한 줄. "조건이 많다"가 아니라 "앱 안에서 끝낼 수 없다"가
   // 우리가 문서에서 찾아낸 것이고, 이 서비스가 필요한 이유다.
+  // 이 자리는 화면에서 가장 먼저 읽히는 문장이다. **지금 이 사람의 사실**을 쓴다.
+  // 트리 전체 통계(11개 중 2/3/6)는 '이 목표의 조건 전체' 절에 같은 숫자로 이미 있다.
   let impact = "";
-  if(tree){
-    const all = tree.conditions.length;
-    const yes = tree.conditions.filter(c => c.remedy.actionable_in_app === true).length;
-    const no = tree.conditions.filter(c => c.remedy.actionable_in_app === false).length;
-    const unsure = all - yes - no;
-
-    // "1개 중 1개" 같은 말이 되지 않게, 조건 수에 따라 문장을 고른다.
-    // 해결 경로를 모르는 것은 "앱에서 불가"에 합치지 않는다. 다른 사실이다.
-    let text = "";
-    if(all === 1){
-      text = no ? `이 조건은 <b>앱 안에서 고칠 수 없습니다.</b>` : "";
-    }else if(yes + no + unsure){
-      text = `이 목표의 조건 <b>${all}개</b> 중 앱 안에서 해결할 수 있는 것은 <b>${yes}개</b>입니다.`;
-      const tail = [];
-      if(no) tail.push(`<b>${no}개</b>는 앱 밖에서 해결해야 합니다`);
-      // "KB 공개문서에" 라고 쓰면 KB 전체를 다 봤다는 뜻이 된다. 우리가 본 것은
-      // 수집한 문서뿐이다. 범위를 넘겨 말하지 않는다.
-      if(unsure) tail.push(`<b>${unsure}개</b>는 어디서 해결하는지 <b>수집한 문서에서 찾지 못했습니다</b>`);
-      if(tail.length) text += ` ${tail.join(" · ")}.`;
-    }
-    if(text) impact = `<p class="impact">${text}</p>`;
+  const blocking = v.unmet.filter(r => r.severity === "blocking");
+  const offApp = blocking.filter(r => r.remedy && r.remedy.actionable_in_app === false).length;
+  if(blocking.length && offApp){
+    impact = blocking.length === 1
+      ? `<p class="impact">막고 있는 이 조건은 <b>앱에서 해결할 수 없습니다.</b>
+         앱만 만져서는 끝나지 않습니다.</p>`
+      : `<p class="impact">지금 막고 있는 조건 <b>${blocking.length}개</b> 중
+         <b>${offApp}개는 앱에서 해결할 수 없습니다.</b> 앱만 만져서는 끝나지 않습니다.</p>`;
   }
 
   // 우리 최고의 증거(직접 바꿔 보기)가 스크롤 아래에 있다. 여기서 존재를 알린다.
@@ -386,7 +381,21 @@ function railSection(v, tree){
   // 근거는 접어두면 없는 것과 같다. 첫 건은 펼쳐 둔다 —
   // 클릭하지 않는 사람에게도 "출처 있는 판정"이 즉시 보여야 한다.
   const stops = v.unmet.map((r, i) => node(r, "stop", i === 0)).join("");
-  const holds = v.unknown.map(r => node(r, "hold")).join("");
+
+  // 사유가 같은 노드가 여러 개면 같은 문장이 세로로 쌓인다(실측 10줄 중 8줄이 글자까지 동일).
+  // 사람이 쓴 화면은 그러지 않는다. 사유를 절 위로 한 번씩만 올리고 목록에서는 뺀다.
+  const byReason = new Map();
+  v.unknown.forEach(r => {
+    const k = r.reason || "";
+    byReason.set(k, (byReason.get(k) || 0) + 1);
+  });
+  const grouped = v.unknown.length > 2;
+  const holdLead = grouped
+    ? `<p class="hold-lead">` + [...byReason]
+        .map(([reason, cnt]) => `<b>${cnt}개</b>는 ${esc(reason.replace(/^이 (사용자 상태에는 )?/, ""))}`)
+        .join(" · ") + `</p>`
+    : "";
+  const holds = holdLead + v.unknown.map(r => node(r, "hold", false, grouped)).join("");
 
   // 제목이 판정과 어긋나면 안 된다. `ok` 인데 "어디서 막혔나"가 뜨면
   // 바로 위 판정과 정면으로 부딪힌다. 무엇이 남았는지에 따라 이름을 고른다.
@@ -411,6 +420,8 @@ function railSection(v, tree){
 let overrides = {};
 // 실험 목록의 표시 순서. 목표·상태를 다시 고를 때만 새로 정한다.
 let tweakOrder = null;
+// 서버가 준 **원본** 프로필. 덮어쓴 값이 원래 값으로 돌아왔는지 판단하는 데 쓴다.
+let lastProfile = null;
 
 // 이 조건을 충족시키는 답이 '예'인가 '아니오'인가.
 // 참/거짓으로 말할 수 없는 조건(금액·날짜)에는 붙이지 않는다 — 없는 답을 지어내지 않는다.
@@ -542,8 +553,9 @@ function renderKeeping(v, plan, tree, prof){
   const active = document.activeElement;
   const focusKey = active && active.classList && active.classList.contains("seg")
     ? [active.dataset.subject, active.dataset.value] : null;
-  const wasOpen = new Set(
-    [...document.querySelectorAll("#out details[open]")].map(summaryKey).filter(Boolean));
+  const openState = new Map(
+    [...document.querySelectorAll("#out details")]
+      .map(d => [summaryKey(d), d.open]).filter(([k]) => k));
   const anchorTop = (() => {
     const el = focusKey ? active : document.querySelector("#tweak");
     return el ? el.getBoundingClientRect().top : null;
@@ -553,7 +565,8 @@ function renderKeeping(v, plan, tree, prof){
 
   // 펼침을 먼저 되돌린다 — 높이가 달라지므로 스크롤 보정보다 앞서야 한다
   document.querySelectorAll("#out details").forEach(d => {
-    if(wasOpen.has(summaryKey(d))) d.open = true;
+    const was = openState.get(summaryKey(d));
+    if(was !== undefined) d.open = was;      // 접어둔 것은 접힌 채로 둔다
   });
   const back = focusKey
     ? document.querySelector(
@@ -565,6 +578,7 @@ function renderKeeping(v, plan, tree, prof){
 }
 
 function render(v, plan, tree, prof){
+  lastProfile = prof;
   const lowById = new Map(v.low_confidence.map(r => [r.id, r]));
 
   $("#verdict").innerHTML = verdictSection(v);
@@ -578,7 +592,10 @@ function render(v, plan, tree, prof){
     + treeSection(tree)
     + stateSection(prof)
     + `<p class="foot">판정 엔진 v${esc(v.engine_version)} · 조건 수집일 ${esc(v.tree_collected_at)}<br>
-        조건은 KB 공개 안내·약관·FAQ에서 추출했으며 항목마다 <b>출처와 수집일</b>이 있습니다.</p>`;
+        조건은 KB <b>공개 안내 페이지·FAQ·카드뉴스</b>에서 추출했으며 항목마다 출처와 수집일이 있습니다.
+        <br>이 목록은 저희가 수집한 문서에서 찾아낸 조건이며, <b>KB 조건의 전부라고 보증하지 않습니다.</b>
+        <br>제8회 KB Future Finance A.I. Challenge 출품작입니다.
+        <b>KB국민카드·KB국민은행의 공식 서비스가 아닙니다.</b></p>`;
 }
 
 // 값을 빠르게 여러 번 바꾸면 요청이 겹친다. 응답은 보낸 순서대로 오지 않는다.
@@ -614,6 +631,12 @@ async function judge(){
       fetch(`/api/profile/${encodeURIComponent($("#profile").value)}`),
     ]);
     if(stale()) return;                 // 더 최신 요청이 있다. 이 결과는 버린다
+    // 목표를 바꾸는 사이 옛 화면의 버튼을 누르면 새 프로필에 없는 키가 실려 400 이 온다.
+    // 그 값은 지금 화면에서 의미가 없으므로 버리고 한 번만 다시 판정한다.
+    if(res.status === 400 && Object.keys(overrides).length){
+      overrides = {}; tweakOrder = null;
+      return judge();
+    }
     if(!res.ok) throw new Error(await errorText(res));
     // 계획·트리는 부가 정보다. 실패해도 판정은 보여준다.
     const [verdict, plan, tree, prof] = [
@@ -693,19 +716,36 @@ async function judge(){
       const seg = e.target.closest("button.seg");
       if(seg){
         const raw = seg.dataset.value;
-        overrides[seg.dataset.subject] = raw === "null" ? null : raw === "true";
+        const next = raw === "null" ? null : raw === "true";
+        const subject = seg.dataset.subject;
+        // 원래 값으로 돌아왔으면 '바꿈'이 아니다. 덮어쓰기를 지운다 —
+        // 이미 선택된 버튼을 다시 눌러도 "직접 바꾼 값 1개"가 뜨던 문제.
+        const [g, k] = subject.split(".");
+        const base = lastProfile && lastProfile[g] ? lastProfile[g][k] : undefined;
+        if(next === base) delete overrides[subject];
+        else overrides[subject] = next;
         judge();
         return;
       }
-      if(e.target.closest("#reset")){ overrides = {}; tweakOrder = null; judge(); }
+      if(e.target.closest("#reset")){
+        overrides = {}; tweakOrder = null;
+        judge().then(() => {
+          // 되돌리기 버튼은 사라진다. 포커스를 실험 절 첫 버튼으로 옮겨
+          // 키보드 사용자가 페이지 맨 앞으로 튕기지 않게 한다.
+          const first = document.querySelector("ul.tw .seg");
+          if(first) first.focus({preventScroll: true});
+        });
+      }
     });
     $("#err").addEventListener("click", e => {
       if(e.target.closest("#retry")) judge();
     });
 
     await judge();
-  }catch{
-    $("#out").innerHTML = `<div class="err">서버에 연결하지 못했습니다. <code>uvicorn src.api.main:app</code> 가 실행 중인지 확인해 주세요.</div>`;
+  }catch(e){
+    console.error("초기 로딩 실패 — 로컬이라면 `uvicorn src.api.main:app` 실행 여부를 확인하세요.", e);
+    $("#err").innerHTML = `<div class="err">화면을 불러오지 못했습니다.
+      잠시 뒤 새로고침해 주세요. 계속 같으면 서버가 내려간 상태입니다.</div>`;
   }
 })();
 

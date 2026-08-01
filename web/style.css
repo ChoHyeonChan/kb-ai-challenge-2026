@@ -73,6 +73,8 @@ main{min-width:0}
 .logo .lg-left circle{stroke:var(--stop); stroke-width:2.6; stroke-dasharray:3.6 3.7}
 .logo .lg-left line{stroke:var(--rule); stroke-width:2.6}
 
+.nb{white-space:nowrap}
+
 h1{
   font-size:31px; line-height:1.1; letter-spacing:-.045em; font-weight:800;
 }
@@ -123,7 +125,7 @@ select{
   cursor:pointer; text-overflow:ellipsis;
 }
 select:hover{border-color:var(--ink-3)}
-select:focus-visible{outline:2px solid var(--mark); outline-offset:1px; border-color:var(--ink-3)}
+select:focus-visible{border-color:var(--ink-3)}
 button{
   width:100%; min-height:48px; margin-top:var(--s4);
   font:inherit; font-size:15px; font-weight:700; letter-spacing:-.01em;
@@ -169,6 +171,7 @@ button[disabled]{opacity:.45; cursor:default}
 }
 .tally span{display:block}
 .tally .n-stop b{color:#ff9d90}
+.v-ok .tally .n-stop b{color:#8b9199}   /* 통과 화면에서 0 은 사건이 아니다 */
 .tally .n-hold b{color:#c8ccd0}
 .tally .n-all b{color:#8b9199}
 
@@ -180,8 +183,15 @@ button[disabled]{opacity:.45; cursor:default}
   background:#0e1113; border-top:1px solid #2a2f34;
   font-size:10.5px; color:#868c93; line-height:1.6;
 }
+.trust{margin-bottom:0}
 .trust b{color:#dfe2e5; font-weight:700; font-variant-numeric:tabular-nums}
 .trust i{font-style:normal; color:#5b6167; padding:0 5px}
+.trust-note{
+  margin:0 calc(var(--s4) * -1) calc(var(--s3) * -1) calc(var(--s5) * -1);
+  padding:0 var(--s4) 9px var(--s5); background:#0e1113;
+  font-size:10px; color:#6d7379; line-height:1.5;
+}
+.trust-note b{color:#9aa0a6; font-weight:700}
 
 /* ── 판정 레일 : 이 화면의 서명 ──
    조건이 세로선으로 이어지다가 막힌 지점에서 끊긴다.
@@ -192,9 +202,8 @@ button[disabled]{opacity:.45; cursor:default}
 .guide{
   display:flex; flex-wrap:wrap; gap:var(--s2) var(--s5);
   margin-bottom:var(--s4); padding-bottom:var(--s3);
-  border-bottom:1px solid var(--rule);
+  border-bottom:1px solid var(--rule); list-style:none;
 }
-.guide{list-style:none}
 .guide li{
   display:inline-flex; align-items:center; gap:6px;
   font-size:11.5px; color:var(--ink-3); line-height:1.5;
@@ -239,21 +248,28 @@ button[disabled]{opacity:.45; cursor:default}
 .impact b{font-weight:800; font-size:15.5px; font-variant-numeric:tabular-nums}
 
 h3 .eyebrow{
-  display:inline-block; margin-right:var(--s2); padding:2px 7px;
+  display:inline-block; margin:0 var(--s2) 0 0; padding:2px 7px;
   font-size:10px; letter-spacing:.14em; font-weight:700;
   color:var(--ink-2); background:var(--surface-2);
   border:1px solid var(--rule); border-radius:2px; vertical-align:2px;
 }
-.rail h3, .plan h3, .state h3, .asset h3, .met h3{
+.rail h3, .plan h3, .state h3, .asset h3, .met h3, .tweak h3{
   font-size:15px; font-weight:800; letter-spacing:-.02em;
   color:var(--ink); text-transform:none; margin-bottom:var(--s3);
 }
+.hold-lead{
+  margin:var(--s3) 0 var(--s2); font-size:12.5px; color:var(--ink-2);
+  padding-left:var(--s3); border-left:2px dashed var(--rule);
+}
+.hold-lead b{color:var(--ink); font-weight:700}
+
 .node{position:relative; padding:0 0 var(--s4) 28px}
 .node::before{                      /* 세로 레일 */
   content:""; position:absolute; left:7px; top:18px; bottom:0;
   width:1px; background:var(--rule);
 }
-.node:last-child::before{display:none}
+.node:last-child::before{bottom:auto; height:var(--s3); opacity:.45}
+.node:only-child::before{height:var(--s2)}
 .node::after{                       /* 상태 마커 */
   content:""; position:absolute; left:2px; top:6px;
   width:11px; height:11px; border-radius:50%;
@@ -267,7 +283,7 @@ h3 .eyebrow{
 
 .label{font-size:15px; line-height:1.5; font-weight:600}
 .node.stop .label{color:var(--stop)}
-.meta{font-size:13px; color:var(--ink-2); margin-top:5px}
+.meta{font-size:13px; color:var(--ink-2); margin-top:var(--s1)}
 .meta b{color:var(--ink); font-weight:600}
 
 /* 앱에서 못 고치는 조건 — 우리 핵심 인사이트를 화면에 렌더 */
@@ -309,15 +325,14 @@ blockquote cite{
 
 /* 충족 목록 — 숫자는 판정에 이미 있다. 여기선 칩으로 눕혀 자리를 아낀다. */
 .met{margin-top:var(--s5); border-top:1px solid var(--rule); padding-top:var(--s4)}
-.met ul{list-style:none; display:flex; flex-wrap:wrap; gap:6px}
+.met ul{list-style:none; display:grid; grid-template-columns:1fr 1fr; gap:2px var(--s5)}
 .met li{
-  font-size:12px; color:var(--ink-2); line-height:1.5;
-  padding:4px var(--s2) 4px 21px; position:relative;
-  background:var(--surface); border:1px solid var(--rule); border-radius:var(--r-sm);
+  font-size:12.5px; color:var(--ink-2); line-height:1.55;
+  padding:3px 0 3px 21px; position:relative;
 }
 .met li::before{content:"✓"; position:absolute; left:7px; color:var(--pass); font-size:11px}
-.met li.interp{border-style:dashed}
-.met li.interp::before{content:"~"; color:#7a6a9e}
+.met li.interp{color:var(--ink-3)}
+.met li.interp::before{content:"~"; color:var(--mark)}
 .met li em{font-style:normal; font-size:11px; color:var(--ink-3); margin-left:5px}
 
 .foot{
@@ -326,16 +341,23 @@ blockquote cite{
 }
 .foot b{color:var(--ink-2)}
 .err{
-  background:#fdf3f2; border:1px solid #f0d5d1; color:var(--stop);
-  padding:var(--s3); border-radius:var(--r-sm); font-size:13.5px; line-height:1.6;
+  background:#fdf3f2; border:1px solid #f0d5d1; color:var(--ink);
+  padding:var(--s3); border-radius:var(--r-md); font-size:13.5px; line-height:1.6;
   margin-bottom:var(--s3);
 }
+.err b{color:var(--stop)}
+.err code{
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace; font-size:12px;
+  background:var(--surface); border:1px solid var(--rule); border-radius:2px; padding:1px 5px;
+}
+/* 솔리드 채움 버튼은 이 화면에서 '판정하기' 하나뿐이다. 오류가 그것과 경쟁하지 않게 한다. */
 .err button{
   width:auto; min-height:36px; margin:var(--s2) 0 0; padding:0 var(--s3);
   font:inherit; font-size:12.5px; font-weight:700;
-  color:#fff; background:var(--stop); border:0; border-radius:var(--r-sm); cursor:pointer;
+  color:var(--stop); background:var(--surface); border:1px solid #f0d5d1;
+  border-radius:var(--r-sm); cursor:pointer;
 }
-.err button:hover{background:#8e2a20}
+.err button:hover{background:#fdf3f2}
 @media (prefers-reduced-motion:no-preference){
   .node{animation:in .34s ease-out both}
   @keyframes in{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
@@ -348,7 +370,7 @@ blockquote cite{
   margin-top:var(--s5); padding:var(--s4);
   background:var(--surface); border:1px solid var(--rule); border-radius:var(--r-md);
 }
-.tweak .lede{font-size:12.5px; color:var(--ink-2); line-height:1.65}
+.tweak .lede{font-size:12.5px; color:var(--ink-2); line-height:1.65; max-width:56ch}
 .tweak .lede b{color:var(--ink); font-weight:700}
 
 ul.tw{list-style:none; margin:var(--s3) 0 0; padding:0}
@@ -375,7 +397,7 @@ li.changed .tw-label{color:var(--ink); font-weight:700}
 
 /* 어느 쪽을 눌러야 충족인지. 조건마다 방향이 달라 이게 없으면 정반대로 읽힌다. */
 .want{
-  display:block; margin-top:2px; font-style:normal;
+  display:block; margin-top:var(--s1); font-style:normal;
   font-size:11px; color:var(--ink-3); letter-spacing:0;
 }
 .want b{color:var(--ink-2); font-weight:700}
@@ -413,7 +435,7 @@ li.changed .tw-label::after{
 
 /* ── 해결 계획 "하나만 풀면 되나요?" ───────────────────────── */
 .plan{
-  margin-top:var(--s5); padding-top:var(--s4);
+  margin-top:var(--s6); padding-top:var(--s4);
   border-top:2px solid var(--ink);
 }
 .plan h3{font-size:15px; letter-spacing:-.2px; margin-bottom:var(--s2)}
@@ -474,7 +496,7 @@ details summary b{ color:var(--ink); font-weight:700 }
   border-top:2px solid var(--ink);
 }
 .asset h3{font-size:15px; letter-spacing:-.01em; margin-bottom:var(--s2)}
-.asset .lede{font-size:13.5px; color:var(--ink-2); line-height:1.7}
+.asset .lede{font-size:13.5px; color:var(--ink-2); line-height:1.7; max-width:52ch}
 .asset .lede b{color:var(--ink); font-weight:700}
 .asset .lede code{font-size:12px}
 
@@ -524,23 +546,25 @@ ul.tree > li:last-child{border-bottom:0}
   background:var(--surface-2); border:1px solid var(--rule-2);
   border-radius:var(--r-sm); padding:2px 6px; word-break:break-all;
 }
-.t-meta{display:flex; gap:var(--s1); flex-wrap:wrap; margin-top:var(--s2)}
+.t-meta{display:flex; gap:var(--s1) 6px; flex-wrap:wrap; margin-top:var(--s2)}
 .chip{
   font-size:11px; font-weight:700; padding:2px var(--s2); border-radius:var(--r-sm);
   border:1px solid var(--rule); color:var(--ink-2); background:var(--surface);
 }
 .chip.stop{border-color:#e3c6c2; color:var(--stop); background:#fdf6f5}
 .chip.warn{border-color:#e8e2cc; color:#8a6d1f; background:#fbf8ee}
-.chip.off{border-color:#e3c6c2; color:var(--stop); background:#fdf6f5}
-.chip.q{border-style:dashed; color:var(--ink-3)}
+.chip.off{border-color:var(--rule); color:var(--ink-2); background:var(--surface);
+          box-shadow:inset 2px 0 0 var(--stop)}   /* 색은 힌트로만 — 심각도 칩과 구분 */
+.chip.q{color:var(--ink-2); background:var(--surface-2)}
 .chip.none{border-style:dashed; color:var(--ink-3); background:var(--surface-2)}
 /* 이 해결 방법을 무엇이 뒷받침하는가 — 조용히, 그러나 항상 보이게 */
-.chip.b{border-color:#cfe0d6; color:#2c6349; background:#f2f8f4; font-weight:600}
+.chip.b{border:0; background:none; padding-left:0; font-weight:600; color:var(--ink-3)}
+.chip.b::before{content:"근거 "; color:var(--pass); font-weight:700}
 .t-note{
   margin-top:var(--s2); font-size:11.5px; line-height:1.55; color:var(--ink-3);
   padding-left:var(--s2); border-left:2px dashed var(--rule);
 }
-.t-path{margin-top:6px; font-size:12px; color:var(--ink-2)}
+.t-path{margin-top:var(--s1); font-size:12px; color:var(--ink-2)}
 .t-path b{color:var(--ink); font-weight:700}
 .ovr{
   margin-top:var(--s2); font-size:11.5px; color:var(--ink-2); line-height:1.6;

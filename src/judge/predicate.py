@@ -120,11 +120,12 @@ def evaluate(pred: Predicate, profile: UserProfile, *, today: date | None = None
     op = pred.op
     subject_val, known = profile.lookup(pred.subject)
 
-    # 존재 여부만 묻는 op 는 known 판정 전에 처리
-    if op == "exists":
-        return known
-    if op == "not_exists":
-        return not known
+    # 존재 여부만 묻는 op 는 known 판정 전에 처리한다.
+    # 다만 '값이 null'과 '키가 없음'은 다르다 — 전자는 모르는 것이므로 단정하지 않는다.
+    if op in ("exists", "not_exists"):
+        if not known and profile.has_path(pred.subject):
+            raise Unknown("이 값을 아직 확인하지 못했습니다")
+        return known if op == "exists" else not known
     if not known:
         # 값이 null 인 것과 키 자체가 없는 것은 다른 사실이다.
         # 내부 경로(subject)는 사유 문장에 넣지 않는다 — 화면에는 조건 label 이
