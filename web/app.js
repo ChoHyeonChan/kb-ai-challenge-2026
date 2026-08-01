@@ -248,8 +248,10 @@ function treeItem(c){
             : c.remedy.primary_path
               ? `<span class="chip none">해결 장소 미확인</span>`
               : `<span class="chip none">해결 방법 미확인</span>`;
+  // 심각도지 현재 상태가 아니다. 조건 이름에 이미 '차단'이 들어가 있어
+  // 「차단」이라고 쓰면 "지금 차단됐다"로 읽힌다. 계획 절의 "필수 조건"과 말을 맞춘다.
   const sev = c.severity === "blocking"
-    ? `<span class="chip stop">차단</span>` : `<span class="chip warn">주의</span>`;
+    ? `<span class="chip stop">필수</span>` : `<span class="chip warn">참고</span>`;
   // 근거의 두께는 **문서 수**로 센다. 문장 수는 부가 정보다.
   // provenance 가 없으면 "1곳"이라고 지어내지 않고 칩 자체를 뺀다.
   const {docs, spans} = support(c.provenance);
@@ -285,7 +287,8 @@ function treeSection(tree){
   const noPath = tree.conditions.length - appYes - appNo;
   return `<section class="asset">
     <h3><span class="eyebrow">근거 자료</span>이 목표의 조건 전체</h3>
-    <p class="lede">판정에 쓰인 조건을 그대로 펼칩니다.
+    <p class="lede"><b>판정 결과와 무관하게</b> 이 목표에 걸린 조건을 전부 펼칩니다.
+      통과했든 막혔든 같은 목록입니다 — 이 트리가 저희가 만든 자산이기 때문입니다.
       조건과 인용은 <b>KB 공개문서에서 자동 추출</b>했고, 각 조건은 기계가 평가하는
       형태(<code>subject op value</code>)를 함께 가집니다.
       사람이 검수 단계에서 더한 메모는 <b>그 자리에 함께 표시</b>합니다.</p>
@@ -390,10 +393,18 @@ function railSection(v, tree){
     byReason.set(k, (byReason.get(k) || 0) + 1);
   });
   const grouped = v.unknown.length > 2;
+  // 이 중 몇 개가 판정을 막는지 밝힌다 — 집계의 '확인 불가'와 계획의 숫자가
+  // 다른 이유가 여기 있다. 나머지는 몰라도 판정이 바뀌지 않는다.
+  const holdBlocking = v.unknown.filter(r => r.severity === "blocking").length;
   const holdLead = grouped
     ? `<p class="hold-lead">` + [...byReason]
         .map(([reason, cnt]) => `<b>${cnt}개</b>는 ${esc(reason.replace(/^이 (사용자 상태에는 )?/, ""))}`)
-        .join(" · ") + `</p>`
+        .join(" · ")
+      + (holdBlocking && holdBlocking < v.unknown.length
+          ? `<br>이 가운데 <b>${holdBlocking}개</b>가 판정을 막습니다.
+             나머지 ${v.unknown.length - holdBlocking}개는 몰라도 판정이 달라지지 않습니다.`
+          : "")
+      + `</p>`
     : "";
   const holds = holdLead + v.unknown.map(r => node(r, "hold", false, grouped)).join("");
 
@@ -509,11 +520,19 @@ function tweakSection(tree, prof, v){
   const reset = n
     ? `<button class="reset" type="button" id="reset">직접 바꾼 값 ${n}개 되돌리기</button>` : "";
 
+  const skipped = tree.conditions.length - rows.length;
   return `<section class="tweak" id="tweak">
     <h3><span class="eyebrow">실험</span>값을 바꾸면 판정이 바뀝니다</h3>
     <p class="lede">아래 상태를 바꾸면 판정을 <b>즉시 다시 계산</b>합니다.
       규칙 엔진이라 같은 값이면 항상 같은 답이 나옵니다.
-      바꾼 값은 이 화면에만 적용되고 <b>저장되지 않습니다</b>.</p>
+      바꾼 값은 이 화면에만 적용되고 <b>저장되지 않습니다</b>.
+      ${rows.length === 1
+        ? `이 목표의 조건은 1개입니다. <b>세 버튼을 차례로 눌러보시면
+           가능 · 불가 · 확인 불가 세 판정이 모두 나옵니다.</b>`
+        : skipped
+          ? `여기 있는 것은 <b>예·아니오로 답할 수 있는 ${rows.length}개</b>입니다.
+             금액·날짜 조건 ${skipped}개는 세 버튼으로 표현할 수 없어 빠져 있습니다.`
+          : ""}</p>
     <ul class="tw">${list}</ul>
     ${reset}
   </section>`;
