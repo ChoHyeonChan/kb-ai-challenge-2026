@@ -41,6 +41,9 @@ def _to_result(c: Condition, *, reason: str | None = None, full: bool = True) ->
         remedy=c.remedy if full else None,
         evidence=c.evidence if full else None,
         reason=reason,
+        # 적용 범위는 요약(full=False)에서도 내린다 — 조건을 좁히는 말이라,
+        # 빠지면 화면이 조건을 실제보다 넓게 말하게 된다.
+        scope_note=c.scope_note,
         provenance=c.provenance if full else None,
     )
 

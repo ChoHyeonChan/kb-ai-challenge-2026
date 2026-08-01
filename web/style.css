@@ -273,6 +273,15 @@ h3 .eyebrow{
 }
 .hold-lead b{color:var(--ink); font-weight:700}
 
+/* 원인·확인 불가 절 안에서 필수와 참고를 가른다.
+   조건 원본 절의 「필수/참고」 칩과 같은 말을 쓰되, 여기서는 라벨에 붙는 작은 표식이다. */
+.sev{
+  margin-left:6px; padding:1px 5px; border-radius:2px; vertical-align:2px;
+  font-size:10px; font-weight:800; letter-spacing:.06em; white-space:nowrap;
+}
+.sev.must{color:var(--stop); background:#fdf6f5; border:1px solid #e3c6c2}
+.sev.note{color:#8a6d1f; background:#fbf8ee; border:1px solid #e8e2cc}
+
 .node{position:relative; padding:0 0 var(--s4) 28px}
 .node::before{                      /* 세로 레일 */
   content:""; position:absolute; left:7px; top:18px; bottom:0;
@@ -580,6 +589,17 @@ ul.tree > li:last-child{border-bottom:0}
 /* 이 해결 방법을 무엇이 뒷받침하는가 — 조용히, 그러나 항상 보이게 */
 .chip.b{border:0; background:none; padding-left:0; font-weight:600; color:var(--ink-3)}
 .chip.b::before{content:"근거 "; color:var(--pass); font-weight:700}
+/* 인용이 걸어둔 적용 범위. 조건이 인용보다 넓어지지 않게 그 자리에서 말한다.
+   근거를 보태는 말이 아니라 **깎는** 말이므로, 눈에 띄되 조용한 자리를 준다. */
+.scope{
+  margin-top:var(--s2); padding:6px var(--s3);
+  font-size:11.5px; line-height:1.6; color:var(--ink-2);
+  background:var(--surface-2); border:1px dashed var(--rule);
+  border-radius:var(--r-sm);
+}
+.scope::before{content:"적용 범위 "; font-weight:800; color:var(--ink-3); letter-spacing:.04em}
+.scope b{color:var(--ink); font-weight:700}
+
 .t-note{
   margin-top:var(--s2); font-size:11.5px; line-height:1.55; color:var(--ink-3);
   padding-left:var(--s2); border-left:2px dashed var(--rule);

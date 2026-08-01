@@ -124,7 +124,7 @@ UnicodeDecodeError: 'cp949' codec can't decode byte 0xec in position 2
 
 ## 4. 다음 재현 전 준비
 
-1. Python 3.11 이상을 설치하고 새 PowerShell에서 `python --version`이 출력되는지 확인한다.
+1. Python 3.12 이상을 설치하고 새 PowerShell에서 `python --version`이 출력되는지 확인한다.
 2. 위의 **2. 재현 절차**를 새 폴더에서 처음부터 다시 실행한다.
 3. pytest와 uvicorn의 실제 전체 출력을 이 문서의 3절에 추가하고, 아래 체크 항목을 완료 처리한다.
 

@@ -104,7 +104,6 @@
       "remedy": {
         "actionable_in_app": false,
         "channels": [
-          "callcenter:1588-1688",
           "branch:영업점",
           "self:ATM"
         ],
@@ -132,7 +131,8 @@
           "card_overseas_faq",
           "card_overseas_general"
         ]
-      }
+      },
+      "scope_note": "고객센터(1588-1688)는 인용에서 **등록여부를 확인**하는 창구로만 나옵니다. 등록 자체는 영업점 또는 ATM 에서 합니다."
     },
     {
       "id": "c_identity_theft_block",
@@ -298,7 +298,7 @@
     },
     {
       "id": "c_limit_accumulated",
-      "label": "회원별 누적 이용액이 600만원 상당 USD 이내여야 합니다",
+      "label": "체크카드 해외 T&E 업종 누적 이용액이 600만원 상당 USD 이내여야 합니다",
       "category": "limit",
       "predicate": {
         "subject": "context.tne_accumulated_krw",
@@ -316,7 +316,7 @@
       "evidence": {
         "source_title": "해외이용 FAQ",
         "url": "https://m.kbcard.com/SVC/DVIEW/MSDMCXHIASVCD0032",
-        "quote": "회원별 누적 600만원 상당의 달러(USD) 환산액 이내 이용할 수 있습니다.",
+        "quote": "또한, 체크카드를 해외 T&E 업종(호텔/항공/렌터카 등)에서 이용하실 경우에는, · 회원별 누적 600만원 상당의 달러(USD) 환산액 이내 이용할 수 있습니다.",
         "collected_at": "2026-07-27",
         "confidence": "high"
       },
@@ -328,11 +328,12 @@
         "source_ids": [
           "card_overseas_faq"
         ]
-      }
+      },
+      "scope_note": "체크카드를 해외 T&E 업종(호텔·항공·렌터카 등)에서 이용할 때의 한도입니다. 그 밖의 가맹점이나 신용카드에는 적용되지 않습니다."
     },
     {
       "id": "c_limit_daily",
-      "label": "1일 이용한도 이내여야 합니다 (600만원 상당 USD)",
+      "label": "체크카드 1일 이용한도 이내여야 합니다 (600만원 상당 USD)",
       "category": "limit",
       "predicate": {
         "subject": "context.daily_used_krw",
@@ -365,11 +366,12 @@
           "card_overseas_faq",
           "card_overseas_general"
         ]
-      }
+      },
+      "scope_note": "체크카드 기준입니다. 수집한 문서는 «신용카드 승인은 1회 또는 1일 제한 기준이 없으며, 신용카드 잔여 한도는 국내 잔여한도에 실시간 환율로 환산된 미달러화로 결정됩니다»라고 적고 있어, 신용카드에는 이 한도가 적용되지 않습니다."
     },
     {
       "id": "c_limit_single",
-      "label": "1회 이용한도 이내여야 합니다 (600만원 상당 USD)",
+      "label": "체크카드 1회 이용한도 이내여야 합니다 (600만원 상당 USD)",
       "category": "limit",
       "predicate": {
         "subject": "context.amount_krw",
@@ -399,7 +401,8 @@
         "source_ids": [
           "card_overseas_general"
         ]
-      }
+      },
+      "scope_note": "체크카드 기준입니다. 수집한 문서는 «신용카드 승인은 1회 또는 1일 제한 기준이 없으며, 신용카드 잔여 한도는 국내 잔여한도에 실시간 환율로 환산된 미달러화로 결정됩니다»라고 적고 있어, 신용카드에는 이 한도가 적용되지 않습니다."
     },
     {
       "id": "c_card_expiry_date",

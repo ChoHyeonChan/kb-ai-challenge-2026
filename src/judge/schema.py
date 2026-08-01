@@ -181,9 +181,14 @@ class ConditionResult(BaseModel):
     remedy: Remedy | None = None
     evidence: Evidence | None = None
     reason: str | None = Field(default=None, description="unknown/low_confidence 사유")
+    scope_note: str | None = Field(
+        default=None,
+        description="인용이 걸어둔 적용 범위. 이 값을 화면까지 내리지 않으면 "
+                    "조건이 인용보다 넓게 읽힌다 (예: 체크카드 전용 한도가 신용카드에도 걸린 것처럼)",
+    )
     provenance: Provenance | None = Field(
         default=None,
-        description="근거가 몇 개 문서에서 확인됐는가. 화면이 '문서 N곳에서 확인'을 표시하는 데 쓴다",
+        description="같은 조건이 몇 개 문서·문장에서 추출됐는가. 독립적 입증 횟수가 아니다",
     )
 
 

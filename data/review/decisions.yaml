@@ -3,7 +3,10 @@
 # 규칙 (src/extract/review.py 참고)
 #   · 여기 없는 조건은 pending 이며 **트리에 들어가지 않는다** (모르면 넣지 않는다)
 #   · decision: approve | reject
-#   · override 는 severity 하나만 허용한다. label·predicate·evidence 는 못 고친다
+#   · override 로 고칠 수 있는 것은 **severity** 와 **evidence_from**(같은 조건으로
+#     추출된 여러 인용 중 대표를 고르는 것) 둘뿐이다.
+#     label·predicate·인용문 자체는 못 고친다 — 사람이 문장을 쓰기 시작하면
+#     그건 더 이상 문서에서 나온 조건이 아니다
 #   · reason 은 반드시 적는다. 이 파일이 곧 감사 기록이다
 #
 # 검수 기준 — 아래 넷 중 하나라도 걸리면 반려한다
@@ -14,7 +17,9 @@
 #
 # 검수자: 조현찬 (1차 판단 Claude 작성 → 현찬 확인)
 # 검수일: 2026-07-29
-# 대상  : 5차 추출(gpt-4o-mini, prompt v5) → 병합 16개 → 승인 11 / 반려 5
+# 대상  : 5차 추출(gpt-4o-mini, prompt v5) → 병합 16개 → 승인 12 / 반려 4
+#         (DCC 차단은 처음 반려했다가, 대표 인용을 바꾸면 조건 자체는 유효해서
+#          승인으로 뒤집었다. 그 판단과 이유는 아래 항목에 그대로 남아 있다)
 
 decisions:
 
@@ -104,7 +109,9 @@ decisions:
     reason: >-
       원문 "회원별 누적 600만원 상당의 달러(USD) 환산액 이내" 근거.
 
-  # ── 반려 ──
+  # ── 판단이 뒤집힌 건 (반려 → 승인) ──
+  #    아래 항목은 처음 반려했다가 대표 인용을 바꿔 승인한 것이다.
+  #    지운 뒤 다시 쓰지 않고, 뒤집은 자리를 그대로 둔다.
 
   - key: "overseas_payment_online|card.dcc_block|eq|false"
     decision: approve

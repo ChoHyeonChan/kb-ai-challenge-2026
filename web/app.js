@@ -31,8 +31,8 @@ function support(prov){
 
 function supportText(prov){
   const {docs, spans} = support(prov);
-  if(docs > 1) return `<b>문서 ${docs}곳</b>에서 확인` + (spans > docs ? ` · 문장 ${spans}개` : "");
-  if(spans > 1) return `한 문서의 <b>문장 ${spans}개</b>에서 확인`;
+  if(docs > 1) return `<b>문서 ${docs}곳</b>에서 같은 조건이 추출됨` + (spans > docs ? ` · 문장 ${spans}개` : "");
+  if(spans > 1) return `한 문서의 <b>문장 ${spans}개</b>에서 같은 조건이 추출됨`;
   return "";
 }
 
@@ -54,8 +54,14 @@ function evidence(ev, prov, open, key){
     </blockquote></details>`;
 }
 
-function node(r, kind, open, hideReason){
+// showSev: 이 절에 필수와 참고가 **섞여 있을 때만** 칩을 단다.
+// 전부 필수인 화면에 「필수」를 다는 것은 정보가 아니라 잡음이다.
+function node(r, kind, open, hideReason, showSev){
   const rem = r.remedy || {};
+  const sev = showSev
+    ? (r.severity === "blocking"
+        ? `<span class="sev must">필수</span>` : `<span class="sev note">참고</span>`)
+    : "";
   let body = "";
   if(kind === "stop"){
     if(rem.primary_path) body += `<div class="meta">해결 <b>${esc(rem.primary_path)}</b></div>`;
@@ -68,13 +74,16 @@ function node(r, kind, open, hideReason){
         : `<div><span class="nopath">해결 방법이 수집한 문서에 없음</span></div>`;
       if(rem.note) body += `<div class="t-note">${esc(rem.note)}</div>`;
     }
+    // 검수에서 사람이 쓴 문장이라 **강조**가 섞인다. escEm 은 이스케이프한 뒤
+    // 별표만 되살리므로 태그가 새어 들어갈 수 없다 (review_override 와 같은 처리).
+    if(r.scope_note) body += `<div class="scope">${escEm(r.scope_note)}</div>`;
     body += evidence(r.evidence, r.provenance, open, r.id);
   }else if(kind === "hold" && r.reason && !hideReason){
     body += `<div class="meta">${esc(r.reason)}</div>`;
   }
   // 레일 마커는 색과 테두리 모양으로만 상태를 말한다. 보조기술에는 안 들린다.
   return `<div class="node ${kind}">
-    <div class="label"><span class="sr-only">${NODE_STATE[kind] || ""}. </span>${esc(r.label)}</div>
+    <div class="label"><span class="sr-only">${NODE_STATE[kind] || ""}. </span>${esc(r.label)}${sev}</div>
     ${body}</div>`;
 }
 
@@ -93,7 +102,6 @@ function planSection(plan){
     return `<section class="plan">
       <h3><span class="eyebrow">계획</span>무엇을 더 알아야 하나</h3>
       <p class="lede">${esc(plan.summary)}</p>
-      ${plan.final_note ? `<p class="order">${esc(plan.final_note)}</p>` : ""}
     </section>`;
   }
 
@@ -122,11 +130,13 @@ function planSection(plan){
   // 소요 시간은 잰 적이 없다. 그리고 '앱에서 불가'가 곧 '창구'도 아니다 —
   // 영업점·ATM·고객센터가 섞여 있다. 데이터가 보증하는 데까지만 말한다.
   const visit = plan.needs_visit_ids.length
-    ? `<p class="order"><b>${plan.needs_visit_ids.length}개는 앱 밖에서 해결해야 합니다.</b>
-       각 조건의 근거 원문에 어디서 하는지가 적혀 있습니다.</p>` : "";
+    ? `<p class="order">앱 밖에서 해결해야 하는 조건은 <b>어디서 하는지가
+       각 조건의 근거 원문에 적혀 있습니다.</b></p>` : "";
 
+  // 풀 것이 하나뿐이면 "하나만 풀면 되나요?"는 답이 정해진 질문이다.
   return `<section class="plan">
-    <h3><span class="eyebrow">계획</span>하나만 풀면 되나요?</h3>
+    <h3><span class="eyebrow">계획</span>${plan.must_fix.length === 1
+      ? "무엇을 해야 하나" : "하나만 풀면 되나요?"}</h3>
     <p class="lede">${esc(plan.summary)}</p>
     ${rows ? `<ul class="ladder">${rows}</ul>` : ""}
     ${visit}
@@ -264,6 +274,7 @@ function treeItem(c){
       ${c.remedy.basis ? `<span class="chip b">${esc(basisLabel(c.remedy))}</span>` : ""}</div>
     ${c.remedy.primary_path ? `<div class="t-path">해결 <b>${esc(c.remedy.primary_path)}</b></div>` : ""}
     ${c.remedy.note ? `<div class="t-note">${esc(c.remedy.note)}</div>` : ""}
+    ${c.scope_note ? `<div class="scope">${escEm(c.scope_note)}</div>` : ""}
     <details data-key="tree-${esc(c.id)}"><summary>근거 원문</summary>
       <blockquote>${esc(c.evidence.quote)}
         <cite>${esc(c.evidence.source_title)} · ${esc(c.evidence.collected_at)} 수집
@@ -296,12 +307,14 @@ function treeSection(tree){
     <p class="lede">조건과 인용은 <b>KB 공개문서에서 자동 추출</b>했고, 각 조건은 기계가 평가하는
       형태(<code>subject op value</code>)를 함께 가집니다.
       사람이 검수 단계에서 더한 메모는 <b>그 자리에 함께 표시</b>합니다.
+      「문서 N곳」은 <b>같은 조건이 몇 개 문서에서 추출됐는지</b>이지, 그만큼 독립적으로
+      입증됐다는 뜻이 아닙니다. 인용이 적용 범위를 걸어둔 조건은 <b>그 범위를 함께</b> 적습니다.
       <b>이 트리가 저희가 만든 자산입니다.</b></p>
     <div class="t-stat">
       <div><b>${tree.conditions.length}</b>조건</div>
       <div><b>${appYes}</b>앱에서 가능</div>
       <div><b>${appNo}</b>앱 밖에서만</div>
-      ${noPath ? `<div><b>${noPath}</b>경로 미확인</div>` : ""}
+      <div><b>${noPath}</b>경로 미확인</div>
       <div><b>${tree.source_meta.source_count}</b>근거 문서</div>
       <div><b>${esc(tree.source_meta.collected_at)}</b>수집</div>
     </div>
@@ -383,12 +396,24 @@ function railSection(v, tree){
   }
 
   // 우리 최고의 증거(직접 바꿔 보기)가 스크롤 아래에 있다. 여기서 존재를 알린다.
-  const jump = `<p class="to-tweak-wrap"><a class="to-tweak" href="#tweak">이 조건들의
-    값을 직접 바꿔 판정이 어떻게 달라지는지 보실 수 있습니다</a></p>`;
+  const one = v.unmet.length + v.unknown.length === 1;
+  const jump = `<p class="to-tweak-wrap"><a class="to-tweak" href="#tweak">${one
+    ? "이 조건의 값을 직접 바꿔 판정이 어떻게 달라지는지 보실 수 있습니다"
+    : "이 조건들의 값을 직접 바꿔 판정이 어떻게 달라지는지 보실 수 있습니다"}</a></p>`;
 
   // 근거는 접어두면 없는 것과 같다. 첫 건은 펼쳐 둔다 —
   // 클릭하지 않는 사람에게도 "출처 있는 판정"이 즉시 보여야 한다.
-  const stops = v.unmet.map((r, i) => node(r, "stop", i === 0)).join("");
+  // 미충족 안에 필수와 참고가 섞이면, 집계의 「미충족 N」과 아래 문장의 「막고 있는 M개」가
+  // 다른 수가 된다. 실제로 4 vs 3 이 나왔다. 무엇을 세는 수인지 화면이 말해야 한다.
+  const warnUnmet = v.unmet.filter(r => r.severity !== "blocking");
+  const mixedStop = warnUnmet.length > 0 && blocking.length > 0;
+  const stopLead = mixedStop
+    ? `<p class="hold-lead">아래 <b>${v.unmet.length}개</b> 가운데
+       <b>${blocking.length}개</b>가 판정을 막습니다.
+       「참고」 ${warnUnmet.length}개는 충족되지 않았지만 판정을 막지는 않습니다.</p>`
+    : "";
+  const stops = stopLead
+    + v.unmet.map((r, i) => node(r, "stop", i === 0, false, mixedStop)).join("");
 
   // 사유가 같은 노드가 여러 개면 같은 문장이 세로로 쌓인다(실측 10줄 중 8줄이 글자까지 동일).
   // 사람이 쓴 화면은 그러지 않는다. 사유를 절 위로 한 번씩만 올리고 목록에서는 뺀다.
@@ -411,7 +436,9 @@ function railSection(v, tree){
           : "")
       + `</p>`
     : "";
-  const holds = holdLead + v.unknown.map(r => node(r, "hold", false, grouped)).join("");
+  const mixedHold = holdBlocking > 0 && holdBlocking < v.unknown.length;
+  const holds = holdLead
+    + v.unknown.map(r => node(r, "hold", false, grouped, mixedHold)).join("");
 
   // 제목이 판정과 어긋나면 안 된다. `ok` 인데 "어디서 막혔나"가 뜨면
   // 바로 위 판정과 정면으로 부딪힌다. 무엇이 남았는지에 따라 이름을 고른다.
