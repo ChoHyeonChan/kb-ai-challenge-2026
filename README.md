@@ -95,7 +95,7 @@ python -m src.extract.extractor && python -m src.extract.assemble
 | `src/resolve/` | 목표 식별 (LLM) — **개발 계획. 지금은 비어 있습니다** |
 | `src/api/` | HTTP 계층 |
 | `web/` | 데모 화면 (index.html · style.css · app.js) |
-| `tests/` | 결정론성 1 · 엣지 6 · 상태변경 8 · 근거묶음 10 = **25건** |
+| `tests/` | 결정론성 1 · 엣지 6 · 상태변경 8 · 근거묶음 10 · 적용범위 7 = **32건** |
 | `eval/labels/` | 수동 라벨 (자동 추출 전에 사람이 만든 정답지) |
 | `eval/results/` | 측정 결과 |
 | `docs/` | 기획안·근거 대장·재현 절차 |
