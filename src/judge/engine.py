@@ -30,6 +30,7 @@ class _Buckets:
         self.unmet: list[ConditionResult] = []
         self.met: list[ConditionResult] = []
         self.unknown: list[ConditionResult] = []
+        self.not_applicable: list[ConditionResult] = []
         self.low_confidence: list[ConditionResult] = []
 
 
@@ -63,6 +64,22 @@ def _classify(tree: ConditionTree, profile: UserProfile, today: date | None) -> 
     """각 조건을 평가해 네 갈래로 분류한다."""
     b = _Buckets()
     for c in tree.conditions:
+        # ① 이 조건이 이 사용자에게 걸리기는 하는가.
+        #    인용이 "체크카드의 경우"라고 대상을 한정했는데 조건을 모두에게 걸면,
+        #    조건이 인용보다 넓어진다. 실제로 신용카드 사용자에게 체크카드 전용
+        #    한도 2개가 '충족'으로 집계되고 있었다 — 통과시켜도 틀린 말이다.
+        if c.applies_when is not None:
+            try:
+                if not evaluate(c.applies_when, profile, today=today):
+                    b.not_applicable.append(_to_result(c, full=False))
+                    continue
+            except Unknown as e:
+                # 걸리는지조차 모르면 조건도 모르는 것이다. 추측하지 않는다.
+                r = _to_result(c, reason=f"적용 대상인지 확인하지 못했습니다 — {e.reason}", full=False)
+                r.severity = c.severity
+                b.unknown.append(r)
+                continue
+
         try:
             ok = evaluate(c.predicate, profile, today=today)
         except Unknown as e:
@@ -114,6 +131,7 @@ def judge(
         unmet=b.unmet,
         met=b.met,
         unknown=b.unknown,
+        not_applicable=b.not_applicable,
         low_confidence=b.low_confidence,
         engine_version=ENGINE_VERSION,
         tree_collected_at=tree.source_meta.collected_at,

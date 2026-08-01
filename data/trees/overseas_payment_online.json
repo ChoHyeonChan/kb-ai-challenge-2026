@@ -305,6 +305,11 @@
         "op": "lte",
         "value": 6000000
       },
+      "applies_when": {
+        "subject": "card.type",
+        "op": "eq",
+        "value": "debit"
+      },
       "severity": "blocking",
       "remedy": {
         "actionable_in_app": null,
@@ -339,6 +344,11 @@
         "subject": "context.daily_used_krw",
         "op": "lte",
         "value": 6000000
+      },
+      "applies_when": {
+        "subject": "card.type",
+        "op": "eq",
+        "value": "debit"
       },
       "severity": "blocking",
       "remedy": {
@@ -377,6 +387,11 @@
         "subject": "context.amount_krw",
         "op": "lte",
         "value": 6000000
+      },
+      "applies_when": {
+        "subject": "card.type",
+        "op": "eq",
+        "value": "debit"
       },
       "severity": "blocking",
       "remedy": {

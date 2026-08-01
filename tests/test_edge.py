@@ -73,8 +73,13 @@ def test_unknown_profile_returns_404() -> None:
 
 
 def test_numeric_string_is_classified_as_unknown() -> None:
-    """숫자 조건에 문자열이 오면 크래시 대신 해당 조건을 unknown으로 분류한다."""
+    """숫자 조건에 문자열이 오면 크래시 대신 해당 조건을 unknown으로 분류한다.
+
+    한도 조건은 원문이 체크카드로 범위를 걸어 두었으므로(`applies_when`),
+    체크카드 상태로 대조해야 이 조건이 평가된다. 신용카드로는 애초에 걸리지 않는다.
+    """
     data = _profile("overseas_ok.json").model_dump()
+    data["card"]["type"] = "debit"
     data["context"]["amount_krw"] = "삼만원"
 
     verdict = judge(_tree("overseas_payment_online.json"), UserProfile.model_validate(data))

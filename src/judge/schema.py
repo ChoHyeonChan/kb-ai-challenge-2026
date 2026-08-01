@@ -102,6 +102,13 @@ class Condition(BaseModel):
     label: str = Field(description="사용자에게 그대로 보여줄 문장")
     category: Category
     predicate: Predicate
+    applies_when: Predicate | None = Field(
+        default=None,
+        description="이 조건이 **누구에게** 걸리는가. 인용이 적용 대상을 한정할 때 쓴다 "
+                    "(예: '체크카드의 경우' → card.type eq debit). "
+                    "없으면 모두에게 적용된다. 검수 단계에서 사람이 붙인다 — "
+                    "LLM 은 predicate 하나만 만든다",
+    )
     severity: Severity = "blocking"
     remedy: Remedy
     evidence: Evidence
@@ -209,6 +216,12 @@ class Verdict(BaseModel):
     unmet: list[ConditionResult] = Field(default_factory=list)
     met: list[ConditionResult] = Field(default_factory=list)
     unknown: list[ConditionResult] = Field(default_factory=list)
+    not_applicable: list[ConditionResult] = Field(
+        default_factory=list,
+        description="`applies_when` 이 거짓이라 이 사용자에게 걸리지 않는 조건. "
+                    "충족도 미충족도 아니므로 따로 센다 — 체크카드 전용 한도를 "
+                    "신용카드 사용자에게 '충족'이라고 말하면 그것도 틀린 말이다",
+    )
     low_confidence: list[ConditionResult] = Field(default_factory=list)
     engine_version: str = "1.0.0"
     tree_collected_at: str = ""

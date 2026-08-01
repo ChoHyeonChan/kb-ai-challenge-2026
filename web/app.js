@@ -359,7 +359,8 @@ function verdictDesc(v){
 
 function verdictSection(v){
   const t = VERDICT[v.verdict] || VERDICT.indeterminate;
-  const total = v.unmet.length + v.met.length + v.unknown.length;
+  const na = (v.not_applicable || []).length;
+  const total = v.unmet.length + v.met.length + v.unknown.length + na;
   return `<section class="verdict ${t.cls}">
     <div class="v-head">
       <span class="v-kicker">${t.kicker}</span>
@@ -371,6 +372,7 @@ function verdictSection(v){
       <div class="n-stop"><b>${v.unmet.length}</b><span>미충족</span></div>
       <div><b>${v.met.length}</b><span>충족</span></div>
       ${v.unknown.length ? `<div class="n-hold"><b>${v.unknown.length}</b><span>확인 불가</span></div>` : ""}
+      ${na ? `<div class="n-na"><b>${na}</b><span>해당 없음</span></div>` : ""}
       <div class="n-all"><b>${total}</b><span>전체 조건</span></div>
     </div>
     ${trustStrip(v)}
@@ -570,6 +572,21 @@ function tweakSection(tree, prof, v){
   </section>`;
 }
 
+// 이 사용자에게 걸리지 않는 조건. 근거가 적용 대상을 한정했기 때문이다.
+// 조용히 빼면 숫자만 줄어들어 "유리하게 뺐다"로 읽힌다. 이유를 함께 보인다.
+function naSection(v){
+  const rows = v.not_applicable || [];
+  if(!rows.length) return "";
+  const items = rows.map(r => `<li>${esc(r.label)}
+    ${r.scope_note ? `<em>${escEm(r.scope_note)}</em>` : ""}</li>`).join("");
+  return `<section class="na">
+    <h3><span class="eyebrow">제외</span>이 상태에는 걸리지 않는 조건</h3>
+    <p class="lede">근거 원문이 <b>적용 대상을 한정한</b> 조건입니다.
+      충족도 미충족도 아니므로 판정에서 제외하고, 뺐다는 사실과 이유를 여기 남깁니다.</p>
+    <ul>${items}</ul>
+  </section>`;
+}
+
 function metSection(v, lowById){
   if(!v.met.length) return "";
   // 해석이 개입한 조건은 별도 섹션으로 빼지 않고 충족 목록 안에서 `~` 로 표시한다.
@@ -593,6 +610,7 @@ function announce(v){
   const t = VERDICT[v.verdict] || VERDICT.indeterminate;
   const parts = [t.title, `미충족 ${v.unmet.length}`, `충족 ${v.met.length}`];
   if(v.unknown.length) parts.push(`확인 불가 ${v.unknown.length}`);
+  if((v.not_applicable || []).length) parts.push(`해당 없음 ${v.not_applicable.length}`);
   $("#announce").textContent = parts.join(", ") + ".";
 }
 
@@ -642,6 +660,7 @@ function render(v, plan, tree, prof){
     + tweakSection(tree, prof, v)
     + planSection(plan)
     + metSection(v, lowById)
+    + naSection(v)
     + stateSection(prof)
     + treeSection(tree)
     + `<p class="foot">판정 엔진 v${esc(v.engine_version)} · 조건 수집일 ${esc(v.tree_collected_at)}<br>
