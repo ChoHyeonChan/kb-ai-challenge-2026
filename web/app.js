@@ -247,8 +247,9 @@ function basisLabel(r){
   if(!r.basis) return "";
   if(r.basis === "measured") return "앱에서 직접 확인";
   if(r.basis === "self_evident") return "조건 자체로 자명";
+  // 칩 앞에 CSS 가 「근거 」를 붙인다. 라벨에도 넣으면 「근거 근거 원문에…」가 된다.
   return r.actionable_in_app === null || r.actionable_in_app === undefined
-    ? "근거 원문에 할 일 명시" : "근거 원문에 채널 명시";
+    ? "원문에 할 일 명시" : "원문에 채널 명시";
 }
 
 function treeItem(c){
