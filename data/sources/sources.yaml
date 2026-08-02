@@ -77,5 +77,6 @@ manual:
     reason: "obank.kbstar.com robots.txt 가 일반 UA 전체 Disallow → 자동 수집하지 않음"
     method: "브라우저 직접 열람 후 본문 저장"
     captured_by: "현찬"
-    captured_at: "2026-07-27"
-    status: "확보됨(화면 확인). 텍스트 파일로 정리 필요"
+    captured_at: "2026-07-29"
+    status: "확보 완료 (본문 텍스트 저장)"
+    scope: "공개 안내 본문만. 로그인 후 개인화 영역 미포함"
