@@ -338,7 +338,7 @@
     },
     {
       "id": "c_limit_daily",
-      "label": "체크카드 1일 이용한도 이내여야 합니다 (600만원 상당 USD)",
+      "label": "체크카드 해외 1일 이용한도 이내여야 합니다 (600만원 상당 USD)",
       "category": "limit",
       "predicate": {
         "subject": "context.daily_used_krw",
@@ -356,7 +356,7 @@
         "channels": [],
         "primary_path": null,
         "basis": null,
-        "note": "해결 방법을 수집한 문서에서 찾지 못했습니다"
+        "note": "해결 방법을 수집한 문서에서 찾지 못했습니다. KB Pay 「이용한도 > 체크카드한도」 화면에서 1회·1일 한도를 변경할 수 있는 것은 확인했습니다(2026-08-03). 다만 그 화면에는 「해외」라는 표기가 없어, 해외 이용한도에도 적용되는지는 확인하지 못했습니다."
       },
       "evidence": {
         "source_title": "해외이용 FAQ",
@@ -381,7 +381,7 @@
     },
     {
       "id": "c_limit_single",
-      "label": "체크카드 1회 이용한도 이내여야 합니다 (600만원 상당 USD)",
+      "label": "체크카드 해외 1회 이용한도 이내여야 합니다 (600만원 상당 USD)",
       "category": "limit",
       "predicate": {
         "subject": "context.amount_krw",
@@ -399,7 +399,7 @@
         "channels": [],
         "primary_path": null,
         "basis": null,
-        "note": "해결 방법을 수집한 문서에서 찾지 못했습니다"
+        "note": "해결 방법을 수집한 문서에서 찾지 못했습니다. KB Pay 「이용한도 > 체크카드한도」 화면에서 1회·1일 한도를 변경할 수 있는 것은 확인했습니다(2026-08-03). 다만 그 화면에는 「해외」라는 표기가 없어, 해외 이용한도에도 적용되는지는 확인하지 못했습니다."
       },
       "evidence": {
         "source_title": "해외이용 종합안내",
